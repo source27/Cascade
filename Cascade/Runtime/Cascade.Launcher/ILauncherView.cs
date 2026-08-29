@@ -13,5 +13,15 @@ namespace Cascade.Launcher
         UniTask WaitConfirmDownloadAsync(long totalBytes, CancellationToken cancellationToken = default);
         void ShowError(string message, Action onRetry);
         void HideError();
+
+        /// <summary>Hides the launcher UI once the game has launched. No-op by default.</summary>
+        void HideWindow()
+        {
+        }
+
+        /// <summary>Restores the launcher UI on retry. No-op by default.</summary>
+        void ShowWindow()
+        {
+        }
     }
 }

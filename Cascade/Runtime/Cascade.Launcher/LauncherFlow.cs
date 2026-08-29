@@ -60,6 +60,7 @@ namespace Cascade.Launcher
             HasFailed = false;
             Failure = null;
             _view?.HideError();
+            _view?.ShowWindow();
             SetStatus(LauncherText.Retrying);
             Start();
         }
@@ -134,6 +135,8 @@ namespace Cascade.Launcher
                 Stage = LauncherStage.Completed;
                 SetStatus(LauncherText.Format(LauncherText.Completed, _resources.ActivePackageVersion));
                 _view?.SetProgress(1f);
+                // The game is up — the launcher UI's job is done.
+                _view?.HideWindow();
                 _log.Info("Launcher", StatusText);
             }
             catch (OperationCanceledException)

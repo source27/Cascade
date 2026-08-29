@@ -18,6 +18,16 @@ namespace Cascade.Launcher
         private UniTaskCompletionSource _confirmSource;
         private Action _retryAction;
 
+        public void HideWindow()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void ShowWindow()
+        {
+            gameObject.SetActive(true);
+        }
+
         private void Awake()
         {
             BindReferences();
