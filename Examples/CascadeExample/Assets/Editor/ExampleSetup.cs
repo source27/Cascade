@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ namespace CascadeExample.Editor
         private const string ScenePath = "Assets/Scenes/Bootstrap.unity";
         private const string HomePath = "Assets/Resources/CascadeUI/Home.prefab";
         private const string DetailPath = "Assets/Resources/CascadeUI/Detail.prefab";
-        private const string SfxPath = "Assets/Resources/CascadeUI/SfxClick.audioClip";
+        private const string SfxPath = "Assets/Resources/CascadeUI/SfxClick.wav";
 
         [MenuItem("CascadeExample/Create Example Pages", priority = 100)]
         public static void Setup()
@@ -78,15 +79,46 @@ namespace CascadeExample.Editor
         {
             const int sampleRate = 44100;
             const float duration = 0.08f;
-            var clip = AudioClip.Create("SfxClick", (int)(sampleRate * duration), 1, sampleRate, false);
-            var data = new float[(int)(sampleRate * duration)];
-            for (var i = 0; i < data.Length; i++)
+            var samples = (int)(sampleRate * duration);
+            var data = new short[samples];
+            for (var i = 0; i < samples; i++)
             {
                 var t = (float)i / sampleRate;
-                data[i] = Mathf.Sin(2f * Mathf.PI * 880f * t) * (1f - t / duration);
+                data[i] = (short)(Mathf.Sin(2f * Mathf.PI * 880f * t) * (1f - t / duration) * short.MaxValue);
             }
-            clip.SetData(data, 0);
-            AssetDatabase.CreateAsset(clip, SfxPath);
+
+            // AudioClip 资产必须从文件导入：写 WAV → ImportAsset（旧 .audioClip 产物删除，避免重复地址）。
+            var oldClip = "Assets/Resources/CascadeUI/SfxClick.audioClip";
+            if (File.Exists(oldClip) || AssetDatabase.LoadAssetAtPath<AudioClip>(oldClip) != null)
+                AssetDatabase.DeleteAsset(oldClip);
+
+            File.WriteAllBytes(Path.GetFullPath(SfxPath), WavEncode(data, sampleRate));
+            AssetDatabase.ImportAsset(SfxPath);
+        }
+
+        private static byte[] WavEncode(short[] pcm, int sampleRate)
+        {
+            using (var stream = new MemoryStream())
+            using (var writer = new BinaryWriter(stream))
+            {
+                var dataSize = pcm.Length * 2;
+                writer.Write(Encoding.ASCII.GetBytes("RIFF"));
+                writer.Write(36 + dataSize);
+                writer.Write(Encoding.ASCII.GetBytes("WAVE"));
+                writer.Write(Encoding.ASCII.GetBytes("fmt "));
+                writer.Write(16);
+                writer.Write((short)1);      // PCM
+                writer.Write((short)1);      // mono
+                writer.Write(sampleRate);
+                writer.Write(sampleRate * 2); // byte rate
+                writer.Write((short)2);      // block align
+                writer.Write((short)16);     // bits per sample
+                writer.Write(Encoding.ASCII.GetBytes("data"));
+                writer.Write(dataSize);
+                foreach (var sample in pcm)
+                    writer.Write(sample);
+                return stream.ToArray();
+            }
         }
 
         [MenuItem("CascadeExample/Configure YooAsset + Localization", priority = 101)]
