@@ -1,0 +1,22 @@
+{
+  "name": "Cascade.Core",
+  "rootNamespace": "Cascade.Core",
+  "references": [
+    "Cascade.Service",
+    "UniTask",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro",
+    "LoopScrollRect.Runtime",
+    "LitMotion",
+    "LitMotion.Extensions"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,22 @@
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Cascade.Service;
+
+namespace Cascade.Core
+{
+    public interface IGameHost
+    {
+        IServiceRegistry Services { get; }
+        IUpdateLoop UpdateLoop { get; }
+        ILogService Log { get; }
+        IEventBus Events { get; }
+        IResourceService Resources { get; }
+        ILocalizationService Localization { get; }
+        IUISystem UI { get; }
+        UniTask<IUISystem> CreateUISystemAsync(
+            UIRegistry registry,
+            string rootAddress,
+            CancellationToken cancellationToken = default);
+        void DestroyUISystem();
+    }
+}

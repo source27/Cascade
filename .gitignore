@@ -104,3 +104,9 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Cascade source generator (Tools~ is Unity-ignored; keep csproj, drop build output)
+!Tools~/**/*.csproj
+!Tools~/**/*.sln
+Tools~/**/bin/
+Tools~/**/obj/
