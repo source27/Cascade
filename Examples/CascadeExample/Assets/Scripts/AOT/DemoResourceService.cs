@@ -127,6 +127,8 @@ namespace CascadeExample
             public void Release()
             {
             }
+
+            public void Dispose() => Release();
         }
     }
 }
