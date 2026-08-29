@@ -5,7 +5,8 @@
         "CascadeExample.AOT",
         "Cascade.Launcher",
         "Cascade.Service",
-        "Cascade.Core"
+        "Cascade.Core",
+        "HybridCLR.Editor"
     ],
     "includePlatforms": [
         "Editor"

@@ -25,6 +25,18 @@
 | Update counter | `IUpdateLoop.RegisterUpdate` |
 | Open Detail | `IUISystem.OpenUI` + 绑定（UIBindingHost） |
 
-## 热更
+## 热更（HybridCLR）
 
-Editor 内为 EditorSimulate（热更程序集随编辑器编译加载）。真机/构建热更（HybridCLR 构建 + StreamingAssets 分发）见「示例工程接入 HybridCLR 热更演示」任务（`CascadeExample → Build HotUpdate`）。
+Editor 默认 EditorSimulate（热更程序集随编辑器编译加载）。要演示**真实热更**（dll 从 StreamingAssets 加载）：
+
+1. 菜单 `CascadeExample → HotUpdate → 1. Configure HybridCLR Settings`（把 `GameLogic.HotUpdate` 标记为热更程序集）。
+2. 菜单 `CascadeExample → HotUpdate → 3. Build Hot DLL + Copy to StreamingAssets`：HybridCLR 编译热更 dll → 拷入 `Assets/StreamingAssets/GameLogic.HotUpdate.dll`，并把 Bootstrap 场景的 playMode 翻转为 **Offline**。
+3. 播放：启动链走 RawFile 模式，`DemoResourceService` 从 StreamingAssets 读出 dll，`CodeLoader` 以 `Assembly.Load` 加载并反射入口 —— 改热更代码 → 重跑菜单 3 → 重进 Play 即热更闭环。
+
+**真机构建**（Android/iOS/PC 打包）：
+1. 菜单 1（配置）+ 菜单 2 `Generate AOT Metadata (All)`（生成 AOTGenericReferences）。
+2. HybridCLR 安装（首次需 `ThirdParty/HybridCLR/Installer`）。
+3. IL2CPP 构建 Player 后，菜单 4 `Copy AOT Metadata to StreamingAssets`（剥离后的 AOT 程序集，按 AotMetadataCatalog 的模块名分发）。
+4. 打包（StreamingAssets 含热更 dll + AOT 元数据；启动时 `LoadMetadataForAOTAssembly` + `Assembly.Load`）。
+
+Editor 内跳过 AOT 元数据加载（解释执行），热更 dll 的加载路径与真机一致。
