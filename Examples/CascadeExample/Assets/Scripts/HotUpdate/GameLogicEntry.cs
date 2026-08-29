@@ -21,6 +21,9 @@ namespace GameLogic
             var ui = await host.CreateUISystemAsync(registry, "UIRoot", cancellationToken);
             ui.BindPageContext(new PageContext(host.Services, ui, host.UpdateLoop));
 
+            // Pages open under an active context (client's GameFlow does the same).
+            ui.SetActiveContext(UIContextId.Main);
+
             await ui.OpenUI<HomePage>(new HomePage.Args(), cancellationToken);
             return "1.0.0";
         }
