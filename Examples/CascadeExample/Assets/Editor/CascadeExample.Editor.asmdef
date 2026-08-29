@@ -8,6 +8,7 @@
         "Cascade.Core",
         "Cascade.Editor",
         "HybridCLR.Editor",
+        "YooAsset",
         "YooAsset.Editor"
     ],
     "includePlatforms": [
