@@ -338,6 +338,10 @@ namespace Cascade.Service.YooAsset
 #if UNITY_EDITOR
             if (_options != null && _options.PlayMode == YooAssetResourcePlayMode.EditorSimulate)
             {
+                if (!assetInfo.IsValid)
+                    throw new InvalidOperationException(
+                        $"Raw address not found in the editor-simulated package: '{location}'. " +
+                        "Check the YooAsset collector setting (BundleCollectorSetting.asset) includes the asset with AddressByFileName.");
                 var projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
                 if (string.IsNullOrEmpty(projectRoot))
                     throw new InvalidOperationException("Unable to resolve project root.");
