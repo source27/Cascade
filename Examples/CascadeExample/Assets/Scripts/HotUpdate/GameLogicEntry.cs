@@ -1,13 +1,15 @@
 using System.Threading;
 using Cascade.Core;
 using Cascade.Generated;
+using CascadeExample;
 using Cysharp.Threading.Tasks;
 
-namespace CascadeExample
+namespace GameLogic
 {
     /// <summary>
-    /// Hot-update entry, invoked reflectively by the framework's CodeLoader
-    /// (entry type / assembly name configured via BootstrapConfiguration defaults).
+    /// Hot-update entry, invoked reflectively by the framework's CodeLoader.
+    /// Namespace/class intentionally match the framework default entry type
+    /// (GameLogic.GameLogicEntry) so no configuration is needed.
     /// </summary>
     public static class GameLogicEntry
     {
