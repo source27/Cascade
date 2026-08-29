@@ -17,51 +17,71 @@ using YooAsset.Editor;
 namespace CascadeExample.Editor
 {
     /// <summary>
-    /// 打包 + 打热更窗口（自 client 的 DBFrameworkBuildWindow 迁移，功能对齐）：
-    /// - 打包页：HybridCLR Generate/All → 热更 dll/元数据 → YooAsset SBP → Player；
-    ///   构建产物上传 DevCDN（PUT + X-CSRF-Token），可查询 DevCDN 最新资源版本。
-    /// - 热更页：Generate AOT Metadata / Build Hot DLL / Copy AOT Metadata 分步。
-    /// DevCDN 服务端见 tools/devcdn（node devcdn-server.mjs）。
+    /// 打包 + 打热更窗口（与 client 的 DBFrameworkBuildWindow 一致）：
+    /// - 打包页：环境(DEV/BETA/GOLD) → 应用/资源版本 → 资源包模式(Full 内嵌/Lite 只留 Bundles)
+    ///   → HybridCLR Generate/All → 热更 dll/元数据 → YooAsset SBP → Android APK；
+    ///   上传 DevCDN（PUT + X-CSRF-Token，.version 最后传）+ DevCDN 版本查询。
+    /// - 热更页：一键出热更资源包（当前 Build Target，不构建 Player）。
+    /// DevCDN 服务端：tools/devcdn（node devcdn-server.mjs）。
     /// </summary>
     public sealed class ExampleBuildWindow : EditorWindow
     {
-        private const string PackageName = "CascadePak";
-        private const string CodeRoot = "Assets/Code";
-        private const string DevCdnBaseUrl = "http://10.1.51.151:2727";
-        private const string DevCdnRootName = "Cascade";
-        private const string DevCdnCsrfToken = "227e24ff-63a2-4499-b1f4-7fd5f0c7330f";
-        private const string LastBuiltPackageVersionKey = "CascadeExample.LastBuiltPackageVersion";
-        private const string HotDllName = "GameLogic.HotUpdate.dll";
-        private const string BuildArtifactsRoot = "BuildArtifacts";
-
         private enum BuildTab
         {
             Package,
             HotUpdate
         }
 
+        private enum BuildEnvironment
+        {
+            DEV,
+            BETA,
+            GOLD
+        }
+
+        private enum ResourcePackageMode
+        {
+            Full = 0,
+            Lite = 1
+        }
+
+        private const string PackageName = "CascadePak";
+        private const string CodeRoot = "Assets/Code";
+        private const string StreamingAssetPackRoot = "Assets/StreamingAssets/assetpack";
+        private const string DevCdnBaseUrl = "http://10.1.51.151:2727";
+        private const string DevCdnRootName = "Cascade";
+        private const string DevCdnCsrfToken = "227e24ff-63a2-4499-b1f4-7fd5f0c7330f";
+        private const string LastBuiltPackageVersionKey = "CascadeExample.LastBuiltPackageVersion";
+        private const string ApkOutputDirectory = "BuildArtifacts/Android";
+        private const string HotUpdateOutputDirectory = "BuildArtifacts/HotUpdate";
+
         private BuildTab _tab;
+        private BuildEnvironment _environment = BuildEnvironment.DEV;
         private string _applicationVersion = "0.1";
-        private string _packageVersion = string.Empty;
+        private string _packageVersion;
+        private ResourcePackageMode _resourcePackageMode = ResourcePackageMode.Full;
         private bool _developmentBuild;
         private bool _isUploading;
         private bool _isRefreshingDevCdnVersion;
         private string _devCdnVersion = "未查询";
+        private string _lastBuiltPackageVersion;
         private string _status = "就绪";
         private Vector2 _scroll;
+
+        private bool EmbedPackage => _resourcePackageMode == ResourcePackageMode.Full;
 
         [MenuItem("CascadeExample/构建窗口", priority = 110)]
         public static void Open()
         {
             var window = GetWindow<ExampleBuildWindow>("Cascade 构建");
-            window.minSize = new Vector2(600f, 480f);
+            window.minSize = new Vector2(640f, 520f);
             window.Show();
         }
 
         private void OnEnable()
         {
             _applicationVersion = PlayerSettings.bundleVersion;
-            _packageVersion = PackageVersionTracker.PeekNext(_applicationVersion);
+            _packageVersion = CreateDefaultPackageVersion();
         }
 
         private void OnGUI()
@@ -82,61 +102,88 @@ namespace CascadeExample.Editor
 
         private void DrawPackageTab()
         {
-            DrawVersionFields();
-
-            if (GUILayout.Button("一键打包（Generate/All → 热更文件 → YooAsset SBP → Player）", GUILayout.Height(32f)))
-                RunAfterGui(BuildPackage);
-
-            EditorGUILayout.Space(8f);
-            using (new EditorGUI.DisabledScope(_isUploading))
-            {
-                if (GUILayout.Button(_isUploading ? "上传中…" : "上传构建产物到 DevCDN", GUILayout.Height(28f)))
-                    UploadResourcesToDevCdn();
-            }
+            EditorGUILayout.LabelField("APK 打包", EditorStyles.boldLabel);
+            _environment = (BuildEnvironment)EditorGUILayout.EnumPopup("环境", _environment);
+            DrawApplicationAndPackageVersionFields();
+            DrawBuildDirectoryField(GetApkBuildDirectory(), OpenApkBuildDirectory);
+            _resourcePackageMode = (ResourcePackageMode)EditorGUILayout.EnumPopup("资源包模式", _resourcePackageMode);
+            _developmentBuild = EditorGUILayout.ToggleLeft("Development Build", _developmentBuild);
+            using (new EditorGUI.DisabledScope(true))
+                EditorGUILayout.TextField("APK 输出路径", GetApkOutputPath());
 
             DrawDevCdnVersion();
 
-            EditorGUILayout.Space(4f);
-            EditorGUILayout.HelpBox(
-                "流程：HybridCLR Generate/All → 热更 dll 与 AOT 元数据拷入 Assets/Code（YooAsset Code 组，RawFile）→ YooAsset ScriptableBuildPipeline → 构建 Player（当前 Build Target）。\n" +
-                "真机联调：tools/devcdn 启动 DevCDN → 上传产物 → Bootstrap 场景 playMode 切 Host。",
-                MessageType.None);
+            EditorGUILayout.Space(8f);
+            if (EmbedPackage)
+            {
+                EditorGUILayout.HelpBox(
+                    "Full（默认）：YooAsset 构建结果写入 StreamingAssets/assetpack 并打入 APK。正式发布请使用此模式。\n" +
+                    $"资源版本：应用版本_序号（如 0.0.1_1），记录于 {PackageVersionTracker.RelativePath}。",
+                    MessageType.None);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox(
+                    "Lite：不内嵌资源，产物只保留在 Bundles。仅供内部测试，正式发布请改回 Full。\n" +
+                    $"资源版本：应用版本_序号（如 0.0.1_1），记录于 {PackageVersionTracker.RelativePath}。",
+                    MessageType.Warning);
+            }
+
+            DrawActionButtons("构建 APK", BuildPackageAndApk);
+            using (new EditorGUI.DisabledScope(_isUploading))
+            {
+                if (GUILayout.Button(_isUploading ? "上传中…" : "上传构建产物到 DevCDN"))
+                    UploadResourcesToDevCdn();
+            }
         }
 
         private void DrawHotUpdateTab()
         {
-            DrawVersionFields();
+            EditorGUILayout.LabelField("热更包", EditorStyles.boldLabel);
+            _environment = (BuildEnvironment)EditorGUILayout.EnumPopup("环境", _environment);
+            DrawApplicationAndPackageVersionFields();
+            DrawBuildDirectoryField(GetHotUpdateBuildDirectory(), OpenHotUpdateBuildDirectory);
+            DrawDevCdnVersion();
 
-            if (GUILayout.Button("1. Generate AOT Metadata (All)", GUILayout.Height(28f)))
-                RunAfterGui(() => PrebuildCommand.GenerateAll());
-
-            if (GUILayout.Button("2. Build Hot DLL + Copy to Assets/Code", GUILayout.Height(28f)))
-                RunAfterGui(BuildHotUpdateDll);
-
-            if (GUILayout.Button("3. Copy AOT Metadata to Assets/Code（真机用）", GUILayout.Height(28f)))
-                RunAfterGui(CopyAotMetadata);
-
-            EditorGUILayout.Space(4f);
+            EditorGUILayout.Space(8f);
             EditorGUILayout.HelpBox(
-                "Editor 内播放走 EditorSimulate（YooAsset 虚拟资源 + 热更程序集随编辑器编译加载）；打包后的真机走 YooAsset 包（Offline 内置 / Host 远端）。",
+                "流程：设置环境 → HybridCLR Generate/All → 复制 GameLogic DLL 与 AOT 元数据 → YooAsset ScriptableBuildPipeline。\n" +
+                $"资源版本格式：应用版本_序号（如 0.0.1_1）。序号记录在 {PackageVersionTracker.RelativePath}。",
                 MessageType.None);
+
+            DrawActionButtons("构建热更包", BuildHotUpdatePackage);
         }
 
-        private void DrawVersionFields()
+        private void DrawApplicationAndPackageVersionFields()
         {
-            EditorGUILayout.LabelField("应用版本");
-            _applicationVersion = EditorGUILayout.TextField(_applicationVersion).Trim();
-            EditorGUILayout.LabelField("资源包版本", _packageVersion);
-            using (new EditorGUI.DisabledScope(true))
+            EditorGUI.BeginChangeCheck();
+            var applicationVersion = EditorGUILayout.TextField("应用版本", _applicationVersion);
+            if (EditorGUI.EndChangeCheck())
             {
-                EditorGUILayout.TextField("下一个包版本", PackageVersionTracker.PeekNext(_applicationVersion));
+                _applicationVersion = applicationVersion;
+                _packageVersion = CreateDefaultPackageVersion();
             }
-            EditorGUILayout.Space(4f);
+
+            EditorGUILayout.BeginHorizontal();
+            _packageVersion = EditorGUILayout.TextField("资源包版本", _packageVersion);
+            if (GUILayout.Button("刷新序号", GUILayout.Width(72f)))
+                _packageVersion = CreateDefaultPackageVersion();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawBuildDirectoryField(string directory, Action open)
+        {
+            EditorGUILayout.BeginHorizontal();
+            using (new EditorGUI.DisabledScope(true))
+                EditorGUILayout.TextField("输出目录", directory);
+            if (GUILayout.Button("打开", GUILayout.Width(60f)))
+                open();
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawDevCdnVersion()
         {
-            var versionUrl = GetDevCdnDirectoryUrl(EditorUserBuildSettings.activeBuildTarget);
+            var versionUrl = GetDevCdnDirectoryUrl(EditorUserBuildSettings.activeBuildTarget, _applicationVersion);
             if (!_isRefreshingDevCdnVersion && !_isUploading)
                 RefreshDevCdnVersion(versionUrl);
 
@@ -148,6 +195,13 @@ namespace CascadeExample.Editor
                     RefreshDevCdnVersion(versionUrl);
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawActionButtons(string buildLabel, Action buildAction)
+        {
+            EditorGUILayout.Space(4f);
+            if (GUILayout.Button(buildLabel, GUILayout.Height(32f)))
+                RunAfterGui(buildAction);
         }
 
         private void DrawStatusBar()
@@ -171,90 +225,100 @@ namespace CascadeExample.Editor
             }
         }
 
-        private void BuildPackage()
+        private void BuildPackageAndApk()
         {
-            var target = EditorUserBuildSettings.activeBuildTarget;
-            EnsureVersion();
-            PlayerSettings.bundleVersion = _applicationVersion;
-            AssetDatabase.SaveAssets();
+            try
+            {
+                var packageVersion = GetPackageVersionInput();
+                var embedPackage = EmbedPackage;
+                PrepareBuild(BuildTarget.Android, embedPackage);
+                BuildHotUpdateCode(BuildTarget.Android);
+                BuildYooAssetPackage(BuildTarget.Android, embedPackage, packageVersion);
+                var apkPath = BuildApk();
+                SetStatus($"APK 构建完成（{_resourcePackageMode}）：{apkPath}，资源版本：{packageVersion}");
+            }
+            catch (Exception exception)
+            {
+                SetStatus("APK 构建失败：" + exception.Message);
+                Debug.LogException(exception);
+                throw;
+            }
+        }
 
+        private void BuildHotUpdatePackage()
+        {
+            try
+            {
+                var packageVersion = GetPackageVersionInput();
+                var target = EditorUserBuildSettings.activeBuildTarget;
+                PrepareBuild(target, false);
+                BuildHotUpdateCode(target);
+                BuildYooAssetPackage(target, false, packageVersion);
+                SetStatus($"热更包构建完成，资源版本：{packageVersion}");
+            }
+            catch (Exception exception)
+            {
+                SetStatus("热更包构建失败：" + exception.Message);
+                Debug.LogException(exception);
+                throw;
+            }
+        }
+
+        private void PrepareBuild(BuildTarget target, bool embedPackage)
+        {
+            if (target != EditorUserBuildSettings.activeBuildTarget)
+                throw new InvalidOperationException($"请先将 Unity 当前 Build Target 切换为 {target}。");
+
+            if (string.IsNullOrWhiteSpace(_applicationVersion))
+                throw new InvalidOperationException("应用版本不能为空。");
+            PlayerSettings.bundleVersion = _applicationVersion.Trim();
+            SetEnvironmentDefine(target, _environment.ToString(), embedPackage);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        private void BuildHotUpdateCode(BuildTarget target)
+        {
             SetStatus("HybridCLR Generate/All…");
             PrebuildCommand.GenerateAll();
             CopyGeneratedCode(target);
-
-            var packageVersion = GetPackageVersionInput();
-            BuildYooAssetPackage(target, packageVersion);
-
-            SetStatus("构建 Player…");
-            var buildPath = Path.Combine(
-                BuildArtifactsRoot,
-                GetPlatformFolder(target),
-                $"CascadeExample_{Sanitize(_applicationVersion)}");
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
-            {
-                scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
-                locationPathName = buildPath,
-                target = target,
-                options = _developmentBuild ? BuildOptions.Development : BuildOptions.None
-            });
-            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
-                throw new InvalidOperationException($"Player 构建失败：{report.summary.result}（详见 Console）");
-
-            SetStatus($"打包完成：{buildPath}，资源版本 {packageVersion}");
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
 
         private void CopyGeneratedCode(BuildTarget target)
         {
-            BuildHotUpdateDll();
-            CopyAotMetadata();
-        }
-
-        private void BuildHotUpdateDll()
-        {
-            SetStatus("编译热更 dll…");
-            var target = EditorUserBuildSettings.activeBuildTarget;
-            CompileDllCommand.CompileDll(target);
-
-            var outputDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
-            var dll = Path.Combine(outputDir, HotDllName);
-            if (!File.Exists(dll))
-                throw new FileNotFoundException($"HybridCLR 热更 DLL 不存在：{dll}");
-
             EnsureFolder(CodeRoot);
-            var dest = Path.Combine(CodeRoot, HotDllName);
-            File.Copy(dll, dest, overwrite: true);
-            AssetDatabase.ImportAsset(dest);
-            SetStatus($"热更 dll 已拷入 {dest}");
-        }
+            DeleteGeneratedCodeFiles(CodeRoot);
 
-        private void CopyAotMetadata()
-        {
-            var target = EditorUserBuildSettings.activeBuildTarget;
-            var stripDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
-            if (!Directory.Exists(stripDir))
-                throw new InvalidOperationException(
-                    $"剥离后的 AOT 程序集不存在：{stripDir}。需先用 IL2CPP 构建过 Player（Generate/All 之后）。");
+            var hotUpdateDirectory = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+            var hotUpdateDll = Path.Combine(hotUpdateDirectory, "GameLogic.HotUpdate.dll");
+            if (!File.Exists(hotUpdateDll))
+                throw new FileNotFoundException("HybridCLR 热更 DLL 不存在。", hotUpdateDll);
 
-            EnsureFolder(CodeRoot);
-            foreach (var name in Cascade.Launcher.AotMetadataCatalog.ResolveLocations())
+            CopyFileAsAsset(hotUpdateDll, Path.Combine(CodeRoot, "GameLogic.HotUpdate.dll"));
+
+            var metadataDirectory = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
+            foreach (var location in Cascade.Launcher.AotMetadataCatalog.ResolveLocations())
             {
-                var source = Path.Combine(stripDir, name);
+                var source = Path.Combine(metadataDirectory, location);
                 if (!File.Exists(source))
-                    throw new FileNotFoundException($"缺少 AOT 元数据：{name}。", source);
-                var dest = Path.Combine(CodeRoot, name);
-                File.Copy(source, dest, overwrite: true);
-                AssetDatabase.ImportAsset(dest);
+                    throw new FileNotFoundException($"缺少 AOT 元数据：{location}。", source);
+                CopyFileAsAsset(source, Path.Combine(CodeRoot, location));
             }
-            SetStatus("AOT 元数据已拷入 Assets/Code。");
         }
 
-        private void BuildYooAssetPackage(BuildTarget target, string packageVersion)
+        private void BuildYooAssetPackage(BuildTarget target, bool embedPackage, string packageVersion)
         {
             SetStatus("YooAsset ScriptableBuildPipeline…");
             var outputRoot = BundleBuilderHelper.GetDefaultBuildOutputRoot();
             Directory.CreateDirectory(outputRoot);
 
-            var bundledRoot = Path.Combine(outputRoot, "StreamingAssets");
+            if (!embedPackage)
+                ClearDirectory(ProjectPath(StreamingAssetPackRoot));
+
+            var bundledRoot = embedPackage
+                ? BundleBuilderHelper.GetStreamingAssetsRoot()
+                : Path.Combine(outputRoot, "StreamingAssets");
             Directory.CreateDirectory(bundledRoot);
 
             var parameters = new ScriptableBuildParameters
@@ -266,7 +330,7 @@ namespace CascadeExample.Editor
                 BuildTarget = target,
                 PackageName = PackageName,
                 PackageVersion = packageVersion,
-                PackageNote = $"CascadeExample {_applicationVersion}",
+                PackageNote = $"CascadeExample {_environment} {_applicationVersion}",
                 EnableSharePackRule = true,
                 VerifyBuildingResult = true,
                 FileNameStyle = EFileNameStyle.HashName,
@@ -280,10 +344,41 @@ namespace CascadeExample.Editor
             if (!result.Success)
                 throw new InvalidOperationException("YooAsset 构建失败：" + result.ErrorInfo);
 
+            _lastBuiltPackageVersion = packageVersion;
+            EditorPrefs.SetString(LastBuiltPackageVersionKey, packageVersion);
             PackageVersionTracker.CommitBuiltVersion(packageVersion);
             _packageVersion = PackageVersionTracker.PeekNext(_applicationVersion);
-            EditorPrefs.SetString(LastBuiltPackageVersionKey, packageVersion);
-            SetStatus($"YooAsset 包构建完成：{result.OutputPackageDirectory}");
+            Debug.Log($"YooAsset package built: {result.OutputPackageDirectory}");
+        }
+
+        private string BuildApk()
+        {
+            SetStatus("Unity 构建 APK…");
+            var outputPath = ProjectPath(GetApkOutputPath());
+            var outputDirectory = Path.GetDirectoryName(outputPath);
+            if (!string.IsNullOrEmpty(outputDirectory))
+                Directory.CreateDirectory(outputDirectory);
+
+            var scenes = EditorBuildSettings.scenes
+                .Where(scene => scene.enabled)
+                .Select(scene => scene.path)
+                .ToArray();
+            if (scenes.Length == 0)
+                throw new InvalidOperationException("Build Settings 没有启用场景。");
+
+            var options = new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = outputPath,
+                target = BuildTarget.Android,
+                targetGroup = BuildTargetGroup.Android,
+                options = _developmentBuild ? BuildOptions.Development : BuildOptions.None
+            };
+
+            var report = BuildPipeline.BuildPlayer(options);
+            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                throw new InvalidOperationException($"Unity APK 构建失败：{report.summary.result}");
+            return outputPath;
         }
 
         private async void UploadResourcesToDevCdn()
@@ -295,14 +390,14 @@ namespace CascadeExample.Editor
                 var target = EditorUserBuildSettings.activeBuildTarget;
                 var packageVersion = EditorPrefs.GetString(LastBuiltPackageVersionKey, string.Empty);
                 if (string.IsNullOrWhiteSpace(packageVersion))
-                    throw new InvalidOperationException("未找到最近构建的资源包，请先执行一键打包。");
+                    throw new InvalidOperationException("未找到最近构建的资源包，请先执行构建。");
 
                 var source = Path.Combine(
                     BundleBuilderHelper.GetDefaultBuildOutputRoot(),
                     target.ToString(),
                     PackageName,
                     packageVersion);
-                var destinationUrl = GetDevCdnDirectoryUrl(target);
+                var destinationUrl = GetDevCdnDirectoryUrl(target, _applicationVersion);
 
                 _isUploading = true;
                 await UploadDirectory(source, destinationUrl);
@@ -410,25 +505,59 @@ namespace CascadeExample.Editor
             }
         }
 
+        private static void SetEnvironmentDefine(BuildTarget target, string environment, bool embedPackage)
+        {
+            var group = BuildPipeline.GetBuildTargetGroup(target);
+            var values = PlayerSettings.GetScriptingDefineSymbolsForGroup(group)
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(value => value != "DEV" && value != "BETA" && value != "GOLD" && value != "DB_EMBED_PACKAGE")
+                .ToList();
+            values.Add(environment);
+            if (embedPackage)
+                values.Add("DB_EMBED_PACKAGE");
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", values));
+        }
+
+        private string CreateDefaultPackageVersion() => PackageVersionTracker.PeekNext(_applicationVersion);
+
         private string GetPackageVersionInput()
         {
-            var next = PackageVersionTracker.PeekNext(_applicationVersion);
             if (string.IsNullOrWhiteSpace(_packageVersion))
-                _packageVersion = next;
-            return _packageVersion;
+                throw new InvalidOperationException("资源包版本不能为空。");
+            return _packageVersion.Trim();
         }
 
-        private void EnsureVersion()
+        private string GetApkBuildDirectory() => NormalizePath(ProjectPath(ApkOutputDirectory));
+
+        private string GetHotUpdateBuildDirectory() => NormalizePath(ProjectPath(HotUpdateOutputDirectory));
+
+        private string GetApkOutputPath()
         {
-            if (string.IsNullOrWhiteSpace(_applicationVersion))
+            var productName = SanitizeFileNamePart(PlayerSettings.productName, "Application");
+            var version = SanitizeFileNamePart(_applicationVersion, "0.0.0");
+            var environment = _environment.ToString().ToLowerInvariant();
+            environment = char.ToUpperInvariant(environment[0]) + environment.Substring(1);
+            var resourceModeSuffix = EmbedPackage ? "_Full" : "_Lite";
+            return NormalizePath(Path.Combine(
+                ApkOutputDirectory,
+                $"{productName}_{version}_{environment}{resourceModeSuffix}.apk"));
+        }
+
+        private void OpenApkBuildDirectory() => OpenDirectory(ProjectPath(ApkOutputDirectory));
+
+        private void OpenHotUpdateBuildDirectory() => OpenDirectory(ProjectPath(HotUpdateOutputDirectory));
+
+        private static void OpenDirectory(string path)
+        {
+            Directory.CreateDirectory(path);
+            EditorUtility.RevealInFinder(path);
+        }
+
+        private static string GetDevCdnDirectoryUrl(BuildTarget target, string applicationVersion)
+        {
+            if (string.IsNullOrWhiteSpace(applicationVersion))
                 throw new InvalidOperationException("应用版本不能为空。");
-        }
-
-        private static string GetDevCdnDirectoryUrl(BuildTarget target)
-        {
-            if (string.IsNullOrWhiteSpace(EditorUserBuildSettings.activeBuildTarget.ToString()))
-                throw new InvalidOperationException("Build Target 无效。");
-            return $"{DevCdnBaseUrl}/{DevCdnRootName}/{GetPlatformFolder(target)}";
+            return $"{DevCdnBaseUrl}/{DevCdnRootName}/{GetPlatformFolder(target)}/{Uri.EscapeDataString(applicationVersion.Trim())}";
         }
 
         private static string GetPlatformFolder(BuildTarget target)
@@ -442,8 +571,49 @@ namespace CascadeExample.Editor
             }
         }
 
-        private static string Sanitize(string value) =>
-            string.IsNullOrWhiteSpace(value) ? "0.0" : string.Concat(value.Where(char.IsLetterOrDigit));
+        private static string SanitizeFileNamePart(string value, string fallback)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return fallback;
+            var sanitized = string.Concat(value.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_'));
+            return string.IsNullOrEmpty(sanitized) ? fallback : sanitized;
+        }
+
+        private static string NormalizePath(string path) => path.Replace('\\', '/');
+
+        private static string ProjectPath(string path) => Path.Combine(Directory.GetCurrentDirectory(), path);
+
+        private static void CopyFileAsAsset(string source, string assetPath)
+        {
+            var destination = ProjectPath(assetPath);
+            var directory = Path.GetDirectoryName(destination);
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+            File.Copy(source, destination, true);
+        }
+
+        private static void DeleteGeneratedCodeFiles(string directory)
+        {
+            if (!Directory.Exists(ProjectPath(directory)))
+                return;
+            foreach (var file in Directory.GetFiles(ProjectPath(directory)))
+            {
+                if (file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                File.Delete(file);
+            }
+        }
+
+        private static void ClearDirectory(string directory)
+        {
+            if (!Directory.Exists(directory))
+                return;
+            foreach (var file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                if (!file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
+                    File.Delete(file);
+            }
+        }
 
         private static void EnsureFolder(string path)
         {
