@@ -35,7 +35,7 @@
       "hash": "2e993ff18f28c931602a07292df0b0804eebef99"
     },
     "com.source27.cascade": {
-      "version": "file:../../../",
+      "version": "file:../../../Cascade",
       "depth": 0,
       "source": "local",
       "dependencies": {
