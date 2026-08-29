@@ -20,8 +20,8 @@ Unity 框架包（`com.source27.cascade`，C# 命名空间 `Cascade.*`），从�
 ├── Tests/Cascade.Tests/         EditMode 测试
 ├── Roslyn/                      源码生成器 DLL（RoslynAnalyzer 标签，全工程作用域）
 ├── Tools~/Cascade.SourceGenerator/  生成器源码工程（Unity 不导入）
-├── Integrations/YooAsset/       可选：YooAsset 资源集成子包
-└── Examples/CascadeExample/     示例 Unity 工程
+├── Integrations~/YooAsset/       可选：YooAsset 资源集成子包
+└── Examples~/CascadeExample/     示例 Unity 工程
 ```
 
 依赖方向：`Launcher → {Service, Core, Module}`，`Core → Service`，`Module →`（无）。框架代码全部属于 **AOT 固化层**，热更代码经 `IGameHost` 访问框架设施。
@@ -55,7 +55,7 @@ https://github.com/source27/Cascade.git
 ### 可选：YooAsset 资源集成包
 
 ```json
-"com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset"
+"com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations~/YooAsset"
 ```
 
 安装后组合根构造 `YooAssetResourceInitOptions` 并赋给 `BootstrapConfiguration.ResourceInitOptions`（见下）。
@@ -75,11 +75,11 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 
 ## 快速开始（示例工程）
 
-1. 用 Unity **2022.3.62f2** 打开 `Examples/CascadeExample`（首次导入自动安装本包，需联网）。
+1. 用 Unity **2022.3.62f2** 打开 `Examples~/CascadeExample`（首次导入自动安装本包，需联网）。
 2. 菜单 **CascadeExample → Setup Demo Scene**。
 3. 打开 `Assets/Scenes/Bootstrap.unity` → **Play**：启动链 → 服务注册 → 本地化 → 热更程序集加载 → Home 页演示（本地化/存档/音效/UpdateLoop/UI 导航）。
 
-热更闭环（真实 `Assembly.Load`，Editor 内可跑）：`CascadeExample → HotUpdate` 菜单，详见 `Examples/CascadeExample/README.md`。
+热更闭环（真实 `Assembly.Load`，Editor 内可跑）：`CascadeExample → HotUpdate` 菜单，详见 `Examples~/CascadeExample/README.md`。
 
 ## 资源层
 
@@ -102,7 +102,7 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 - `CONTEXT.md` — 领域词汇（glossary）
 - `docs/adr/` — 关键决策记录（布局/命名/资源解耦/DI/热更）
 - `docs/agents/` — 工程技能配置（issue tracker / triage / domain docs）
-- `Examples/CascadeExample/README.md` — 示例工程说明（含真机热更打包步骤）
+- `Examples~/CascadeExample/README.md` — 示例工程说明（含真机热更打包步骤）
 
 ## 状态
 

@@ -1,0 +1,150 @@
+{
+  "dependencies": {
+    "com.annulusgames.lit-motion": {
+      "version": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.burst": "1.6.0",
+        "com.unity.collections": "1.5.1",
+        "com.unity.mathematics": "1.0.1"
+      },
+      "hash": "0b4c588ee75a07198841d92aab653e6b39445089"
+    },
+    "com.annulusgames.lit-motion.animation": {
+      "version": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation#0b4c588ee75a07198841d92aab653e6b39445089",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.annulusgames.lit-motion": "2.0.0"
+      },
+      "hash": "0b4c588ee75a07198841d92aab653e6b39445089"
+    },
+    "com.code-philosophy.hybridclr": {
+      "version": "https://github.com/focus-creative-games/hybridclr_unity.git#ca7f87b6a72f3739f99a5ad0c957c7aae0cbd922",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ca7f87b6a72f3739f99a5ad0c957c7aae0cbd922"
+    },
+    "com.cysharp.unitask": {
+      "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2e993ff18f28c931602a07292df0b0804eebef99"
+    },
+    "com.source27.cascade": {
+      "version": "file:../../../",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.textmeshpro": "3.0.9",
+        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",
+        "com.code-philosophy.hybridclr": "https://github.com/focus-creative-games/hybridclr_unity.git#ca7f87b6a72f3739f99a5ad0c957c7aae0cbd922",
+        "com.annulusgames.lit-motion": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
+        "com.annulusgames.lit-motion.animation": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation#0b4c588ee75a07198841d92aab653e6b39445089",
+        "me.qiankanglai.loopscrollrect": "https://github.com/qiankanglai/LoopScrollRect.git#a74a705e1c9d0f73ea1a441dabb23b22f3283071"
+      }
+    },
+    "com.unity.burst": {
+      "version": "1.8.21",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.collections": {
+      "version": "1.5.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.6.6",
+        "com.unity.test-framework": "1.1.31",
+        "com.unity.nuget.mono-cecil": "1.11.4"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ext.nunit": {
+      "version": "1.0.6",
+      "depth": 3,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.mathematics": {
+      "version": "1.2.6",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.mono-cecil": {
+      "version": "1.11.4",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.test-framework": {
+      "version": "1.1.33",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ext.nunit": "1.0.6",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.textmeshpro": {
+      "version": "3.0.9",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ugui": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0"
+      }
+    },
+    "me.qiankanglai.loopscrollrect": {
+      "version": "https://github.com/qiankanglai/LoopScrollRect.git#a74a705e1c9d0f73ea1a441dabb23b22f3283071",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "hash": "a74a705e1c9d0f73ea1a441dabb23b22f3283071"
+    },
+    "com.unity.modules.imgui": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.jsonserialize": {
+      "version": "1.0.0",
+      "depth": 2,
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.modules.ui": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {}
+    }
+  }
+}
