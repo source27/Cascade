@@ -4,8 +4,8 @@
 
 ## 快速开始
 
-1. 用 Unity **2022.3.62f2** 打开本目录（`Examples~/CascadeExample`）。
-   - 首次导入会自动从 `file:../../../`（相对 `Packages/manifest.json` 所在目录）解析并安装 `com.source27.cascade`（以及其 git 固定版本的第三方依赖，需联网）。
+1. 用 Unity **2022.3.62f2** 打开本目录（`Examples/CascadeExample`）。
+   - 首次导入会自动从 `file:../../../Cascade`（相对 `Packages/manifest.json` 所在目录）解析并安装 `com.source27.cascade`（以及其 git 固定版本的第三方依赖，需联网）。
 2. 菜单 **CascadeExample → Setup Demo Scene**（生成 Bootstrap 场景、UIRoot/Home/Detail 预制体、SFX 音效，并加入 Build Settings）。
 3. 打开 `Assets/Scenes/Bootstrap.unity`，点击 **Play**。
 
