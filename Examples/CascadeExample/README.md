@@ -4,10 +4,8 @@
 
 ## 快速开始
 
-1. 用 Unity **2022.3.62f2** 打开本目录（`Examples/CascadeExample`）。
-   - 首次导入会自动从 `file:../../../Cascade`（相对 `Packages/manifest.json` 所在目录）解析并安装 `com.source27.cascade`（以及其 git 固定版本的第三方依赖，需联网）。
-2. 菜单 **CascadeExample → Create Example Pages**（生成 Home/Detail 页面预制体与 SFX 音效）→ **CascadeExample → Configure YooAsset + Localization**（配置 CascadePak 收集器：UI/Localization/Code 三组 + 本地化数据）。
-3. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景与启动 UI 直接迁移自 client，无需生成），点击 **Play**。
+1. 用 Unity **2022.3.62f2** 打开本目录（`Examples/CascadeExample`）。第三方包全部 vendor 在 `Packages/`（file: 引用），**完全离线解析**。
+2. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景/启动 UI 迁移自 client；页面预制体、SFX、本地化数据、YooAsset 收集器均已就绪），点击 **Play**。
 
 启动链（EditorSimulate 模式）：
 
