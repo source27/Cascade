@@ -1,0 +1,18 @@
+{
+  "name": "Cascade.Service.YooAsset",
+  "rootNamespace": "Cascade.Service.YooAsset",
+  "references": [
+    "Cascade.Service",
+    "YooAsset",
+    "UniTask"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
