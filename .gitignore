@@ -120,3 +120,6 @@ Examples/**/[Uu]ser[Ss]ettings/
 Examples/**/sysinfo.txt
 Examples/**/[Bb]uild/
 Examples/**/[Bb]uilds/
+
+# YooAsset build output (editor-simulate bundles)
+Examples/**/Bundles/
