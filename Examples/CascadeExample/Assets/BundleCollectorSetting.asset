@@ -63,4 +63,15 @@ MonoBehaviour:
         PackRuleName: PackRawFile
         FilterRuleName: CollectAll
         AssetTags: 
-        UserData: 
+        UserData:
+    - GroupName: Scene
+      GroupDesc: 
+      AssetTags: 
+      Collectors:
+      - CollectPath: Assets/Scenes
+        CollectorGUID: 3cbac82caa4eb6645ac7ca64b57d59cb
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
