@@ -14,9 +14,12 @@
   "author": {
     "name": "source27"
   },
-  "dependencies": {
-    "com.unity.ugui": "1.0.0",
-    "com.unity.textmeshpro": "3.0.9",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.textmeshpro": "3.0.9",
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.2d.sprite": "1.0.0",
             "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",
     "com.code-philosophy.hybridclr": "https://github.com/focus-creative-games/hybridclr_unity.git#ca7f87b6a72f3739f99a5ad0c957c7aae0cbd922",
             "com.annulusgames.lit-motion": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
