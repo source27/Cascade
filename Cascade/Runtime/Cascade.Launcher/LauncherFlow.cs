@@ -299,9 +299,16 @@ namespace Cascade.Launcher
             SetStatus(LauncherText.Get(LauncherText.LoadingHotUpdate));
             try
             {
-                var bytes = await _resources.LoadRawBytesAsync(_configuration.HotUpdateDllLocation, cancellationToken);
-                var assembly = _codeLoader.LoadGameLogicAssembly(bytes);
-                _loadedAssembly = assembly;
+                // EditorSimulate: no dll fetch — CodeLoader uses the editor-compiled assembly.
+                if (_configuration.AssemblyLoadMode == BootstrapAssemblyLoadMode.EditorLoaded)
+                {
+                    _loadedAssembly = _codeLoader.LoadGameLogicAssembly(null);
+                }
+                else
+                {
+                    var bytes = await _resources.LoadRawBytesAsync(_configuration.HotUpdateDllLocation, cancellationToken);
+                    _loadedAssembly = _codeLoader.LoadGameLogicAssembly(bytes);
+                }
             }
             catch (Exception exception)
             {

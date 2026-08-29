@@ -44,20 +44,22 @@ namespace Cascade.Launcher
 
         public Assembly LoadGameLogicAssembly(byte[] bytes)
         {
-            if (bytes == null || bytes.Length == 0)
-                throw new InvalidOperationException("GameLogic DLL is empty.");
-
-            _log.Info("CodeLoader", $"GameLogic DLL ready: {bytes.Length} bytes, {ComputeHash(bytes)}.");
-
 #if UNITY_EDITOR
+            // EditorSimulate: the hot assembly is already compiled into the editor —
+            // bytes are not needed (the launcher skips fetching them).
             if (_assemblyLoadMode == BootstrapAssemblyLoadMode.EditorLoaded)
             {
                 var loaded = FindLoadedGameLogicAssembly();
                 if (loaded == null)
                     throw new InvalidOperationException("GameLogic.HotUpdate assembly is not loaded.");
+                _log.Info("CodeLoader", "Using editor-loaded GameLogic.HotUpdate assembly.");
                 return loaded;
             }
 #endif
+
+            if (bytes == null || bytes.Length == 0)
+                throw new InvalidOperationException("GameLogic DLL is empty.");
+            _log.Info("CodeLoader", $"GameLogic DLL ready: {bytes.Length} bytes, {ComputeHash(bytes)}.");
             return Assembly.Load(bytes);
         }
 
