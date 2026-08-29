@@ -197,7 +197,7 @@ namespace CascadeExample.Editor
                 target = target,
                 options = _developmentBuild ? BuildOptions.Development : BuildOptions.None
             });
-            if (report.summary.result != BuildResult.Succeeded)
+            if (report.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
                 throw new InvalidOperationException($"Player 构建失败：{report.summary.result}（详见 Console）");
 
             SetStatus($"打包完成：{buildPath}，资源版本 {packageVersion}");

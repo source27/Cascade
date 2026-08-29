@@ -74,6 +74,21 @@ namespace CascadeExample.Editor
             SavePrefab(root, DetailPath);
         }
 
+        private static void BuildSfxClip()
+        {
+            const int sampleRate = 44100;
+            const float duration = 0.08f;
+            var clip = AudioClip.Create("SfxClick", (int)(sampleRate * duration), 1, sampleRate, false);
+            var data = new float[(int)(sampleRate * duration)];
+            for (var i = 0; i < data.Length; i++)
+            {
+                var t = (float)i / sampleRate;
+                data[i] = Mathf.Sin(2f * Mathf.PI * 880f * t) * (1f - t / duration);
+            }
+            clip.SetData(data, 0);
+            AssetDatabase.CreateAsset(clip, SfxPath);
+        }
+
         [MenuItem("CascadeExample/Configure YooAsset + Localization", priority = 101)]
         public static void ConfigureYooAsset()
         {
