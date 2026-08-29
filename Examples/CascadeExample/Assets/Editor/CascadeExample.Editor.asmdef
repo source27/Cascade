@@ -6,7 +6,9 @@
         "Cascade.Launcher",
         "Cascade.Service",
         "Cascade.Core",
-        "HybridCLR.Editor"
+        "Cascade.Editor",
+        "HybridCLR.Editor",
+        "YooAsset.Editor"
     ],
     "includePlatforms": [
         "Editor"

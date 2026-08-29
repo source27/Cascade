@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.source27.cascade": "file:../../../Cascade",
+    "com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset",
     "com.unity.ugui": "1.0.0",
     "com.unity.textmeshpro": "3.0.9",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",

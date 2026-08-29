@@ -6,12 +6,12 @@
 
 1. 用 Unity **2022.3.62f2** 打开本目录（`Examples/CascadeExample`）。
    - 首次导入会自动从 `file:../../../Cascade`（相对 `Packages/manifest.json` 所在目录）解析并安装 `com.source27.cascade`（以及其 git 固定版本的第三方依赖，需联网）。
-2. 菜单 **CascadeExample → Create Example Pages**（只需一次：生成 Home/Detail 页面预制体与 SFX 音效，并把 Bootstrap 场景加入 Build Settings）。
+2. 菜单 **CascadeExample → Create Example Pages**（生成 Home/Detail 页面预制体与 SFX 音效）→ **CascadeExample → Configure YooAsset + Localization**（配置 CascadePak 收集器：UI/Localization/Code 三组 + 本地化数据）。
 3. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景与启动 UI 直接迁移自 client，无需生成），点击 **Play**。
 
 启动链（EditorSimulate 模式）：
 
-- `ExampleBootstrapEntry`（继承框架 `BootstrapEntry`，只覆写 `CreateResourceService()` → `DemoResourceService`）
+- `ExampleBootstrapEntry`（继承框架 `BootstrapEntry`，只覆写 `CreateResourceService()` → `YooAssetResourceService（client 同款资源管线）`）
 - 启动流程：服务注册 → 本地化（内嵌词表）→ 热更程序集（编辑器内已编译的 `GameLogic.HotUpdate`）→ `GameLogicEntry.Start(IGameHost, …)`
 - UI：`UIRegistryGenerated.RegisterAll`（Roslyn 源码生成器产物）→ Home 页（本地化切换 / 存档读档 / 音效 / UpdateLoop 计数 / 打开 Detail / 返回）
 
@@ -30,7 +30,7 @@
 Editor 默认 EditorSimulate（热更程序集随编辑器编译加载）。要演示**真实热更**（dll 从 StreamingAssets 加载）：
 
 1. 菜单 **CascadeExample → 构建窗口**（自 client 的 DBFrameworkBuildWindow 迁移，去 YooAsset/CDN）：热更页执行 `1. Generate AOT Metadata` → `2. Build Hot DLL + Copy to StreamingAssets`（编译 dll 拷入 `Assets/StreamingAssets/GameLogic.HotUpdate.dll`，并把 Bootstrap 场景 playMode 翻转为 **Offline**）。
-2. 播放：启动链走 RawFile 模式，`DemoResourceService` 从 StreamingAssets 读出 dll，`CodeLoader` 以 `Assembly.Load` 加载并反射入口 —— 改热更代码 → 重跑步骤 2 → 重进 Play 即热更闭环。
+2. 播放：启动链走 RawFile 模式，`YooAssetResourceService（client 同款资源管线）` 从 StreamingAssets 读出 dll，`CodeLoader` 以 `Assembly.Load` 加载并反射入口 —— 改热更代码 → 重跑步骤 2 → 重进 Play 即热更闭环。
 
 **真机构建**（Android/iOS/PC 打包）：
 1. 菜单 1（配置）+ 菜单 2 `Generate AOT Metadata (All)`（生成 AOTGenericReferences）。

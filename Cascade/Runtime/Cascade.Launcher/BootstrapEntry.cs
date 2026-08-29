@@ -46,6 +46,7 @@ namespace Cascade.Launcher
                 ResolveEnvironment(),
                 ResolvePlayMode(),
                 AppVersion);
+            _configuration.ResourceInitOptions = CreateResourceInitOptions();
 
             _registry = new ServiceRegistry();
             RegisterServices(_registry);
@@ -73,6 +74,13 @@ namespace Cascade.Launcher
         /// implementation (a demo service, the YooAsset integration service, …).
         /// </summary>
         protected virtual IResourceService CreateResourceService() => null;
+
+        /// <summary>
+        /// Provider-specific resource initialization options, injected into
+        /// <see cref="BootstrapConfiguration.ResourceInitOptions"/>. Override to supply
+        /// e.g. <c>YooAssetResourceInitOptions</c> from a resource integration package.
+        /// </summary>
+        protected virtual ResourceInitOptions CreateResourceInitOptions() => null;
 
         /// <summary>
         /// Registers the framework's default service set. Override to customize.

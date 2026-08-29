@@ -3,7 +3,7 @@ using Cascade.Generated;
 
 namespace CascadeExample
 {
-    [UI(Address = "CascadeUI/Detail", Layer = UILayer.Top, Presentation = UIPresentation.Modal, CloseOnMaskClick = true)]
+    [UI(Address = "Detail", Layer = UILayer.Top, Presentation = UIPresentation.Modal, CloseOnMaskClick = true)]
     public sealed class DetailPage : UIPage<DetailPage.Args, DetailPageBindings>
     {
         public struct Args : IUIArgs<DetailPage>

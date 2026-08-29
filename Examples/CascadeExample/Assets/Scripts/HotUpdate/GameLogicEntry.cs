@@ -16,7 +16,7 @@ namespace CascadeExample
             var registry = new UIRegistry();
             UIRegistryGenerated.RegisterAll(registry);
 
-            var ui = await host.CreateUISystemAsync(registry, "CascadeUI/UIRoot", cancellationToken);
+            var ui = await host.CreateUISystemAsync(registry, "UIRoot", cancellationToken);
             ui.BindPageContext(new PageContext(host.Services, ui, host.UpdateLoop));
 
             await ui.OpenUI<HomePage>(new HomePage.Args(), cancellationToken);

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace CascadeExample
 {
-    [UI(Address = "CascadeUI/Home", Layer = UILayer.Normal, Presentation = UIPresentation.Screen)]
+    [UI(Address = "Home", Layer = UILayer.Normal, Presentation = UIPresentation.Screen)]
     public sealed class HomePage : UIPage<HomePage.Args, HomePageBindings>
     {
         public struct Args : IUIArgs<HomePage>
@@ -75,7 +75,7 @@ namespace CascadeExample
         {
             try
             {
-                var duration = await Ctx.Services.Get<IAudioService>().PlayOneShotAsync("CascadeUI/SfxClick");
+                var duration = await Ctx.Services.Get<IAudioService>().PlayOneShotAsync("SfxClick");
                 Bindings.TxtStatus.text = $"Sfx played ({duration:0.00}s).";
             }
             catch (Exception exception)

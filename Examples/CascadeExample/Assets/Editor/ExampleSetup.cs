@@ -2,6 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using YooAsset.Editor;
 
 namespace CascadeExample.Editor
 {
@@ -73,19 +74,94 @@ namespace CascadeExample.Editor
             SavePrefab(root, DetailPath);
         }
 
-        private static void BuildSfxClip()
+        [MenuItem("CascadeExample/Configure YooAsset + Localization", priority = 101)]
+        public static void ConfigureYooAsset()
         {
-            const int sampleRate = 44100;
-            const float duration = 0.08f;
-            var clip = AudioClip.Create("SfxClick", (int)(sampleRate * duration), 1, sampleRate, false);
-            var data = new float[(int)(sampleRate * duration)];
-            for (var i = 0; i < data.Length; i++)
+            EnsureFolder("Assets/Resources/CascadeUI/Localization");
+            EnsureFolder("Assets/Code");
+            WriteLocalizationData();
+            ConfigureCollector();
+            EditorUtility.DisplayDialog(
+                "CascadeExample",
+                "YooAsset 收集器已配置（CascadePak）：\n" +
+                "UI 组（Resources/CascadeUI，AddressByFileName + PackSeparately）\n" +
+                "Localization 组（RawFile）+ Code 组（RawFile，热更 dll/元数据）\n" +
+                "本地化数据（localization_catalog / en / zh）已生成。",
+                "OK");
+        }
+
+        private static void WriteLocalizationData()
+        {
+            WriteJson("Assets/Resources/CascadeUI/Localization/localization_catalog.json",
+                "{\"defaultLocale\":\"en\",\"locales\":[{\"code\":\"en\",\"location\":\"en\"},{\"code\":\"zh\",\"location\":\"zh\"}]}");
+            WriteJson("Assets/Resources/CascadeUI/Localization/en.json",
+                "{\"entries\":[" +
+                "{\"id\":\"home.title\",\"value\":\"Cascade Demo\"}," +
+                "{\"id\":\"home.locale\",\"value\":\"Switch locale\"}," +
+                "{\"id\":\"home.save\",\"value\":\"Save value\"}," +
+                "{\"id\":\"home.load\",\"value\":\"Load value\"}," +
+                "{\"id\":\"home.audio\",\"value\":\"Play SFX\"}," +
+                "{\"id\":\"home.counter\",\"value\":\"Update counter\"}," +
+                "{\"id\":\"home.detail\",\"value\":\"Open Detail\"}," +
+                "{\"id\":\"home.back\",\"value\":\"Back\"}," +
+                "{\"id\":\"home.status\",\"value\":\"Ready\"}]}");
+            WriteJson("Assets/Resources/CascadeUI/Localization/zh.json",
+                "{\"entries\":[" +
+                "{\"id\":\"home.title\",\"value\":\"Cascade 示例\"}," +
+                "{\"id\":\"home.locale\",\"value\":\"切换语言\"}," +
+                "{\"id\":\"home.save\",\"value\":\"保存\"}," +
+                "{\"id\":\"home.load\",\"value\":\"读取\"}," +
+                "{\"id\":\"home.audio\",\"value\":\"播放音效\"}," +
+                "{\"id\":\"home.counter\",\"value\":\"更新计数\"}," +
+                "{\"id\":\"home.detail\",\"value\":\"打开详情\"}," +
+                "{\"id\":\"home.back\",\"value\":\"返回\"}," +
+                "{\"id\":\"home.status\",\"value\":\"就绪\"}]}");
+            AssetDatabase.Refresh();
+        }
+
+        private static void WriteJson(string path, string content)
+        {
+            File.WriteAllText(path, content);
+            AssetDatabase.ImportAsset(path);
+        }
+
+        private static void ConfigureCollector()
+        {
+            var setting = BundleCollectorSettingData.Setting;
+            var package = setting.Packages.Find(item => item.PackageName == "CascadePak");
+            if (package == null)
+                package = BundleCollectorSettingData.CreatePackage("CascadePak");
+
+            EnsureCollector(package, "UI", "Assets/Resources/CascadeUI", nameof(AddressByFileName), nameof(PackSeparately), nameof(CollectAll));
+            EnsureCollector(package, "Localization", "Assets/Resources/CascadeUI/Localization", nameof(AddressByFileName), nameof(PackRawFile), nameof(CollectAll));
+            EnsureCollector(package, "Code", "Assets/Code", nameof(AddressByFileName), nameof(PackRawFile), nameof(CollectAll));
+            BundleCollectorSettingData.SaveFile();
+        }
+
+        private static void EnsureCollector(
+            BundleCollectorPackage package,
+            string groupName,
+            string collectPath,
+            string addressRule,
+            string packRule,
+            string filterRule)
+        {
+            var group = package.Groups.Find(item => item.GroupName == groupName)
+                        ?? BundleCollectorSettingData.CreateGroup(package, groupName);
+            var collector = group.Collectors.Find(item => item.CollectPath == collectPath);
+            if (collector == null)
             {
-                var t = (float)i / sampleRate;
-                data[i] = Mathf.Sin(2f * Mathf.PI * 880f * t) * (1f - t / duration);
+                collector = new BundleCollector();
+                BundleCollectorSettingData.CreateCollector(group, collector);
             }
-            clip.SetData(data, 0);
-            AssetDatabase.CreateAsset(clip, SfxPath);
+
+            collector.CollectPath = collectPath;
+            collector.CollectorGUID = AssetDatabase.AssetPathToGUID(collectPath);
+            collector.CollectorType = ECollectorType.MainAssetCollector;
+            collector.AddressRuleName = addressRule;
+            collector.PackRuleName = packRule;
+            collector.FilterRuleName = filterRule;
+            BundleCollectorSettingData.ModifyCollector(group, collector);
         }
 
         private static Button MakeButton(Transform parent, string name, Vector2 anchoredPosition)

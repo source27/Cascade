@@ -5,6 +5,7 @@
         "Cascade.Launcher",
         "Cascade.Service",
         "Cascade.Core",
+        "Cascade.Service.YooAsset",
         "UniTask"
     ],
     "includePlatforms": [],
