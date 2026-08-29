@@ -42,10 +42,10 @@ https://github.com/source27/Cascade.git
 
 ### 方式二：本地路径
 
-`Packages/manifest.json` 添加：
+`Packages/manifest.json` 添加（**`file:` 路径相对于 `Packages/` 目录**，即 manifest 所在位置）：
 
 ```json
-"com.source27.cascade": "file:../cascade"
+"com.source27.cascade": "file:../../cascade"
 ```
 
 ### 方式三：embedded
