@@ -5,6 +5,7 @@ using HybridCLR.Editor.Commands;
 using HybridCLR.Editor.Settings;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace CascadeExample.Editor
@@ -36,7 +37,6 @@ namespace CascadeExample.Editor
             settings.enable = true;
             settings.hotUpdateAssemblyDefinitions = new[] { asmdef };
             settings.hotUpdateAssemblies = new[] { "GameLogic.HotUpdate" };
-            settings.preserveHotUpdateAssemblies = true;
             HybridCLRSettings.Save();
             Debug.Log("[CascadeExample] HybridCLR settings configured: GameLogic.HotUpdate is a hot-update assembly.");
         }
