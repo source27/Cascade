@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "com.source27.cascade": "0.1.0",
-    "com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=/Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae",
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=/src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+            "com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae",
+            "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
   }
 }

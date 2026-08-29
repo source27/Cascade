@@ -1,4 +1,5 @@
 using Cascade.Core;
+using Cascade.Generated;
 
 namespace CascadeExample
 {

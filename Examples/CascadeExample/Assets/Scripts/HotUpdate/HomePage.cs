@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using Cascade.Core;
+using Cascade.Generated;
 using Cascade.Service;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
