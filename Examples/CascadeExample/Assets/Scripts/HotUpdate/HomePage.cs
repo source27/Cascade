@@ -43,9 +43,9 @@ namespace CascadeExample
             _updateRegistration = null;
         }
 
-        private void OnUpdate(float deltaTime)
+        private void OnUpdate()
         {
-            _counter += deltaTime;
+            _counter += Time.deltaTime;
             if (_counter - _lastDisplayedCounter >= 1f)
             {
                 _lastDisplayedCounter = _counter;

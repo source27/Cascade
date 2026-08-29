@@ -299,7 +299,7 @@ namespace Cascade.Launcher
             SetStatus(LauncherText.Get(LauncherText.LoadingHotUpdate));
             try
             {
-                var bytes = await _resources.LoadRawBytesAsync(_configuration.GameLogicDllLocation, cancellationToken);
+                var bytes = await _resources.LoadRawBytesAsync(_configuration.HotUpdateDllLocation, cancellationToken);
                 var assembly = _codeLoader.LoadGameLogicAssembly(bytes);
                 _loadedAssembly = assembly;
             }
