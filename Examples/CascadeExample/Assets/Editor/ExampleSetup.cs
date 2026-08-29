@@ -77,7 +77,7 @@ namespace CascadeExample.Editor
         [MenuItem("CascadeExample/Configure YooAsset + Localization", priority = 101)]
         public static void ConfigureYooAsset()
         {
-            EnsureFolder("Assets/Resources/CascadeUI/Localization");
+            EnsureFolder("Assets/CascadeRes/Localization");
             EnsureFolder("Assets/Code");
             WriteLocalizationData();
             ConfigureCollector();
@@ -92,9 +92,9 @@ namespace CascadeExample.Editor
 
         private static void WriteLocalizationData()
         {
-            WriteJson("Assets/Resources/CascadeUI/Localization/localization_catalog.json",
+            WriteJson("Assets/CascadeRes/Localization/localization_catalog.json",
                 "{\"defaultLocale\":\"en\",\"locales\":[{\"code\":\"en\",\"location\":\"en\"},{\"code\":\"zh\",\"location\":\"zh\"}]}");
-            WriteJson("Assets/Resources/CascadeUI/Localization/en.json",
+            WriteJson("Assets/CascadeRes/Localization/en.json",
                 "{\"entries\":[" +
                 "{\"id\":\"home.title\",\"value\":\"Cascade Demo\"}," +
                 "{\"id\":\"home.locale\",\"value\":\"Switch locale\"}," +
@@ -105,7 +105,7 @@ namespace CascadeExample.Editor
                 "{\"id\":\"home.detail\",\"value\":\"Open Detail\"}," +
                 "{\"id\":\"home.back\",\"value\":\"Back\"}," +
                 "{\"id\":\"home.status\",\"value\":\"Ready\"}]}");
-            WriteJson("Assets/Resources/CascadeUI/Localization/zh.json",
+            WriteJson("Assets/CascadeRes/Localization/zh.json",
                 "{\"entries\":[" +
                 "{\"id\":\"home.title\",\"value\":\"Cascade 示例\"}," +
                 "{\"id\":\"home.locale\",\"value\":\"切换语言\"}," +
@@ -133,7 +133,7 @@ namespace CascadeExample.Editor
                 package = BundleCollectorSettingData.CreatePackage("CascadePak");
 
             EnsureCollector(package, "UI", "Assets/Resources/CascadeUI", nameof(AddressByFileName), nameof(PackSeparately), nameof(CollectAll));
-            EnsureCollector(package, "Localization", "Assets/Resources/CascadeUI/Localization", nameof(AddressByFileName), nameof(PackRawFile), nameof(CollectAll));
+            EnsureCollector(package, "Localization", "Assets/CascadeRes/Localization", nameof(AddressByFileName), nameof(PackRawFile), nameof(CollectAll));
             EnsureCollector(package, "Code", "Assets/Code", nameof(AddressByFileName), nameof(PackRawFile), nameof(CollectAll));
             BundleCollectorSettingData.SaveFile();
         }
