@@ -131,7 +131,81 @@ namespace CascadeExample.Editor
 
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
 
+            BuildLauncherUi();
+
             EditorSceneManager.SaveScene(scene, ScenePath);
+        }
+
+        /// <summary>
+        /// Launcher UI for the framework's PatchWindow (ILauncherView): status text,
+        /// progress slider, hidden error/message box. Hierarchy matches PatchWindow's
+        /// BindReferences() auto-find paths (UIWindow/Slider/txt_tips, UIWindow/MessgeBox/...).
+        /// </summary>
+        private static void BuildLauncherUi()
+        {
+            var canvasGo = new GameObject("LauncherCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            var canvas = canvasGo.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = canvasGo.GetComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+
+            var patch = new GameObject("PatchWindow", typeof(RectTransform), typeof(Cascade.Launcher.PatchWindow));
+            Stretch((RectTransform)patch.transform);
+            patch.transform.SetParent(canvasGo.transform, false);
+
+            var window = new GameObject("UIWindow", typeof(RectTransform));
+            var winRect = (RectTransform)window.transform;
+            winRect.SetParent(patch.transform, false);
+            winRect.anchorMin = new Vector2(0.5f, 0.5f);
+            winRect.anchorMax = new Vector2(0.5f, 0.5f);
+            winRect.pivot = new Vector2(0.5f, 0.5f);
+            winRect.sizeDelta = new Vector2(900f, 160f);
+            winRect.anchoredPosition = new Vector2(0f, -240f);
+
+            // Progress slider with fill
+            var sliderGo = new GameObject("Slider", typeof(RectTransform), typeof(Image), typeof(Slider));
+            var sliderRect = (RectTransform)sliderGo.transform;
+            sliderRect.SetParent(window.transform, false);
+            sliderRect.sizeDelta = new Vector2(760f, 24f);
+            sliderRect.anchoredPosition = new Vector2(0f, 0f);
+            var sliderImage = sliderGo.GetComponent<Image>();
+            sliderImage.color = new Color(0.15f, 0.15f, 0.2f, 0.9f);
+            var slider = sliderGo.GetComponent<Slider>();
+
+            var fill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            var fillRect = (RectTransform)fill.transform;
+            fillRect.SetParent(sliderGo.transform, false);
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = new Vector2(4f, 2f);
+            fillRect.offsetMax = new Vector2(-4f, -2f);
+            var fillImage = fill.GetComponent<Image>();
+            fillImage.type = Image.Type.Filled;
+            fillImage.fillMethod = Image.FillMethod.Horizontal;
+            fillImage.color = new Color(0.2f, 0.7f, 0.9f, 1f);
+
+            var sliderSo = new SerializedObject(slider);
+            sliderSo.FindProperty("m_TargetGraphic").objectReferenceValue = sliderImage;
+            sliderSo.FindProperty("m_FillRect").objectReferenceValue = fillRect;
+            sliderSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var tips = MakeText(sliderGo.transform, "txt_tips", new Vector2(0f, -34f), 26);
+            ((RectTransform)tips.transform).sizeDelta = new Vector2(760f, 32f);
+
+            // Error/message box (hidden; PatchWindow.Awake keeps it hidden)
+            var box = new GameObject("MessgeBox", typeof(RectTransform), typeof(Image));
+            var boxRect = (RectTransform)box.transform;
+            boxRect.SetParent(window.transform, false);
+            boxRect.sizeDelta = new Vector2(560f, 160f);
+            boxRect.anchoredPosition = new Vector2(0f, -140f);
+            box.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.12f, 0.95f);
+            var content = MakeText(box.transform, "txt_content", new Vector2(0f, 24f), 26);
+            ((RectTransform)content.transform).sizeDelta = new Vector2(520f, 70f);
+            var ok = MakeButton(box.transform, "btn_ok", new Vector2(0f, -48f));
+            ((RectTransform)ok.transform).sizeDelta = new Vector2(160f, 48f);
+            ok.GetComponentInChildren<Text>().text = "OK";
+            box.SetActive(false);
         }
 
         private static Button MakeButton(Transform parent, string name, Vector2 anchoredPosition)
