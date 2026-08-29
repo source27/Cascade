@@ -110,6 +110,27 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 - `docs/agents/` — 工程技能配置（issue tracker / triage / domain docs）
 - `Examples/CascadeExample/README.md` — 示例工程说明（含真机热更打包步骤）
 
+## 路线图
+
+**近期（示例闭环）**
+- [ ] 示例工程在 Unity 2022.3.62f2 首开验证（本仓库开发机无 Unity Editor，编译/运行验证待环境）
+- [ ] 真机/CDN 热更闭环实测：HybridCLR 打包 → `tools/devcdn` 上传 → Host 模式加载
+- [ ] CI：EditMode 测试 + UPM 包校验
+- [ ] 包许可证声明（LICENSE）
+
+**中期（Module 层落地）**
+- [ ] `Cascade.Module` 落地通用模块（框架给机制、业务规则放热更层）：
+  - 红点系统（通知聚合/徽标机制）
+  - 引导系统（步骤驱动引导框架）
+  - 对话系统（数据驱动对话框架）
+  - 定位/流程跳转（流程状态机 + UI 导航延伸）
+- [ ] Addressables 集成子包（`IResourceService` 契约已留缝）
+- [ ] 测试补全（`AtlasSpriteServiceTests`/`PackageVersionCompareTests` 归位）
+
+**远期**
+- [ ] 更多资源提供者/平台支持
+- [ ] 示例工程扩展（更多演示页面与玩法系统）
+
 ## 状态
 
 代码已从冻结的 client 工程抽取并改名（`DB.*` → `Cascade.*`，含设计修正）；示例工程首次打开时自动解析 git 依赖（需联网）。注意：**包目录是 `Cascade/`**，安装时务必带 `?path=Cascade`（仓库根不含 package.json）。
