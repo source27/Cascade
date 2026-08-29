@@ -1,0 +1,21 @@
+{
+    "name": "CascadeExample.Editor",
+    "rootNamespace": "CascadeExample.Editor",
+    "references": [
+        "CascadeExample.AOT",
+        "Cascade.Launcher",
+        "Cascade.Service",
+        "Cascade.Core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

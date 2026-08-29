@@ -1,0 +1,19 @@
+{
+    "name": "CascadeExample.AOT",
+    "rootNamespace": "CascadeExample",
+    "references": [
+        "Cascade.Launcher",
+        "Cascade.Service",
+        "Cascade.Core",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

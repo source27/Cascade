@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "com.source27.cascade": "file:../../",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.textmeshpro": "3.0.9"
+  }
+}
