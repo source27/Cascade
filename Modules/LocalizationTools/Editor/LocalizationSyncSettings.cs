@@ -28,14 +28,22 @@ namespace Cascade.Modules.LocalizationTools.Editor
         public string defaultLocale = "en";
         public List<LocalizationCsvSource> sources = new List<LocalizationCsvSource>();
 
-        public static LocalizationSyncSettings GetOrCreate()
+        public static LocalizationSyncSettings TryLoad()
         {
-            var settings = AssetDatabase.LoadAssetAtPath<LocalizationSyncSettings>(AssetPath);
-            if (settings != null)
-                return settings;
+            return AssetDatabase.LoadAssetAtPath<LocalizationSyncSettings>(AssetPath);
+        }
+
+        /// <summary>
+        /// Create the default settings asset. Caller must confirm with the user first.
+        /// </summary>
+        public static LocalizationSyncSettings CreateDefault()
+        {
+            var existing = TryLoad();
+            if (existing != null)
+                return existing;
 
             EnsureFolder("Assets/Settings");
-            settings = CreateInstance<LocalizationSyncSettings>();
+            var settings = CreateInstance<LocalizationSyncSettings>();
             settings.sources.Add(new LocalizationCsvSource { name = "Main", url = DefaultSheetUrl });
             AssetDatabase.CreateAsset(settings, AssetPath);
             AssetDatabase.SaveAssets();

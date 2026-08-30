@@ -17,21 +17,43 @@ namespace Cascade.Modules.LocalizationTools.Editor
     {
         public const string OutputRoot = LocalizationImportPipeline.OutputRoot;
 
-        /// <summary>
-        /// Ensure settings asset exists, select it in the Project window for Inspector editing.
-        /// </summary>
-        public static LocalizationSyncSettings ConfigureProject()
+        public static void FocusSettings(LocalizationSyncSettings settings)
         {
-            var settings = LocalizationSyncSettings.GetOrCreate();
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
             Selection.activeObject = settings;
             EditorGUIUtility.PingObject(settings);
+        }
+
+        /// <summary>
+        /// Ask the user before creating the settings asset. Returns null if declined.
+        /// </summary>
+        public static LocalizationSyncSettings PromptCreateSettings()
+        {
+            var existing = LocalizationSyncSettings.TryLoad();
+            if (existing != null)
+                return existing;
+
+            var create = EditorUtility.DisplayDialog(
+                "Cascade Localization",
+                $"尚未创建本地化同步设置。\n\n是否创建？\n{LocalizationSyncSettings.AssetPath}",
+                "创建",
+                "取消");
+            if (!create)
+                return null;
+
+            var settings = LocalizationSyncSettings.CreateDefault();
+            FocusSettings(settings);
             return settings;
         }
 
         [MenuItem("Cascade/多语言设置", priority = 109)]
         public static void OpenSettingsFromMenu()
         {
-            ConfigureProject();
+            var settings = LocalizationSyncSettings.TryLoad() ?? PromptCreateSettings();
+            if (settings == null)
+                return;
+            FocusSettings(settings);
         }
 
         [MenuItem("Cascade/更新多语言", priority = 110)]
@@ -39,7 +61,27 @@ namespace Cascade.Modules.LocalizationTools.Editor
         {
             try
             {
-                var count = await SyncAsync(LocalizationSyncSettings.GetOrCreate());
+                var settings = LocalizationSyncSettings.TryLoad();
+                var createdNow = false;
+                if (settings == null)
+                {
+                    settings = PromptCreateSettings();
+                    if (settings == null)
+                        return;
+                    createdNow = true;
+                }
+
+                if (createdNow || !HasConfiguredSourceUrl(settings))
+                {
+                    FocusSettings(settings);
+                    EditorUtility.DisplayDialog(
+                        "Cascade Localization",
+                        "请在 Inspector 中填写 Google Sheet URL（sources → url），然后再次执行 Cascade/更新多语言。",
+                        "OK");
+                    return;
+                }
+
+                var count = await SyncAsync(settings);
                 EditorUtility.DisplayDialog("Cascade Localization", $"同步完成，共生成 {count} 个语言表。", "OK");
             }
             catch (Exception exception)
@@ -68,12 +110,21 @@ namespace Cascade.Modules.LocalizationTools.Editor
             return CountLocaleTables(artifacts);
         }
 
+        private static bool HasConfiguredSourceUrl(LocalizationSyncSettings settings)
+        {
+            return settings.sources != null &&
+                   settings.sources.Any(source =>
+                       source != null &&
+                       source.enabled &&
+                       !string.IsNullOrWhiteSpace(source.url));
+        }
+
         private static List<LocalizationCsvSource> EnsureSourcesConfigured(LocalizationSyncSettings settings)
         {
             var enabledSources = settings.sources?.Where(source => source != null && source.enabled).ToList();
             if (enabledSources == null || enabledSources.Count == 0)
             {
-                ConfigureProject();
+                FocusSettings(settings);
                 throw new InvalidOperationException(
                     "未配置启用的本地化数据源。请在 Inspector 中为 LocalizationSyncSettings 添加 sources，然后重试 Cascade/更新多语言。");
             }
@@ -81,7 +132,7 @@ namespace Cascade.Modules.LocalizationTools.Editor
             var missingUrl = enabledSources.FirstOrDefault(source => string.IsNullOrWhiteSpace(source.url));
             if (missingUrl != null)
             {
-                ConfigureProject();
+                FocusSettings(settings);
                 throw new InvalidOperationException(
                     $"数据源 “{missingUrl.name}” 未填写 Google Sheet URL。请在 Inspector 填写 url 后重试 Cascade/更新多语言。");
             }
