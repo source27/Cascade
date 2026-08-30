@@ -1,0 +1,102 @@
+# CascadeExample — nested Unity 2022.3 project
+# Paths are relative to this directory.
+# Template basis: https://github.com/github/gitignore/blob/main/Unity.gitignore
+
+# === Unity generated ===
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+sysinfo.txt
+
+# === Blender extras Unity may import ===
+*.blend1
+*.blend1.meta
+
+# === IDE / C# / VS / Rider (project-local) ===
+.vs/
+.gradle/
+.idea/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+*.DotSettings.user
+*.log
+
+# JetBrains Rider Unity plugin (if ever under Assets)
+[Aa]ssets/Plugins/Editor/JetBrains*
+
+# === Mono / crash ===
+mono_crash.*
+
+# === Player / package build products ===
+*.apk
+*.aab
+*.app
+*.unitypackage
+*.unitypackage.meta
+crashlytics-build.properties
+
+# === Test runner ===
+InitTestScene*.unity*
+[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# === Addressables (if introduced later) ===
+ServerData/
+[Aa]ssets/StreamingAssets/aa*
+[Aa]ssets/AddressableAssetsData/link.xml*
+[Aa]ssets/Addressables_Temp*
+[Aa]ssets/AddressableAssetsData/*/*.bin*
+
+# === Visual Scripting (if introduced later) ===
+[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
+[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db.meta
+[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers
+[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
+
+# === Asset caches ===
+[Aa]ssets/[Ss]ceneDependencyCache*
+[Aa]ssets/AssetStoreTools*
+
+# === YooAsset ===
+Bundles/
+
+# === HybridCLR ===
+HybridCLRData/
+
+# === Build window outputs (APK / hot-update export) ===
+BuildArtifacts/
+
+# Local package version sequence (构建窗口)
+ProjectSettings/CascadePackageVersion.json
+
+# Hot-update DLLs staged as TextAssets for YooAsset collectors
+# Rebuild via CascadeExample → 构建窗口 (落盘 *.dll.bytes)
+Assets/Code/**
+!Assets/Code/.gitkeep
+
+# DevCDN local upload store
+Tools/devcdn/root/**
+!Tools/devcdn/root/.gitkeep
