@@ -59,3 +59,7 @@ _Avoid_: Example、示例工程、Demo、Sample、Examples/
 
 **默认流水线（Default Pipeline）**:
 Bootstrap 提供的可替换启动骨架（默认服务、资源 **初始化**、交付 `IGameHost` 给主逻辑入口约定）。不包含资源更新或代码热更步骤；那些由 Mobile Starter 在组合根之后（或之中 override）自行接上。
+
+**游戏流程（GameFlow）**:
+主包 `Cascade.Core` 提供的薄流程骨架：`IGameFlowState`（Enter/Exit 自管该步 UI）+ `GameFlow`（注册状态、`RunAsync` / `ChangeStateAsync` / `ReturnAsync`：先 Exit 再 Enter；单槽 `PreviousStateId`，非多级栈）+ `IGameFlowQuery`（只读当前/上一 id）。**状态 id 与表由游戏程序集定义**（string，如 Main/Battle）；核心不设封闭枚举、不提供通用 FSM/Procedure 栈。与 `UIContextId`（UI 树分区）正交。
+_Avoid_: 把 Login/Battle 做成 UIContextId、在核心包写死业务流程表、GF 式 FsmState 全家桶、把 GameFlow 做成导航回退栈

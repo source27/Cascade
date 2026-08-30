@@ -63,6 +63,26 @@ Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 
 - `IEventBus`：`Subscribe` / `Publish` 类型化处理器  
 - 本轮 **不做** Command/Query mediator 或强制 C/Q 基类；需要时在业务层自建，勿假设核心有 CQRS  
 
+## 游戏流程（GameFlow）
+
+主包：`Cascade.Core.GameFlow` + `IGameFlowState` + `IGameFlowQuery`。
+
+```csharp
+var flow = new GameFlow(new IGameFlowState[] { new MainFlowState(ctx), new BattleFlowState(ctx) }, host.Log);
+host.Services.Register<IGameFlowQuery>(flow);
+await flow.RunAsync("Main", ct);
+// 跳转 / 返回上一状态（单槽，不是多级栈）：
+await flow.ChangeStateAsync("Battle", ct);
+await flow.ReturnAsync(ct); // -> Main；此时 PreviousStateId 变为 Battle
+```
+
+- 状态 id：游戏常量（string），**不要**改 `UIContextId`
+- `EnterAsync` / `ExitAsync`：该流程自己的根 UI 与局部系统
+- `PreviousStateId` / `CanReturn` / `ReturnAsync`：只记 **一次** 成功跳转的来源
+- 设置 / 表 / 管理器：在 `GameEntry`（或热更 `GameLogicEntry`）里、`RunAsync` **之前** 初始化
+- 单 game：可只用一个状态；需要整壳隔离时再在状态里 `SetActiveContext(Main|MiniGame)`
+
+
 ## 热更入口（仅 Mobile）
 
 热更程序集约定（Starter / CodeLoader，**非**主包 API）：

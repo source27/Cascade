@@ -61,6 +61,7 @@ Bootstrap 默认顺序：
 
 - 组合根 override：`CreateResourceService`、`CreateResourceInitOptions`、`RegisterServices`、`RunGameAsync`  
 - 游戏专有服务：`Register` 进 `ServiceRegistry`，热更/主逻辑经 `host.Services.Get<T>()`  
+- 游戏流程：主包 `GameFlow` + 游戏实现 `IGameFlowState`（状态 id 自定）；**不**提供 GF 式通用 FSM  
 - **不**使用 DI 容器（AOT 侧）；**不**把 `IGameHost` 扩成服务目录  
 - 本地化：契约在主包；默认实现 = 资源 catalog + 表；Google Sheet 等是作者工具，可换成其它 `ILocalizationService` 实现  
 

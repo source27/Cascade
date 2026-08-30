@@ -87,6 +87,13 @@ protected override async UniTask RunGameAsync(IGameHost host, CancellationToken 
 Bootstrap **只到** 资源 init（+ 可选本地化 init）和 `RunGameAsync`。  
 资源 **更新**、HybridCLR、Patch UI、构建窗 **不在** 主包。
 
+## 游戏流程
+
+主包 `Cascade.Core`：`GameFlow` / `IGameFlowState` / `IGameFlowQuery`（状态 id 由游戏定义）。  
+Indie 示例：`GameEntry` 组状态 → `RunAsync("Main")`；`MainFlowState` / `BattleFlowState` 自管烟测 UI。  
+Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync(...)`。
+
+
 ## Mobile vs Indie 对照
 
 | | Mobile | Indie |
