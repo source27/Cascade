@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cascade.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,12 +16,13 @@ namespace Cascade.Modules.LocalizationTools.Editor
     /// </summary>
     public static class LocalizationSyncTool
     {
-        public const string OutputRoot = LocalizationImportPipeline.OutputRoot;
+        public static string DefaultOutputRoot => LocalizationImportPipeline.DefaultOutputRoot;
 
         public static void FocusSettings(LocalizationSyncSettings settings)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
+            LocalizationEditorPaths.SetPreferredAssetRoot(settings.ResolvedOutputRoot);
             Selection.activeObject = settings;
             EditorGUIUtility.PingObject(settings);
         }
@@ -104,9 +106,15 @@ namespace Cascade.Modules.LocalizationTools.Editor
                 contributions.Add(new LocalizationCsvContribution(source, csv));
             }
 
-            var artifacts = LocalizationImportPipeline.BuildArtifacts(settings.defaultLocale, contributions);
-            WriteArtifacts(artifacts);
-            Debug.Log($"Cascade Localization: generated {CountLocaleTables(artifacts)} locale table(s) from {enabledSources.Count} source(s).");
+            var outputRoot = settings.ResolvedOutputRoot;
+            var artifacts = LocalizationImportPipeline.BuildArtifacts(
+                settings.defaultLocale,
+                contributions,
+                outputRoot);
+            WriteArtifacts(artifacts, outputRoot);
+            LocalizationEditorPaths.SetPreferredAssetRoot(outputRoot);
+            Debug.Log(
+                $"Cascade Localization: generated {CountLocaleTables(artifacts)} locale table(s) from {enabledSources.Count} source(s) → {outputRoot}");
             return CountLocaleTables(artifacts);
         }
 
@@ -140,14 +148,14 @@ namespace Cascade.Modules.LocalizationTools.Editor
             return enabledSources;
         }
 
-        private static void WriteArtifacts(IReadOnlyDictionary<string, string> artifacts)
+        private static void WriteArtifacts(IReadOnlyDictionary<string, string> artifacts, string outputRoot)
         {
-            EnsureFolder(OutputRoot);
+            EnsureFolder(outputRoot);
             foreach (var output in artifacts)
                 File.WriteAllText(Path.GetFullPath(output.Key), output.Value, new UTF8Encoding(false));
 
             var expected = new HashSet<string>(artifacts.Keys.Select(NormalizePath), StringComparer.OrdinalIgnoreCase);
-            foreach (var file in Directory.GetFiles(Path.GetFullPath(OutputRoot), "localization_*.json"))
+            foreach (var file in Directory.GetFiles(Path.GetFullPath(outputRoot), "localization_*.json"))
             {
                 var assetPath = NormalizePath(Path.GetRelativePath(Directory.GetCurrentDirectory(), file));
                 if (!expected.Contains(assetPath))

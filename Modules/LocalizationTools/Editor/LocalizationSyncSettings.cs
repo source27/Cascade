@@ -26,7 +26,13 @@ namespace Cascade.Modules.LocalizationTools.Editor
 
         [Tooltip("Normalized default locale code written into localization_catalog.json.")]
         public string defaultLocale = "en";
+
+        [Tooltip("Project-relative folder under Assets/ where catalog and locale JSON are written. Runtime still loads by resource location, not this path.")]
+        public string outputRoot = LocalizationImportPipeline.DefaultOutputRoot;
+
         public List<LocalizationCsvSource> sources = new List<LocalizationCsvSource>();
+
+        public string ResolvedOutputRoot => LocalizationImportPipeline.NormalizeOutputRoot(outputRoot);
 
         public static LocalizationSyncSettings TryLoad()
         {
@@ -44,6 +50,7 @@ namespace Cascade.Modules.LocalizationTools.Editor
 
             EnsureFolder("Assets/Settings");
             var settings = CreateInstance<LocalizationSyncSettings>();
+            settings.outputRoot = LocalizationImportPipeline.DefaultOutputRoot;
             settings.sources.Add(new LocalizationCsvSource { name = "Main", url = DefaultSheetUrl });
             AssetDatabase.CreateAsset(settings, AssetPath);
             AssetDatabase.SaveAssets();

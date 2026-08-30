@@ -12,10 +12,13 @@ namespace Cascade.Editor
     // Edit-mode ILocalizationService: loads Assets JSON directly, never writes player save.
     public sealed class EditorLocalizationPreview : ILocalizationService
     {
-        public const string AssetRoot = "Assets/CascadeRes/Localization";
-        public const string CatalogAssetPath = AssetRoot + "/localization_catalog.json";
         public const string EditorLocalePrefsKey = "Cascade.Localization.EditorLocale";
         public const string KeyMode = "key";
+
+        /// <summary>Resolved project localization JSON folder (not a fixed Cascade brand path).</summary>
+        public static string AssetRoot => LocalizationEditorPaths.ResolveAssetRoot();
+
+        public static string CatalogAssetPath => LocalizationEditorPaths.CatalogPath();
 
         private readonly Dictionary<string, string> _localeFiles =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -37,7 +40,9 @@ namespace Cascade.Editor
         {
             try
             {
-                if (!File.Exists(CatalogAssetPath))
+                var root = LocalizationEditorPaths.ResolveAssetRoot();
+                var catalogPath = LocalizationEditorPaths.CatalogPath(root);
+                if (!File.Exists(catalogPath))
                 {
                     IsLoaded = false;
                     _supported.Clear();
@@ -49,7 +54,7 @@ namespace Cascade.Editor
                     return false;
                 }
 
-                var catalogBytes = File.ReadAllBytes(CatalogAssetPath);
+                var catalogBytes = File.ReadAllBytes(catalogPath);
                 var catalog = LocalizationDataParser.ParseCatalog(catalogBytes);
                 _defaultLocale = catalog.DefaultLocale;
                 _supported.Clear();
@@ -59,7 +64,7 @@ namespace Cascade.Editor
                 _dropdownOptions.AddRange(catalog.Locales);
                 _localeFiles.Clear();
                 foreach (var pair in catalog.Locations)
-                    _localeFiles[pair.Key] = ResolveTablePath(pair.Value);
+                    _localeFiles[pair.Key] = LocalizationEditorPaths.TablePath(pair.Value, root);
 
                 var preferred = EditorPrefs.GetString(EditorLocalePrefsKey, _defaultLocale);
                 if (IsKeyMode(preferred))
@@ -156,12 +161,19 @@ namespace Cascade.Editor
             return string.Equals(locale, KeyMode, StringComparison.OrdinalIgnoreCase);
         }
 
-        private static string ResolveTablePath(string location)
+        /// <summary>True when a JSON under any discovered localization root changed.</summary>
+        public static bool IsLocalizationJsonPath(string path)
         {
-            var fileName = location;
-            if (fileName.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
-                return $"{AssetRoot}/{fileName}";
-            return $"{AssetRoot}/{fileName}.json";
+            if (string.IsNullOrEmpty(path) ||
+                !path.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var normalized = path.Replace('\\', '/');
+            if (normalized.EndsWith("/" + LocalizationEditorPaths.CatalogFileName, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            var root = LocalizationEditorPaths.ResolveAssetRoot();
+            return normalized.StartsWith(root + "/", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

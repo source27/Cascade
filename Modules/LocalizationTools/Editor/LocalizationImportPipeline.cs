@@ -111,15 +111,18 @@ namespace Cascade.Modules.LocalizationTools.Editor
     /// </summary>
     public static class LocalizationImportPipeline
     {
-        public const string OutputRoot = "Assets/CascadeRes/Localization";
+        /// <summary>Neutral default disk folder when settings omit outputRoot. Not a runtime location.</summary>
+        public const string DefaultOutputRoot = "Assets/Localization";
 
         public static IReadOnlyDictionary<string, string> BuildArtifacts(
             string defaultLocale,
-            IReadOnlyList<LocalizationCsvContribution> contributions)
+            IReadOnlyList<LocalizationCsvContribution> contributions,
+            string outputRoot = null)
         {
             if (contributions == null)
                 throw new ArgumentNullException(nameof(contributions));
 
+            var root = NormalizeOutputRoot(outputRoot);
             var enabled = contributions.Where(contribution => contribution.Source != null && contribution.Source.enabled).ToList();
             if (enabled.Count == 0)
                 throw new InvalidOperationException("No enabled localization sources are configured.");
@@ -134,7 +137,22 @@ namespace Cascade.Modules.LocalizationTools.Editor
             if (!merged.ContainsKey(normalizedDefault) || merged[normalizedDefault].Count == 0)
                 throw new InvalidDataException($"Default locale '{normalizedDefault}' has no generated entries.");
 
-            return BuildOutputMap(normalizedDefault, merged);
+            return BuildOutputMap(normalizedDefault, merged, root);
+        }
+
+        public static string NormalizeOutputRoot(string outputRoot)
+        {
+            if (string.IsNullOrWhiteSpace(outputRoot))
+                return DefaultOutputRoot;
+            var normalized = outputRoot.Replace('\\', '/').Trim().TrimEnd('/');
+            if (normalized.StartsWith("./", StringComparison.Ordinal))
+                normalized = normalized.Substring(2);
+            if (!normalized.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(normalized, "Assets", StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException(
+                    $"Localization output root must be under Assets/ (got '{outputRoot}').",
+                    nameof(outputRoot));
+            return normalized;
         }
 
         public static void MergeCsv(
@@ -194,7 +212,8 @@ namespace Cascade.Modules.LocalizationTools.Editor
 
         private static IReadOnlyDictionary<string, string> BuildOutputMap(
             string defaultLocale,
-            SortedDictionary<string, SortedDictionary<string, string>> merged)
+            SortedDictionary<string, SortedDictionary<string, string>> merged,
+            string outputRoot)
         {
             var outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             var locales = new List<LocalizationCatalogLocaleFile>();
@@ -204,7 +223,7 @@ namespace Cascade.Modules.LocalizationTools.Editor
                     continue;
                 var location = "localization_" + language.Key.ToLowerInvariant();
                 locales.Add(new LocalizationCatalogLocaleFile { code = language.Key, location = location });
-                outputs[$"{OutputRoot}/{location}.json"] = JsonUtility.ToJson(
+                outputs[$"{outputRoot}/{location}.json"] = JsonUtility.ToJson(
                     new LocalizationTableFile
                     {
                         entries = language.Value
@@ -214,7 +233,7 @@ namespace Cascade.Modules.LocalizationTools.Editor
                     true) + "\n";
             }
 
-            outputs[$"{OutputRoot}/localization_catalog.json"] = JsonUtility.ToJson(
+            outputs[$"{outputRoot}/localization_catalog.json"] = JsonUtility.ToJson(
                 new LocalizationCatalogFile { defaultLocale = defaultLocale, locales = locales.ToArray() },
                 true) + "\n";
             return outputs;

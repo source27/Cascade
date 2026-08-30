@@ -2,7 +2,8 @@
   "name": "Cascade.Modules.LocalizationTools.Editor",
   "rootNamespace": "Cascade.Modules.LocalizationTools.Editor",
   "references": [
-    "Cascade.Service"
+    "Cascade.Service",
+    "Cascade.Editor"
   ],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],

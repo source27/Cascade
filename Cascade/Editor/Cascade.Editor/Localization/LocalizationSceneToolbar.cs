@@ -247,11 +247,7 @@ namespace Cascade.Editor
                     return false;
                 for (var i = 0; i < paths.Length; i++)
                 {
-                    var path = paths[i];
-                    if (string.IsNullOrEmpty(path))
-                        continue;
-                    if (path.StartsWith(EditorLocalizationPreview.AssetRoot, StringComparison.OrdinalIgnoreCase) &&
-                        path.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+                    if (EditorLocalizationPreview.IsLocalizationJsonPath(paths[i]))
                         return true;
                 }
                 return false;

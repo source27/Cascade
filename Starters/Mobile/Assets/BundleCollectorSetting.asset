@@ -43,8 +43,8 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Assets/CascadeRes/Localization
-        CollectorGUID: a4da50cef32a25348b33808fc75d3775
+      - CollectPath: Assets/Localization
+        CollectorGUID: 879ac639aa814c0892bd4114970fd90f
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackSeparately
