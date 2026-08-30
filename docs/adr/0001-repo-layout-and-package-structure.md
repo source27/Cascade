@@ -1,5 +1,7 @@
 # 仓库布局与包结构
 
+**Status:** accepted — Starter 路径与构建工具归属见 [ADR 0012](0012-starters-layout-and-build-tools.md)（`Examples/` → `Starters/`）
+
 UPM 包 `com.source27.cascade` 位于仓库子目录 **`Cascade/`**（`package.json` 在 `Cascade/` 内，git URL 安装必须带 `?path=Cascade`）；示例工程在仓库根的 `Examples/CascadeExample/`（独立 Unity 工程，manifest 以 `file:../../../Cascade` 相对引用——Unity 的 `file:` 按 manifest 所在目录解析）；资源提供者集成子包在 `Integrations/YooAsset/`（`?path=Integrations/YooAsset` 安装）；源码生成器源码在包内 `Tools~/`（波浪号目录，Unity 不导入）而编译产物在 `Cascade/Roslyn/`（无 asmdef，按 Unity 官方规则作用于全工程程序集）。
 
 ## 为什么包不在仓库根（实测教训）

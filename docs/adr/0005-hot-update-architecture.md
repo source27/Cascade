@@ -1,5 +1,9 @@
 # 热更架构：AOT 固化层 + HybridCLR 热更层
 
+**Status:** superseded by [ADR 0007](0007-hot-update-belongs-to-mobile-starter.md)
+
+> 下文保留为抽取期历史决策。现行：代码/资源热更实现与 HybridCLR 依赖归属 Mobile Starter，不在 Cascade 主包。
+
 框架代码全部属于 AOT 固化层（编译进主程序集，元数据最小化）；热更代码经 HybridCLR 加载并反射入口（`public static UniTask<string> Start(IGameHost, CancellationToken)`，入口类型/热更 dll 地址/程序集名经 `BootstrapConfiguration` 可配置，默认 `GameLogic.GameLogicEntry` / `GameLogic.HotUpdate.dll` / `GameLogic.HotUpdate`）。`CodeLoader` 双模式：`EditorSimulate`（编辑器内复用已编译程序集）与 RawFile（`Assembly.Load` dll 字节，真机另经 `LoadMetadataForAOTAssembly` 加载 AOT 元数据）。
 
 ## 理由

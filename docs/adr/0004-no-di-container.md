@@ -1,5 +1,7 @@
 # 无 DI 容器：显式注册 + 手写构造注入
 
+**Status:** accepted — 项目扩展方式见 [ADR 0011](0011-composition-root-extension-and-no-cq.md)
+
 维持 `ServiceRegistry` 显式实例注册（`Register<T>(instance)` / `Get<T>()` / 逆序 Dispose）与手写构造注入（如 `EventBus(ILogService log = null)`），不引入任何 DI 容器。
 
 ## 理由
