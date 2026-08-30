@@ -5,5 +5,7 @@
 [Uu]ser[Ss]ettings/
 *.csproj
 *.sln
+*.slnx
 *.user
 .vs/
+.vscode/
