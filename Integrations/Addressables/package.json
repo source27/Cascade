@@ -1,0 +1,15 @@
+{
+  "name": "com.source27.cascade.integrations.addressables",
+  "version": "0.1.0",
+  "displayName": "Cascade Addressables Integration",
+  "description": "Addressables load-only IResourceService for Cascade.",
+  "unity": "2022.3",
+  "keywords": ["cascade", "addressables", "resource"],
+  "author": {"name": "source27"},
+  "license": "MIT",
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.unity.addressables": "1.21.19",
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+  }
+}

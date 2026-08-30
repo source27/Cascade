@@ -51,13 +51,15 @@ if (pkg) {
   if (!pkg.unity) fail('Cascade/package.json missing unity');
   if (pkg.license !== 'MIT') fail(`Cascade/package.json license: expected MIT, got ${pkg.license}`);
   if (!pkg.dependencies || typeof pkg.dependencies !== 'object') fail('Cascade/package.json missing dependencies');
+  for (const dep of Object.keys(pkg.dependencies)) {
+    if (/hybridclr|lit-motion|loopscroll/i.test(dep)) fail(`Cascade must not depend on ${dep}`);
+  }
 }
 
 const requiredAsmdefs = [
-  'Cascade/Runtime/Cascade.Launcher/Cascade.Launcher.asmdef',
+  'Cascade/Runtime/Cascade.Bootstrap/Cascade.Bootstrap.asmdef',
   'Cascade/Runtime/Cascade.Service/Cascade.Service.asmdef',
   'Cascade/Runtime/Cascade.Core/Cascade.Core.asmdef',
-  'Cascade/Runtime/Cascade.Module/Cascade.Module.asmdef',
   'Cascade/Editor/Cascade.Editor/Cascade.Editor.asmdef',
   'Cascade/Tests/Cascade.Tests/Cascade.Tests.asmdef',
 ];

@@ -3,7 +3,7 @@
     "rootNamespace": "CascadeExample.Editor",
     "references": [
         "CascadeExample.AOT",
-        "Cascade.Launcher",
+        "Cascade.Bootstrap",
         "Cascade.Service",
         "Cascade.Core",
         "Cascade.Editor",

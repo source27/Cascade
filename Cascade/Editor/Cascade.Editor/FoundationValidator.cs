@@ -32,18 +32,16 @@ namespace Cascade.Editor
     {
         private static readonly string[] RequiredRuntimeAssemblies =
         {
-            "Cascade.Launcher",
+            "Cascade.Bootstrap",
             "Cascade.Service",
-            "Cascade.Core",
-            "Cascade.Module"
+            "Cascade.Core"
         };
 
         private static readonly Dictionary<string, string[]> AllowedReferences = new Dictionary<string, string[]>
         {
-            ["Cascade.Launcher"] = new[] { "Cascade.Service", "Cascade.Core", "Cascade.Module", "HybridCLR.Runtime", "UniTask", "UnityEngine.UI" },
+            ["Cascade.Bootstrap"] = new[] { "Cascade.Service", "Cascade.Core", "UniTask", "UnityEngine.UI" },
             ["Cascade.Service"] = new[] { "UniTask" },
-            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask", "UnityEngine.UI", "Unity.TextMeshPro" },
-            ["Cascade.Module"] = new string[0]
+            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask", "UnityEngine.UI", "Unity.TextMeshPro" }
         };
 
         public static FoundationValidationResult ValidateProject(string projectRoot)
@@ -166,10 +164,9 @@ namespace Cascade.Editor
         {
             switch (assemblyName)
             {
-                case "Cascade.Launcher": return "Cascade.Launcher";
+                case "Cascade.Bootstrap": return "Cascade.Bootstrap";
                 case "Cascade.Service": return "Cascade.Service";
                 case "Cascade.Core": return "Cascade.Core";
-                case "Cascade.Module": return "Cascade.Module";
                 case "Cascade.Editor": return "Cascade.Editor";
                 case "Cascade.Tests": return "Cascade.Tests";
                 default: return null;
@@ -179,10 +176,9 @@ namespace Cascade.Editor
         private static string ExpectedNamespaceForPath(string path)
         {
             var normalized = Normalize(path);
-            if (normalized.IndexOf("/Runtime/Cascade.Launcher/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Launcher";
+            if (normalized.IndexOf("/Runtime/Cascade.Bootstrap/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Bootstrap";
             if (normalized.IndexOf("/Runtime/Cascade.Service/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Service";
             if (normalized.IndexOf("/Runtime/Cascade.Core/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Core";
-            if (normalized.IndexOf("/Runtime/Cascade.Module/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Module";
             if (normalized.IndexOf("/Editor/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Editor";
             if (normalized.IndexOf("/Tests/", StringComparison.OrdinalIgnoreCase) >= 0) return "Cascade.Tests";
             return null;

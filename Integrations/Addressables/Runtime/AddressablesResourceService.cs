@@ -1,0 +1,184 @@
+using System;
+using System.Threading;
+using Cascade.Service;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
+
+namespace Cascade.Service.Addressables
+{
+    /// <summary>Slim init options; most behavior comes from AddressableAssetSettings.</summary>
+    public sealed class AddressablesResourceInitOptions : ResourceInitOptions
+    {
+        public AddressablesResourceInitOptions(bool autoReleaseInitHandle = true)
+        {
+            AutoReleaseInitHandle = autoReleaseInitHandle;
+        }
+
+        public bool AutoReleaseInitHandle { get; }
+    }
+
+    /// <summary>
+    /// Load-only Addressables provider. No catalog-update APIs on this type.
+    /// LoadRawBytesAsync treats location as a TextAsset address.
+    /// UnloadUnused is a documented no-op (rely on handle Release refcounts).
+    /// </summary>
+    public sealed class AddressablesResourceService : IResourceService, IDisposable
+    {
+        private bool _initialized;
+        private bool _disposed;
+
+        public bool IsInitialized => _initialized;
+
+        public async UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
+        {
+            ThrowIfDisposed();
+            var opts = options as AddressablesResourceInitOptions ?? new AddressablesResourceInitOptions();
+            var handle = UnityEngine.AddressableAssets.Addressables.InitializeAsync(opts.AutoReleaseInitHandle);
+            await handle.ToUniTask(cancellationToken: cancellationToken);
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+                throw new InvalidOperationException($"Addressables.InitializeAsync failed: {handle.OperationException}");
+            _initialized = true;
+        }
+
+        public async UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)
+            where T : UnityEngine.Object
+        {
+            EnsureInitialized();
+            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(location);
+            await handle.ToUniTask(cancellationToken: cancellationToken);
+            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+            {
+                if (handle.IsValid())
+                    UnityEngine.AddressableAssets.Addressables.Release(handle);
+                throw new InvalidOperationException($"Failed to load Addressables asset '{location}': {handle.OperationException}");
+            }
+
+            return new AddressablesAssetHandle<T>(handle);
+        }
+
+        public async UniTask<ISceneHandle> LoadSceneAsync(
+            string location,
+            ResourceSceneLoadMode loadMode = ResourceSceneLoadMode.Single,
+            CancellationToken cancellationToken = default)
+        {
+            EnsureInitialized();
+            var mode = loadMode == ResourceSceneLoadMode.Additive ? LoadSceneMode.Additive : LoadSceneMode.Single;
+            var handle = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(location, mode);
+            await handle.ToUniTask(cancellationToken: cancellationToken);
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                if (handle.IsValid())
+                    UnityEngine.AddressableAssets.Addressables.Release(handle);
+                throw new InvalidOperationException($"Failed to load Addressables scene '{location}': {handle.OperationException}");
+            }
+
+            return new AddressablesSceneHandle(handle);
+        }
+
+        public async UniTask<byte[]> LoadRawBytesAsync(string location, CancellationToken cancellationToken = default)
+        {
+            EnsureInitialized();
+            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<TextAsset>(location);
+            try
+            {
+                await handle.ToUniTask(cancellationToken: cancellationToken);
+                if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+                    throw new InvalidOperationException(
+                        $"LoadRawBytesAsync expects a TextAsset address; failed for '{location}': {handle.OperationException}");
+                return handle.Result.bytes;
+            }
+            finally
+            {
+                if (handle.IsValid())
+                    UnityEngine.AddressableAssets.Addressables.Release(handle);
+            }
+        }
+
+        /// <summary>No-op: Addressables unloads via handle Release refcounts.</summary>
+        public void UnloadUnused()
+        {
+        }
+
+        public void Dispose()
+        {
+            _disposed = true;
+            _initialized = false;
+        }
+
+        private void EnsureInitialized()
+        {
+            ThrowIfDisposed();
+            if (!_initialized)
+                throw new InvalidOperationException("AddressablesResourceService is not initialized.");
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(AddressablesResourceService));
+        }
+
+        private sealed class AddressablesAssetHandle<T> : IAssetHandle<T> where T : UnityEngine.Object
+        {
+            private AsyncOperationHandle<T> _handle;
+            private bool _released;
+
+            public AddressablesAssetHandle(AsyncOperationHandle<T> handle)
+            {
+                _handle = handle;
+            }
+
+            public T Asset => _released || !_handle.IsValid() ? null : _handle.Result;
+            public bool IsValid => !_released && _handle.IsValid() && _handle.Status == AsyncOperationStatus.Succeeded;
+
+            public void Release()
+            {
+                if (_released)
+                    return;
+                _released = true;
+                if (_handle.IsValid())
+                    UnityEngine.AddressableAssets.Addressables.Release(_handle);
+            }
+
+            public void Dispose() => Release();
+        }
+
+        private sealed class AddressablesSceneHandle : ISceneHandle
+        {
+            private AsyncOperationHandle<SceneInstance> _handle;
+            private bool _released;
+
+            public AddressablesSceneHandle(AsyncOperationHandle<SceneInstance> handle)
+            {
+                _handle = handle;
+            }
+
+            public string SceneName =>
+                _released || !_handle.IsValid() ? string.Empty : _handle.Result.Scene.name;
+
+            public bool IsValid => !_released && _handle.IsValid() && _handle.Status == AsyncOperationStatus.Succeeded;
+
+            public async UniTask UnloadAsync(CancellationToken cancellationToken = default)
+            {
+                if (_released || !_handle.IsValid())
+                    return;
+                var unload = UnityEngine.AddressableAssets.Addressables.UnloadSceneAsync(_handle);
+                await unload.ToUniTask(cancellationToken: cancellationToken);
+                _released = true;
+            }
+
+            public void Release()
+            {
+                if (_released)
+                    return;
+                if (_handle.IsValid())
+                    UnityEngine.AddressableAssets.Addressables.Release(_handle);
+                _released = true;
+            }
+        }
+    }
+}

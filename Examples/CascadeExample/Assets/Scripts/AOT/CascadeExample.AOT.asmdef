@@ -2,11 +2,13 @@
     "name": "CascadeExample.AOT",
     "rootNamespace": "CascadeExample",
     "references": [
-        "Cascade.Launcher",
+        "Cascade.Bootstrap",
         "Cascade.Service",
         "Cascade.Core",
         "Cascade.Service.YooAsset",
-        "UniTask"
+        "HybridCLR.Runtime",
+        "UniTask",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

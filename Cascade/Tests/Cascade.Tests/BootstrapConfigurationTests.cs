@@ -1,3 +1,5 @@
+using Cascade.Bootstrap;
+using Cascade.Service;
 using NUnit.Framework;
 
 namespace Cascade.Tests
@@ -5,55 +7,26 @@ namespace Cascade.Tests
     public sealed class BootstrapConfigurationTests
     {
         [Test]
-        public void Defaults_AreFrameworkNeutral()
+        public void Configuration_IsSlim_WithoutHotUpdateFields()
         {
-            var configuration = new Cascade.Launcher.BootstrapConfiguration(
-                Cascade.Launcher.BootstrapEnvironment.Dev,
-                Cascade.Launcher.BootstrapPlayMode.Host,
-                "1.0.0");
-
-            Assert.That(configuration.HotUpdateDllLocation, Is.EqualTo(Cascade.Launcher.BootstrapConfiguration.DefaultHotUpdateDllLocation));
-            Assert.That(configuration.HotUpdateAssemblyName, Is.EqualTo(Cascade.Launcher.BootstrapConfiguration.DefaultHotUpdateAssemblyName));
-            Assert.That(configuration.GameLogicEntryType, Is.EqualTo(Cascade.Launcher.BootstrapConfiguration.DefaultGameLogicEntryType));
+            var configuration = new BootstrapConfiguration(BootstrapEnvironment.Dev, "1.0.0");
+            Assert.That(configuration.Environment, Is.EqualTo(BootstrapEnvironment.Dev));
+            Assert.That(configuration.AppVersion, Is.EqualTo("1.0.0"));
             Assert.That(configuration.ResourceInitOptions, Is.Null);
+            Assert.That(typeof(BootstrapConfiguration).GetProperty("HotUpdateDllLocation"), Is.Null);
+            Assert.That(typeof(BootstrapConfiguration).GetProperty("PlayMode"), Is.Null);
         }
 
         [Test]
-        public void CustomHotUpdateSettings_AreRespected()
+        public void ResourceInitOptions_CanBeAssigned()
         {
-            var configuration = new Cascade.Launcher.BootstrapConfiguration(
-                Cascade.Launcher.BootstrapEnvironment.Dev,
-                Cascade.Launcher.BootstrapPlayMode.Offline,
-                "1.0.0",
-                "HotUpdate.dll",
-                "HotUpdate",
-                "CascadeExample.GameEntry");
-
-            Assert.That(configuration.HotUpdateDllLocation, Is.EqualTo("HotUpdate.dll"));
-            Assert.That(configuration.HotUpdateAssemblyName, Is.EqualTo("HotUpdate"));
-            Assert.That(configuration.GameLogicEntryType, Is.EqualTo("CascadeExample.GameEntry"));
-        }
-
-        [Test]
-        public void AssemblyLoadMode_FollowsPlayMode()
-        {
-            Assert.That(
-                Cascade.Launcher.BootstrapConfiguration.ResolveAssemblyLoadMode(Cascade.Launcher.BootstrapPlayMode.EditorSimulate),
-                Is.EqualTo(Cascade.Launcher.BootstrapAssemblyLoadMode.EditorLoaded));
-            Assert.That(
-                Cascade.Launcher.BootstrapConfiguration.ResolveAssemblyLoadMode(Cascade.Launcher.BootstrapPlayMode.Host),
-                Is.EqualTo(Cascade.Launcher.BootstrapAssemblyLoadMode.RawFile));
-            Assert.That(
-                Cascade.Launcher.BootstrapConfiguration.ResolveAssemblyLoadMode(Cascade.Launcher.BootstrapPlayMode.Offline),
-                Is.EqualTo(Cascade.Launcher.BootstrapAssemblyLoadMode.RawFile));
-        }
-
-        [Test]
-        public void AotMetadataCatalog_NormalizesModuleNameToLocation()
-        {
-            Assert.That(Cascade.Launcher.AotMetadataCatalog.NormalizeLocation("mscorlib.dll"), Is.EqualTo("mscorlib.dll"));
-            Assert.That(Cascade.Launcher.AotMetadataCatalog.NormalizeLocation("path/to/System.Core.dll"), Is.EqualTo("System.Core.dll"));
-            Assert.That(Cascade.Launcher.AotMetadataCatalog.ResolveLocations(), Is.Not.Null);
+            var configuration = new BootstrapConfiguration(BootstrapEnvironment.Beta, "2.0.0")
+            {
+                ResourceInitOptions = new ResourceInitOptions()
+            };
+            Assert.That(configuration.ResourceInitOptions, Is.Not.Null);
+            Assert.That(BootstrapConfiguration.DefaultLogLevel(BootstrapEnvironment.Dev), Is.EqualTo(LogLevel.Trace));
+            Assert.That(BootstrapConfiguration.DefaultLogLevel(BootstrapEnvironment.Gold), Is.EqualTo(LogLevel.Info));
         }
     }
 }
