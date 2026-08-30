@@ -73,7 +73,7 @@ namespace Cascade.Mobile.Editor
 
         private bool EmbedPackage => _resourcePackageMode == ResourcePackageMode.Full;
 
-        [MenuItem("Cascade/Mobile/构建窗口", priority = 110)]
+        [MenuItem("Cascade/构建窗口", priority = 110)]
         public static void Open()
         {
             var window = GetWindow<MobileBuildWindow>("Cascade 构建");

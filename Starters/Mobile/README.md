@@ -16,7 +16,7 @@ Unity **2022.3.62f3**. Open `Starters/Mobile`.
 |----------|------|
 | `Cascade.Mobile.AOT` | `MobileBootstrapEntry`, launch/hot-update pipeline, Patch UI |
 | `GameLogic.HotUpdate` | Hot-update game entry (default type name) |
-| `Cascade.Mobile.Editor` | Build / hot-update window (`Cascade/Mobile/...`) |
+| `Cascade.Mobile.Editor` | Build / hot-update window (`Cascade/构建窗口`) |
 
 ## Packages
 

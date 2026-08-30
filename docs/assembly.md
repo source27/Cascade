@@ -50,7 +50,7 @@ Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter
 1. Unity **2022.3.62f3** 打开 `Starters/Mobile`  
 2. `Assets/Scenes/Bootstrap.unity` → Play  
 3. 组合根：`MobileBootstrapEntry`（Yoo + 热更流水线）  
-4. 构建：菜单 **Cascade/Mobile/**（HybridCLR + Yoo 打包/热更）  
+4. 构建：菜单 **Cascade/构建窗口**（HybridCLR + Yoo 打包/热更）
 5. 细节：`Starters/Mobile/README.md`  
 
 ### 独立游戏 — `Starters/Indie`

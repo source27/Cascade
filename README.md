@@ -72,7 +72,7 @@ https://github.com/source27/Cascade.git?path=Cascade
 
 1. Unity **2022.3.62f3** 打开 [`Starters/Mobile`](Starters/Mobile)  
 2. `Assets/Scenes/Bootstrap.unity` → Play  
-3. 组合根：`MobileBootstrapEntry`；构建菜单：**Cascade/Mobile/**  
+3. 组合根：`MobileBootstrapEntry`；构建菜单：**Cascade/构建窗口**
 4. 说明：[`Starters/Mobile/README.md`](Starters/Mobile/README.md)
 
 ### 独立游戏
