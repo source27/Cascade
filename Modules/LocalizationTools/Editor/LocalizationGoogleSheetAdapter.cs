@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 
-namespace Cascade.Editor
+namespace Cascade.Modules.LocalizationTools.Editor
 {
     /// <summary>
     /// Google Sheet transport adapter for the localization import pipeline (edit/export URL → CSV text).

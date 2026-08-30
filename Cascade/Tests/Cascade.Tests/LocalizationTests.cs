@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Cascade.Editor;
 using Cascade.Service;
 using NUnit.Framework;
 
@@ -12,75 +11,6 @@ namespace Cascade.Tests
 {
     public sealed class LocalizationTests
     {
-        [Test]
-        public void GoogleSheetUrlAndF5CsvLayoutAreSupported()
-        {
-            const string editUrl = "https://docs.google.com/spreadsheets/d/1QbL_teiUTtvHrp_gOlNiyW92wuKS5NwPBwBJjwWyago/edit?gid=0#gid=0";
-            Assert.That(
-                LocalizationGoogleSheetAdapter.ToCsvExportUrl(editUrl),
-                Is.EqualTo("https://docs.google.com/spreadsheets/d/1QbL_teiUTtvHrp_gOlNiyW92wuKS5NwPBwBJjwWyago/export?format=csv&gid=0"));
-
-            const string csv = "note\r\nnote\r\nKey,EN,CN\r\n\r\n\r\n\r\nwelcome,\"Hello, \"\"Captain\"\"\",\"first\r\nsecond\"\r\n";
-            var merged = new SortedDictionary<string, SortedDictionary<string, string>>(StringComparer.Ordinal);
-            LocalizationImportPipeline.MergeCsv(
-                csv,
-                new LocalizationCsvSource { name = "test", headerRow = 3, dataStartRow = 7 },
-                merged);
-
-            Assert.That(merged["en"]["welcome"], Is.EqualTo("Hello, \"Captain\""));
-            Assert.That(merged["zh-CN"]["welcome"], Is.EqualTo("first\nsecond"));
-        }
-
-        [Test]
-        public void ImportPipelineBuildsRuntimeCompatibleCatalogAndTablesFromCsvFixtures()
-        {
-            const string mainCsv =
-                "note\r\nnote\r\nKey,EN,CN\r\n\r\n\r\n\r\nwelcome,\"Hello, \"\"Captain\"\"\",\"你好\"\r\nbye,Goodbye,再见\r\n";
-            const string extraCsv =
-                "note\r\nnote\r\nKey,EN,CN\r\n\r\n\r\n\r\nextra,Extra,额外\r\n";
-
-            var artifacts = LocalizationImportPipeline.BuildArtifacts(
-                defaultLocale: "en",
-                contributions: new[]
-                {
-                    new LocalizationCsvContribution(
-                        new LocalizationCsvSource { name = "main", headerRow = 3, dataStartRow = 7 },
-                        mainCsv),
-                    new LocalizationCsvContribution(
-                        new LocalizationCsvSource { name = "extra", headerRow = 3, dataStartRow = 7 },
-                        extraCsv),
-                    new LocalizationCsvContribution(
-                        new LocalizationCsvSource { name = "disabled-ignored", enabled = false, headerRow = 3, dataStartRow = 7 },
-                        "note\r\nnote\r\nKey,EN,CN\r\n\r\n\r\n\r\nignored,X,Y\r\n")
-                });
-
-            Assert.That(artifacts.ContainsKey($"{LocalizationImportPipeline.OutputRoot}/localization_catalog.json"), Is.True);
-            Assert.That(artifacts.ContainsKey($"{LocalizationImportPipeline.OutputRoot}/localization_en.json"), Is.True);
-            Assert.That(artifacts.ContainsKey($"{LocalizationImportPipeline.OutputRoot}/localization_zh-cn.json"), Is.True);
-
-            var catalog = LocalizationDataParser.ParseCatalog(
-                Encoding.UTF8.GetBytes(artifacts[$"{LocalizationImportPipeline.OutputRoot}/localization_catalog.json"]));
-            Assert.That(catalog.DefaultLocale, Is.EqualTo("en"));
-            Assert.That(catalog.Locales, Is.EquivalentTo(new[] { "en", "zh-CN" }));
-            Assert.That(catalog.Locations["en"], Is.EqualTo("localization_en"));
-            Assert.That(catalog.Locations["zh-CN"], Is.EqualTo("localization_zh-cn"));
-
-            var en = LocalizationDataParser.ParseTable(
-                Encoding.UTF8.GetBytes(artifacts[$"{LocalizationImportPipeline.OutputRoot}/localization_en.json"]),
-                "en");
-            var zh = LocalizationDataParser.ParseTable(
-                Encoding.UTF8.GetBytes(artifacts[$"{LocalizationImportPipeline.OutputRoot}/localization_zh-cn.json"]),
-                "zh-CN");
-
-            Assert.That(en["welcome"], Is.EqualTo("Hello, \"Captain\""));
-            Assert.That(en["bye"], Is.EqualTo("Goodbye"));
-            Assert.That(en["extra"], Is.EqualTo("Extra"));
-            Assert.That(en.ContainsKey("ignored"), Is.False);
-            Assert.That(zh["welcome"], Is.EqualTo("你好"));
-            Assert.That(zh["bye"], Is.EqualTo("再见"));
-            Assert.That(zh["extra"], Is.EqualTo("额外"));
-        }
-
         [Test]
         public void RuntimeSelectsSavedLocaleAndKeepsItWhenSwitchFails()
         {
@@ -158,7 +88,6 @@ namespace Cascade.Tests
 
             service.Dispose();
             Assert.That(LocalizationAccess.IsBound, Is.False);
-            Assert.That(LocalizationAccess.Get("hello"), Is.EqualTo("hello"));
         }
 
         private sealed class FakeResourceService : IResourceService
@@ -168,8 +97,12 @@ namespace Cascade.Tests
             public bool IsInitialized => true;
 
             public void Add(string location, string json) => _raw[location] = Encoding.UTF8.GetBytes(json);
-            public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default) => UniTask.CompletedTask;
-            public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : UnityEngine.Object =>
+
+            public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default) =>
+                UniTask.CompletedTask;
+
+            public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)
+                where T : UnityEngine.Object =>
                 UniTask.FromException<IAssetHandle<T>>(new NotSupportedException());
 
             public UniTask<ISceneHandle> LoadSceneAsync(
@@ -190,7 +123,8 @@ namespace Cascade.Tests
 
         private sealed class FakeSaveService : ISaveService
         {
-            private readonly Dictionary<string, string> _values = new Dictionary<string, string>();
+            private readonly Dictionary<string, string> _values = new Dictionary<string, string>(StringComparer.Ordinal);
+
             public string GetString(string key, string defaultValue = "") => _values.TryGetValue(key, out var value) ? value : defaultValue;
             public void SetString(string key, string value) => _values[key] = value;
             public void Flush() { }

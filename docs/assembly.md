@@ -8,6 +8,7 @@
 | `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | 手游 / Yoo 资源管线 |
 | `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 独立游戏 / Addressables |
 | `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时 |
+| `Modules/LocalizationTools/` | `com.source27.cascade.modules.localizationtools` | 需要 Google Sheet→JSON 等本地化作者工具时 |
 
 主包程序集：`Cascade.Service`、`Cascade.Core`、`Cascade.Bootstrap`、`Cascade.Editor`、`Cascade.Tests`。
 
@@ -34,7 +35,8 @@ https://github.com/source27/Cascade.git?path=Cascade
 ```json
 "com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset",
 "com.source27.cascade.integrations.addressables": "https://github.com/source27/Cascade.git?path=Integrations/Addressables",
-"com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras"
+"com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
+"com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
 ```
 
 Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter 一致）。

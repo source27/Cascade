@@ -45,9 +45,9 @@ Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 
 
 ## 本地化
 
-- 契约：`ILocalizationService`  
+- 契约：`ILocalizationService`（主包运行时）  
 - 默认实现：catalog + 语言表，经 `LoadRawBytesAsync`  
-- Google Sheet 同步：Editor 作者工具，不是唯一运行时  
+- Google Sheet / 表导入：可选模块 `com.source27.cascade.modules.localizationtools`（Editor 作者工具，菜单 **Cascade/多语言设置**、**Cascade/更新多语言**）  
 - 换配表格式：实现另一 `ILocalizationService`，在 `RegisterServices` 注册  
 - 流水线：仅当 registry 中有本地化服务时才 `InitializeAsync`  
 

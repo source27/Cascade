@@ -91,6 +91,23 @@ if (yoo) {
   );
 }
 
+// --- localization tools module ---
+const locToolsPath = join(repoRoot, 'Modules', 'LocalizationTools', 'package.json');
+requireFile(locToolsPath, 'Modules/LocalizationTools/package.json');
+const locTools = readJson(locToolsPath);
+if (locTools) {
+  if (locTools.name !== 'com.source27.cascade.modules.localizationtools') {
+    fail(`LocalizationTools package name mismatch: ${locTools.name}`);
+  }
+  if (locTools.license !== 'MIT') {
+    fail(`Modules/LocalizationTools/package.json license: expected MIT, got ${locTools.license}`);
+  }
+  requireFile(
+    join(repoRoot, 'Modules', 'LocalizationTools', 'Editor', 'Cascade.Modules.LocalizationTools.Editor.asmdef'),
+    'Modules/LocalizationTools/Editor/Cascade.Modules.LocalizationTools.Editor.asmdef',
+  );
+}
+
 // --- starters ---
 requireFile(
   join(repoRoot, 'Starters', 'Mobile', 'Packages', 'manifest.json'),

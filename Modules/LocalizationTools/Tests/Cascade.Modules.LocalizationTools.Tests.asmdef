@@ -1,0 +1,19 @@
+{
+  "name": "Cascade.Modules.LocalizationTools.Tests",
+  "rootNamespace": "Cascade.Modules.LocalizationTools.Tests",
+  "references": [
+    "Cascade.Modules.LocalizationTools.Editor",
+    "Cascade.Service",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner"
+  ],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

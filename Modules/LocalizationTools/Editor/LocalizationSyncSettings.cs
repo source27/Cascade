@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cascade.Editor
+namespace Cascade.Modules.LocalizationTools.Editor
 {
     [Serializable]
     public sealed class LocalizationCsvSource

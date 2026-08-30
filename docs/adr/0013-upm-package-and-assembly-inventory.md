@@ -7,7 +7,8 @@
 | `Cascade/` | `com.source27.cascade` | `Cascade.Service`, `Cascade.Core`, **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）, `Cascade.Editor`, `Cascade.Tests` |
 | `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | `Cascade.Service.YooAsset` |
 | `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | `Cascade.Service.Addressables` |
-| `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | `Cascade.Modules.UIExtras` |
+| `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | `Cascade.Modules.UIExtras` (+ Editor/Tests) |
+| `Modules/LocalizationTools/` | `com.source27.cascade.modules.localizationtools` | `Cascade.Modules.LocalizationTools.Editor` (+ Tests；Editor-only 作者工具) |
 | 未来能力 | `Modules/<Name>/` | `com.source27.cascade.modules.<name>` → `Cascade.Modules.<Name>` |
 
 - **删除** 空壳 `Cascade.Module`（不再作可选能力归宿，见 ADR 0009）。

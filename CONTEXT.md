@@ -25,8 +25,12 @@ _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮
 _Avoid_: 热更包、cascade.hotupdate、框架管热更、默认跑资源更新、Cascade.Launcher（旧名）、Cascade.Module（已删空壳）、纯零件无流水线（已否决）
 
 **本地化提供者**:
-实现 `ILocalizationService` 的运行时；默认实现经资源加载 catalog 与语言表。Google Sheet 等同步工具属于 **作者管线**，不是契约的唯一实现。可替换为本地配表等其它实现并在组合根注册。
-_Avoid_: 把 Sheet 当成唯一本地化实现、无契约的硬编码文案服务
+实现 `ILocalizationService` 的运行时；默认实现经资源加载 catalog 与语言表。可替换为本地配表等其它实现并在组合根注册。
+_Avoid_: 把 Sheet 当成唯一本地化实现、无契约的硬编码文案服务、把作者工具包当成运行时提供者
+
+**本地化作者工具（Localization Tools）**:
+可选 UPM 模块 `com.source27.cascade.modules.localizationtools`（Editor-only）：Google Sheet 等表源 → 运行时同款 catalog/locale JSON。依赖方向：tools → 主包。不装则仍可用已提交的 JSON + 主包场景预览。
+_Avoid_: 塞进主包的 Sheet 同步、runtime 依赖 Excel/Sheet 库、与 `ILocalizationService` 混为一谈
 
 **Starter**:
 可 fork 的完整 Unity 工程，开新项目的生产起点。路径约定：`Starters/Mobile`、`Starters/Indie`。薄壳（最小场景/入口证明组装通），不承载可玩内容切片。Mobile 拥有代码热更 + 资源热更全套（HybridCLR、YooAsset 更新编排、Patch UI、构建窗）；Indie 使用 Addressables，无热更。

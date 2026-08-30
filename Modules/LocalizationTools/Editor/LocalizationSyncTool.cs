@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace Cascade.Editor
+namespace Cascade.Modules.LocalizationTools.Editor
 {
     /// <summary>
     /// Editor orchestration for localization authoring: settings menus + Sheet download + disk write.

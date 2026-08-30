@@ -6,7 +6,7 @@ using System.Text;
 using Cascade.Service;
 using UnityEngine;
 
-namespace Cascade.Editor
+namespace Cascade.Modules.LocalizationTools.Editor
 {
     public static class LocalizationCsvParser
     {

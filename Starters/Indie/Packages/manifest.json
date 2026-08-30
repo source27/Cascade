@@ -2,6 +2,7 @@
   "dependencies": {
     "com.source27.cascade": "file:../../../Cascade",
     "com.source27.cascade.integrations.addressables": "file:../../../Integrations/Addressables",
+    "com.source27.cascade.modules.localizationtools": "file:../../../Modules/LocalizationTools",
     "com.unity.addressables": "1.21.19",
     "com.unity.ugui": "1.0.0",
     "com.unity.textmeshpro": "3.0.9",

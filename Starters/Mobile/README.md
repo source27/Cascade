@@ -23,4 +23,5 @@ Unity **2022.3.62f3**. Open `Starters/Mobile`.
 - `com.source27.cascade` (file)
 - `com.source27.cascade.integrations.yooasset` (file)
 - `com.source27.cascade.modules.uiextras` (file)
+- `com.source27.cascade.modules.localizationtools` (file) — Sheet→JSON authoring (`Cascade/多语言设置`, `Cascade/更新多语言`)
 - HybridCLR, YooAsset, UniTask, LitMotion, LoopScroll (vendored under Packages/)

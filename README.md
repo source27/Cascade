@@ -20,7 +20,8 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 │   ├── YooAsset/                    可选资源集成（含更新 API 在具体类型上）
 │   └── Addressables/                可选资源集成（load-only）
 ├── Modules/
-│   └── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
+│   ├── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
+│   └── LocalizationTools/           可选本地化作者工具（Sheet→JSON）
 ├── Starters/
 │   ├── Mobile/                      手游生产起点（Yoo + HybridCLR + 构建窗）
 │   └── Indie/                       独立游戏起点（Addressables，无热更）
@@ -51,7 +52,8 @@ https://github.com/source27/Cascade.git?path=Cascade
 ```json
 "com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset",
 "com.source27.cascade.integrations.addressables": "https://github.com/source27/Cascade.git?path=Integrations/Addressables",
-"com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras"
+"com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
+"com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
 ```
 
 ### 主包依赖
