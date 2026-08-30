@@ -26,6 +26,7 @@ namespace Cascade.Tests
             };
             Assert.That(configuration.ResourceInitOptions, Is.Not.Null);
             Assert.That(BootstrapConfiguration.DefaultLogLevel(BootstrapEnvironment.Dev), Is.EqualTo(LogLevel.Trace));
+            Assert.That(BootstrapConfiguration.DefaultLogLevel(BootstrapEnvironment.Beta), Is.EqualTo(LogLevel.Debug));
             Assert.That(BootstrapConfiguration.DefaultLogLevel(BootstrapEnvironment.Gold), Is.EqualTo(LogLevel.Info));
         }
     }

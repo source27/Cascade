@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Cascade.Service
 {
@@ -11,6 +10,11 @@ namespace Cascade.Service
         public void Trace(string category, string message)
         {
             Write(LogLevel.Trace, category, message);
+        }
+
+        public void Debug(string category, string message)
+        {
+            Write(LogLevel.Debug, category, message);
         }
 
         public void Info(string category, string message)
@@ -36,7 +40,7 @@ namespace Cascade.Service
             var text = string.IsNullOrEmpty(message)
                 ? Format(category, exception?.ToString() ?? "Exception")
                 : Format(category, $"{message}\n{exception}");
-            Debug.LogError(text);
+            UnityEngine.Debug.LogError(text);
         }
 
         private void Write(LogLevel level, string category, string message)
@@ -48,13 +52,13 @@ namespace Cascade.Service
             switch (level)
             {
                 case LogLevel.Warning:
-                    Debug.LogWarning(text);
+                    UnityEngine.Debug.LogWarning(text);
                     break;
                 case LogLevel.Error:
-                    Debug.LogError(text);
+                    UnityEngine.Debug.LogError(text);
                     break;
                 default:
-                    Debug.Log(text);
+                    UnityEngine.Debug.Log(text);
                     break;
             }
         }

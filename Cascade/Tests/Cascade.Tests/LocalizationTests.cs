@@ -136,6 +136,7 @@ namespace Cascade.Tests
             public LogLevel MinimumLevel { get; set; } = LogLevel.Trace;
             public int WarningCount { get; private set; }
             public void Trace(string category, string message) { }
+            public void Debug(string category, string message) { }
             public void Info(string category, string message) { }
             public void Warning(string category, string message) => WarningCount++;
             public void Error(string category, string message) { }
