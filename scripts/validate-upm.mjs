@@ -91,22 +91,41 @@ if (yoo) {
   );
 }
 
-// --- example project pointers ---
+// --- starters ---
 requireFile(
-  join(repoRoot, 'Examples', 'CascadeExample', 'Packages', 'manifest.json'),
-  'Examples/CascadeExample/Packages/manifest.json',
+  join(repoRoot, 'Starters', 'Mobile', 'Packages', 'manifest.json'),
+  'Starters/Mobile/Packages/manifest.json',
 );
 requireFile(
-  join(repoRoot, 'Examples', 'CascadeExample', 'ProjectSettings', 'ProjectVersion.txt'),
-  'Examples/CascadeExample/ProjectSettings/ProjectVersion.txt',
+  join(repoRoot, 'Starters', 'Mobile', 'ProjectSettings', 'ProjectVersion.txt'),
+  'Starters/Mobile/ProjectSettings/ProjectVersion.txt',
+);
+requireFile(
+  join(repoRoot, 'Starters', 'Indie', 'Packages', 'manifest.json'),
+  'Starters/Indie/Packages/manifest.json',
+);
+requireFile(
+  join(repoRoot, 'Starters', 'Indie', 'ProjectSettings', 'ProjectVersion.txt'),
+  'Starters/Indie/ProjectSettings/ProjectVersion.txt',
 );
 const projectVersion = readFileSync(
-  join(repoRoot, 'Examples', 'CascadeExample', 'ProjectSettings', 'ProjectVersion.txt'),
+  join(repoRoot, 'Starters', 'Mobile', 'ProjectSettings', 'ProjectVersion.txt'),
   'utf8',
 );
 if (!/m_EditorVersion:\s*2022\.3\.62f3/.test(projectVersion)) {
-  fail('Examples/CascadeExample ProjectVersion.txt must pin Unity 2022.3.62f3');
+  fail('Starters/Mobile ProjectVersion.txt must pin Unity 2022.3.62f3');
 }
+const indieVersion = readFileSync(
+  join(repoRoot, 'Starters', 'Indie', 'ProjectSettings', 'ProjectVersion.txt'),
+  'utf8',
+);
+if (!/m_EditorVersion:\s*2022\.3\.62f3/.test(indieVersion)) {
+  fail('Starters/Indie ProjectVersion.txt must pin Unity 2022.3.62f3');
+}
+requireFile(
+  join(repoRoot, 'Integrations', 'Addressables', 'package.json'),
+  'Integrations/Addressables/package.json',
+);
 
 if (errors.length > 0) {
   console.error('validate-upm failed:');
@@ -117,4 +136,4 @@ if (errors.length > 0) {
 console.log('validate-upm OK');
 console.log(`  package ${pkg?.name}@${pkg?.version} (unity ${pkg?.unity})`);
 console.log(`  roslyn dlls: ${roslynDlls.join(', ')}`);
-console.log(`  example editor: 2022.3.62f3`);
+console.log(`  starters editor: 2022.3.62f3`);

@@ -1,0 +1,25 @@
+{
+    "name": "Cascade.Mobile.Editor",
+    "rootNamespace": "Cascade.Mobile.Editor",
+    "references": [
+        "Cascade.Mobile.AOT",
+        "Cascade.Bootstrap",
+        "Cascade.Service",
+        "Cascade.Core",
+        "Cascade.Editor",
+        "HybridCLR.Editor",
+        "YooAsset",
+        "YooAsset.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Cascade.Indie",
+  "rootNamespace": "Cascade.Indie",
+  "references": [
+    "Cascade.Bootstrap",
+    "Cascade.Service",
+    "Cascade.Core",
+    "Cascade.Service.Addressables",
+    "UniTask",
+    "Unity.Addressables",
+    "Unity.ResourceManager",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "autoReferenced": true,
+  "noEngineReferences": false
+}

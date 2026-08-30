@@ -1,0 +1,22 @@
+{
+    "name": "Cascade.Mobile.AOT",
+    "rootNamespace": "Cascade.Mobile",
+    "references": [
+        "Cascade.Bootstrap",
+        "Cascade.Service",
+        "Cascade.Core",
+        "Cascade.Service.YooAsset",
+        "HybridCLR.Runtime",
+        "UniTask",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

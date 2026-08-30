@@ -22,8 +22,11 @@ Unity 框架包（`com.source27.cascade`，C# 命名空间 `Cascade.*`），从�
 │   ├── Roslyn/                     源码生成器 DLL（RoslynAnalyzer 标签，全工程作用域）
 │   ├── Tools~/Cascade.SourceGenerator/  生成器源码工程（Unity 不导入）
 │   └── package.json
-├── Examples/CascadeExample/        示例 Unity 工程（独立工程，file: 引用包）
-├── Integrations/YooAsset/          可选：YooAsset 资源集成子包（?path=Integrations/YooAsset）
+├── Starters/Mobile/               手游 Starter（Yoo+HybridCLR）
+├── Starters/Indie/                独立游戏 Starter（Addressables）
+├── Integrations/YooAsset/          可选：YooAsset 资源集成
+├── Integrations/Addressables/    可选：Addressables 资源集成
+├── Modules/UiExtras/             可选：UI extras（LitMotion/LoopScroll）
 ├── README.md
 ├── CONTEXT.md                      领域词汇
 └── docs/                           ADR / agents 配置
@@ -82,10 +85,10 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 
 ## 快速开始（示例工程）
 
-1. 用 Unity **2022.3.62f3** 打开 `Examples/CascadeExample`（首次导入自动安装本包，需联网）。
+1. 用 Unity **2022.3.62f3** 打开 `Starters/Mobile`（首次导入自动安装本包，需联网）。
 2. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景/启动 UI/页面/本地化/YooAsset 收集器均迁移或预置）→ **Play**：启动链 → 服务注册 → 本地化 → 热更程序集加载 → Home 页演示（本地化/存档/音效/UpdateLoop/UI 导航）。
 
-热更闭环（真实 `Assembly.Load`，Editor 内可跑）：`CascadeExample → 构建窗口`（自 client DBFrameworkBuildWindow 迁移），详见 `Examples/CascadeExample/README.md`。
+热更闭环（真实 `Assembly.Load`，Editor 内可跑）：`Cascade/Mobile 构建窗口`（自 client DBFrameworkBuildWindow 迁移），详见 `Starters/Mobile/README.md`。
 
 ## 资源层
 
@@ -108,7 +111,7 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 - `CONTEXT.md` — 领域词汇（glossary）
 - `docs/adr/` — 关键决策记录（布局/命名/资源解耦/DI/热更）
 - `docs/agents/` — 工程技能配置（issue tracker / triage / domain docs）
-- `Examples/CascadeExample/README.md` — 示例工程说明（含真机热更打包步骤）
+- `Starters/Mobile/README.md` — Mobile Starter 说明（含真机热更打包步骤）
 
 ## 路线图
 

@@ -1,0 +1,7 @@
+{
+  "defaultLocale": "en",
+  "locales": [
+    { "code": "en", "location": "loc_en" },
+    { "code": "zh", "location": "loc_zh" }
+  ]
+}

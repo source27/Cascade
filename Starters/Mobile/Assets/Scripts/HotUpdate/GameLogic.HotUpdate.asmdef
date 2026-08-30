@@ -1,0 +1,18 @@
+{
+    "name": "GameLogic.HotUpdate",
+    "rootNamespace": "GameLogic",
+    "references": [
+        "Cascade.Service",
+        "Cascade.Core",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
