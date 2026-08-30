@@ -22,10 +22,10 @@ Depends on `com.source27.cascade` only (tools → main; never reverse).
 
 | Menu | Action |
 |------|--------|
-| **Cascade → 更新多语言** | 若尚无 settings，询问是否创建；填好 Sheet URL 后拉取并写 JSON |
-| **Cascade → 多语言设置** | 打开已有 settings；不存在时同样询问是否创建 |
+| **Cascade → 更新多语言** | 若尚无 settings，询问是否创建；填好 Sheet URL 后再同步写 JSON |
 
-Settings 不会在打开工程时静默生成。路径：`Assets/Settings/LocalizationSyncSettings.asset`。
+无单独「多语言设置」菜单。创建后选中 `Assets/Settings/LocalizationSyncSettings.asset` 即可在 Inspector 改 `outputRoot` / URL。
+
 
 ## Output contract (runtime)
 

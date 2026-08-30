@@ -49,15 +49,6 @@ namespace Cascade.Modules.LocalizationTools.Editor
             return settings;
         }
 
-        [MenuItem("Cascade/多语言设置", priority = 109)]
-        public static void OpenSettingsFromMenu()
-        {
-            var settings = LocalizationSyncSettings.TryLoad() ?? PromptCreateSettings();
-            if (settings == null)
-                return;
-            FocusSettings(settings);
-        }
-
         [MenuItem("Cascade/更新多语言", priority = 110)]
         public static async void SyncFromMenu()
         {
