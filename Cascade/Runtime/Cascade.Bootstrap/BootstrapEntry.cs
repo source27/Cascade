@@ -85,7 +85,7 @@ namespace Cascade.Bootstrap
             }
             catch (Exception exception)
             {
-                log.Error("Bootstrap", $"Bootstrap failed: {exception.Message}", exception);
+                log.Exception("Bootstrap", exception, "Bootstrap failed");
             }
         }
 
