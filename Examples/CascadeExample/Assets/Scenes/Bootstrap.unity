@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   environment: 0
-  playMode: 0
+  playMode: 2
   appVersionOverride: 
   patchWindow: {fileID: 81742262}
 --- !u!1 &420578210

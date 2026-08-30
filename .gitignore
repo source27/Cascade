@@ -121,5 +121,16 @@ Examples/**/sysinfo.txt
 Examples/**/[Bb]uild/
 Examples/**/[Bb]uilds/
 
-# YooAsset build output (editor-simulate bundles)
+# YooAsset build output (editor-simulate / package builds)
 Examples/**/Bundles/
+Examples/**/HybridCLRData/
+Examples/**/BuildArtifacts/
+Examples/**/ProjectSettings/CascadePackageVersion.json
+
+# HybridCLR hot-update binaries copied into Assets/Code as TextAssets
+Examples/**/Assets/Code/**
+!Examples/**/Assets/Code/.gitkeep
+
+# DevCDN local upload store (uploaded YooAsset packages; keep empty root/)
+Examples/**/Tools/devcdn/root/**
+!Examples/**/Tools/devcdn/root/.gitkeep

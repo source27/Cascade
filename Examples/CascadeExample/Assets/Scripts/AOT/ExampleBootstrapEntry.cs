@@ -14,7 +14,7 @@ namespace CascadeExample
     public sealed class ExampleBootstrapEntry : BootstrapEntry
     {
         private const string PackageName = "CascadePak";
-        private const string DevCdnRoot = "http://10.1.51.151:2727/Cascade/";
+        private const string DevCdnRoot = "http://127.0.0.1:2727/Cascade/";
 
         protected override IResourceService CreateResourceService() => new YooAssetResourceService();
 

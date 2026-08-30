@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="Cascade.Core">
+    <type fullname="Cascade.Core.IGameHost" preserve="all" />
+    <type fullname="Cascade.Core.IUIArgs`1" preserve="all" />
+    <type fullname="Cascade.Core.IUIPageFactory" preserve="all" />
+    <type fullname="Cascade.Core.IUISystem" preserve="all" />
+    <type fullname="Cascade.Core.IUIView" preserve="all" />
+    <type fullname="Cascade.Core.IUpdateLoop" preserve="all" />
+    <type fullname="Cascade.Core.UIAttribute" preserve="all" />
+    <type fullname="Cascade.Core.UIBackPolicy" preserve="all" />
+    <type fullname="Cascade.Core.UIBase" preserve="all" />
+    <type fullname="Cascade.Core.UIBase`1" preserve="all" />
+    <type fullname="Cascade.Core.UIBindingHost" preserve="all" />
+    <type fullname="Cascade.Core.UICachePolicy" preserve="all" />
+    <type fullname="Cascade.Core.UIContextId" preserve="all" />
+    <type fullname="Cascade.Core.UIInputPolicy" preserve="all" />
+    <type fullname="Cascade.Core.UILayer" preserve="all" />
+    <type fullname="Cascade.Core.UIPageRegistration" preserve="all" />
+    <type fullname="Cascade.Core.UIPresentation" preserve="all" />
+    <type fullname="Cascade.Core.UIRegistry" preserve="all" />
+    <type fullname="Cascade.Core.UISafeAreaPolicy" preserve="all" />
+  </assembly>
+  <assembly fullname="Cascade.Service">
+    <type fullname="Cascade.Service.IAudioService" preserve="all" />
+    <type fullname="Cascade.Service.ILocalizationService" preserve="all" />
+    <type fullname="Cascade.Service.IResourceService" preserve="all" />
+    <type fullname="Cascade.Service.ISaveService" preserve="all" />
+    <type fullname="Cascade.Service.ISceneHandle" preserve="all" />
+    <type fullname="Cascade.Service.IServiceRegistry" preserve="all" />
+    <type fullname="Cascade.Service.ResourceSceneLoadMode" preserve="all" />
+  </assembly>
+  <assembly fullname="UniTask">
+    <type fullname="Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder`1" preserve="all" />
+    <type fullname="Cysharp.Threading.Tasks.UniTask" preserve="all" />
+    <type fullname="Cysharp.Threading.Tasks.UniTask/Awaiter" preserve="all" />
+    <type fullname="Cysharp.Threading.Tasks.UniTask`1" preserve="all" />
+    <type fullname="Cysharp.Threading.Tasks.UniTask`1/Awaiter" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.Component" preserve="all" />
+    <type fullname="UnityEngine.Events.UnityAction" preserve="all" />
+    <type fullname="UnityEngine.Events.UnityEvent" preserve="all" />
+    <type fullname="UnityEngine.GameObject" preserve="all" />
+    <type fullname="UnityEngine.Time" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.UI">
+    <type fullname="UnityEngine.UI.Button" preserve="all" />
+    <type fullname="UnityEngine.UI.Button/ButtonClickedEvent" preserve="all" />
+    <type fullname="UnityEngine.UI.Text" preserve="all" />
+  </assembly>
+  <assembly fullname="netstandard">
+    <type fullname="System.Action" preserve="all" />
+    <type fullname="System.ArgumentNullException" preserve="all" />
+    <type fullname="System.Array" preserve="all" />
+    <type fullname="System.Byte" preserve="all" />
+    <type fullname="System.CodeDom.Compiler.GeneratedCodeAttribute" preserve="all" />
+    <type fullname="System.ComponentModel.EditorBrowsableAttribute" preserve="all" />
+    <type fullname="System.ComponentModel.EditorBrowsableState" preserve="all" />
+    <type fullname="System.DateTime" preserve="all" />
+    <type fullname="System.Diagnostics.DebuggableAttribute" preserve="all" />
+    <type fullname="System.Diagnostics.DebuggableAttribute/DebuggingModes" preserve="all" />
+    <type fullname="System.Diagnostics.DebuggerHiddenAttribute" preserve="all" />
+    <type fullname="System.Exception" preserve="all" />
+    <type fullname="System.IDisposable" preserve="all" />
+    <type fullname="System.InvalidOperationException" preserve="all" />
+    <type fullname="System.Object" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.AsyncStateMachineAttribute" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.AsyncVoidMethodBuilder" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.CompilerGeneratedAttribute" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.IAsyncStateMachine" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.RuntimeCompatibilityAttribute" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.RuntimeHelpers" preserve="all" />
+    <type fullname="System.RuntimeFieldHandle" preserve="all" />
+    <type fullname="System.RuntimeTypeHandle" preserve="all" />
+    <type fullname="System.Single" preserve="all" />
+    <type fullname="System.String" preserve="all" />
+    <type fullname="System.Threading.CancellationToken" preserve="all" />
+    <type fullname="System.Type" preserve="all" />
+    <type fullname="System.ValueType" preserve="all" />
+  </assembly>
+</linker>

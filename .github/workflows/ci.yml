@@ -1,0 +1,57 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: upm + source-generator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Validate UPM package layout
+        run: node scripts/validate-upm.mjs
+
+      - name: Build Roslyn source generator
+        run: dotnet build Cascade/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj -c Release --verbosity minimal
+
+  # EditMode tests need a Unity license (Personal/Plus/Pro).
+  # Enable by setting repository secrets:
+  #   UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD
+  # Then uncomment the job below (game-ci).
+  #
+  # editmode:
+  #   name: unity editmode tests
+  #   runs-on: ubuntu-latest
+  #   needs: validate
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: game-ci/unity-test-runner@v4
+  #       env:
+  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         projectPath: Examples/CascadeExample
+  #         unityVersion: 2022.3.62f3
+  #         testMode: editmode
+  #         githubToken: ${{ secrets.GITHUB_TOKEN }}

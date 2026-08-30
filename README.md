@@ -1,6 +1,6 @@
 # Cascade
 
-Unity 框架包（`com.source27.cascade`，C# 命名空间 `Cascade.*`），从已停更的 Unity 工程（client，Unity 2022.3.62f2）中抽取的可复用框架层：
+Unity 框架包（`com.source27.cascade`，C# 命名空间 `Cascade.*`），从已停更的 Unity 工程（client，Unity 2022.3.62f3）中抽取的可复用框架层：
 
 - **Launcher**：启动编排（组合根、启动流程、HybridCLR 热更加载、补丁窗口）
 - **Service**：服务层（日志/资源/本地化/音频/存档/图集/网络契约与实现）
@@ -82,7 +82,7 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 
 ## 快速开始（示例工程）
 
-1. 用 Unity **2022.3.62f2** 打开 `Examples/CascadeExample`（首次导入自动安装本包，需联网）。
+1. 用 Unity **2022.3.62f3** 打开 `Examples/CascadeExample`（首次导入自动安装本包，需联网）。
 2. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景/启动 UI/页面/本地化/YooAsset 收集器均迁移或预置）→ **Play**：启动链 → 服务注册 → 本地化 → 热更程序集加载 → Home 页演示（本地化/存档/音效/UpdateLoop/UI 导航）。
 
 热更闭环（真实 `Assembly.Load`，Editor 内可跑）：`CascadeExample → 构建窗口`（自 client DBFrameworkBuildWindow 迁移），详见 `Examples/CascadeExample/README.md`。
@@ -113,10 +113,10 @@ YooAsset（3.0.5，Apache-2.0）仅在安装集成包时引入。
 ## 路线图
 
 **近期（示例闭环）**
-- [ ] 示例工程在 Unity 2022.3.62f2 首开验证（本仓库开发机无 Unity Editor，编译/运行验证待环境）
-- [ ] 真机/CDN 热更闭环实测：HybridCLR 打包 → `tools/devcdn` 上传 → Host 模式加载
-- [ ] CI：EditMode 测试 + UPM 包校验
-- [ ] 包许可证声明（LICENSE）
+- [x] 示例工程在 Unity **2022.3.62f3** 首开验证（Editor Play / 启动链 / Home 页）
+- [x] CDN 热更闭环实测：HybridCLR Generate → 构建热更包（`*.dll.bytes`）→ `Tools/devcdn` 上传 → Host 模式加载 AOT 元数据 + 热更 DLL
+- [x] CI：UPM 包结构校验 + Roslyn 源码生成器 `dotnet build`（`.github/workflows/ci.yml`）；Unity EditMode 需配置 `UNITY_LICENSE` 后启用 game-ci 注释任务
+- [x] 包许可证声明（根目录 `LICENSE` = MIT；`Cascade/package.json` / `Integrations/YooAsset/package.json` `license` 字段）
 
 **中期（Module 层落地）**
 - [ ] `Cascade.Module` 落地通用模块（框架给机制、业务规则放热更层）：

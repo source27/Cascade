@@ -9,7 +9,7 @@ import { timingSafeEqual } from 'node:crypto';
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const options = parseArguments(process.argv.slice(2));
 const root = resolve(options.root ?? resolve(scriptDirectory, 'root'));
-const host = options.host ?? '10.1.51.151';
+const host = options.host ?? '127.0.0.1';
 const port = Number(options.port ?? 2727);
 const csrfToken = options.csrf ?? '227e24ff-63a2-4499-b1f4-7fd5f0c7330f';
 

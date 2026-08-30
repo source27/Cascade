@@ -1,10 +1,10 @@
 # CascadeExample
 
-示例工程：演示 Cascade 框架的完整用法（Unity 2022.3.62f2，内置渲染管线）。
+示例工程：演示 Cascade 框架的完整用法（Unity 2022.3.62f3，内置渲染管线）。
 
 ## 快速开始
 
-1. 用 Unity **2022.3.62f2** 打开本目录（`Examples/CascadeExample`）。第三方包全部 vendor 在 `Packages/`（file: 引用），**完全离线解析**。
+1. 用 Unity **2022.3.62f3** 打开本目录（`Examples/CascadeExample`）。第三方包全部 vendor 在 `Packages/`（file: 引用），**完全离线解析**。
 2. 打开 `Assets/Scenes/Bootstrap.unity`（启动场景/启动 UI 迁移自 client；页面预制体、SFX、本地化数据、YooAsset 收集器均已就绪），点击 **Play**。
 
 启动链（EditorSimulate 模式）：
