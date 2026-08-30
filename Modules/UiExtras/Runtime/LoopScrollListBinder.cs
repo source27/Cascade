@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Cascade.Core
+namespace Cascade.Modules.UIExtras
 {
     // Virtual list adapter. Cell presentation is pure C# (not MonoBehaviour),
     // created by the page via cellFactory and cached per GameObject instance.

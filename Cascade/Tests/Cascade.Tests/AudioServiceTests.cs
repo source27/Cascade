@@ -30,30 +30,23 @@ namespace Cascade.Tests
         private sealed class NullResourceService : IResourceService
         {
             public bool IsInitialized => false;
-            public string ActivePackageVersion => string.Empty;
-            public bool IsUsingLocalVersion => true;
 
             public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
                 => UniTask.CompletedTask;
-            public UniTask<string> RequestVersionAsync(CancellationToken cancellationToken = default)
-                => UniTask.FromResult(string.Empty);
-            public UniTask UpdateManifestAsync(string version, CancellationToken cancellationToken = default)
-                => UniTask.CompletedTask;
-            public ResourceDownloadPlan PrepareDownload() => new ResourceDownloadPlan(0, 0);
-            public UniTask DownloadAsync(IProgress<ResourceDownloadProgress> progress = null, CancellationToken cancellationToken = default)
-                => UniTask.CompletedTask;
-            public UniTask ClearUnusedCacheAsync(CancellationToken cancellationToken = default)
-                => UniTask.CompletedTask;
+
             public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)
                 where T : UnityEngine.Object
                 => throw new NotSupportedException();
+
             public UniTask<ISceneHandle> LoadSceneAsync(
                 string location,
                 ResourceSceneLoadMode loadMode = ResourceSceneLoadMode.Single,
                 CancellationToken cancellationToken = default)
                 => throw new NotSupportedException();
+
             public UniTask<byte[]> LoadRawBytesAsync(string location, CancellationToken cancellationToken = default)
                 => throw new NotSupportedException();
+
             public void UnloadUnused()
             {
             }

@@ -42,7 +42,7 @@ namespace Cascade.Editor
         {
             ["Cascade.Launcher"] = new[] { "Cascade.Service", "Cascade.Core", "Cascade.Module", "HybridCLR.Runtime", "UniTask", "UnityEngine.UI" },
             ["Cascade.Service"] = new[] { "UniTask" },
-            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask", "UnityEngine.UI", "Unity.TextMeshPro", "LoopScrollRect.Runtime", "LitMotion", "LitMotion.Extensions" },
+            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask", "UnityEngine.UI", "Unity.TextMeshPro" },
             ["Cascade.Module"] = new string[0]
         };
 

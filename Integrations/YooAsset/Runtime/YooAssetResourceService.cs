@@ -11,6 +11,45 @@ using Cascade.Service;
 
 namespace Cascade.Service.YooAsset
 {
+    public readonly struct YooAssetDownloadProgress
+    {
+        public YooAssetDownloadProgress(int totalCount, int currentCount, long totalBytes, long currentBytes)
+        {
+            TotalCount = totalCount;
+            CurrentCount = currentCount;
+            TotalBytes = totalBytes;
+            CurrentBytes = currentBytes;
+        }
+
+        public int TotalCount { get; }
+        public int CurrentCount { get; }
+        public long TotalBytes { get; }
+        public long CurrentBytes { get; }
+
+        public float NormalizedProgress
+        {
+            get
+            {
+                if (TotalBytes <= 0)
+                    return TotalCount <= 0 ? 0f : (float)CurrentCount / TotalCount;
+                return (float)CurrentBytes / TotalBytes;
+            }
+        }
+    }
+
+    public readonly struct YooAssetDownloadPlan
+    {
+        public YooAssetDownloadPlan(int totalCount, long totalBytes)
+        {
+            TotalCount = totalCount;
+            TotalBytes = totalBytes;
+        }
+
+        public int TotalCount { get; }
+        public long TotalBytes { get; }
+        public bool NeedsDownload => TotalCount > 0 && TotalBytes > 0;
+    }
+
     /// <summary>YooAsset resource play modes.</summary>
     public enum YooAssetResourcePlayMode
     {
@@ -198,11 +237,11 @@ namespace Cascade.Service.YooAsset
             throw new InvalidOperationException(operation.Error);
         }
 
-        public ResourceDownloadPlan PrepareDownload()
+        public YooAssetDownloadPlan PrepareDownload()
         {
             EnsureInitialized();
             _pendingDownloader = _package.CreateResourceDownloader(new ResourceDownloaderOptions(5, 3));
-            var plan = new ResourceDownloadPlan(
+            var plan = new YooAssetDownloadPlan(
                 _pendingDownloader.TotalDownloadCount,
                 _pendingDownloader.TotalDownloadBytes);
             if (!plan.NeedsDownload)
@@ -210,7 +249,7 @@ namespace Cascade.Service.YooAsset
             return plan;
         }
 
-        public async UniTask DownloadAsync(IProgress<ResourceDownloadProgress> progress = null, CancellationToken cancellationToken = default)
+        public async UniTask DownloadAsync(IProgress<YooAssetDownloadProgress> progress = null, CancellationToken cancellationToken = default)
         {
             EnsureInitialized();
             var downloader = _pendingDownloader ?? _package.CreateResourceDownloader(new ResourceDownloaderOptions(5, 3));
@@ -218,7 +257,7 @@ namespace Cascade.Service.YooAsset
 
             if (downloader.TotalDownloadCount == 0)
             {
-                progress?.Report(new ResourceDownloadProgress(0, 0, 0, 0));
+                progress?.Report(new YooAssetDownloadProgress(0, 0, 0, 0));
                 return;
             }
 
@@ -226,7 +265,7 @@ namespace Cascade.Service.YooAsset
             while (!downloader.IsDone)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                progress?.Report(new ResourceDownloadProgress(
+                progress?.Report(new YooAssetDownloadProgress(
                     downloader.TotalDownloadCount,
                     downloader.CurrentDownloadCount,
                     downloader.TotalDownloadBytes,

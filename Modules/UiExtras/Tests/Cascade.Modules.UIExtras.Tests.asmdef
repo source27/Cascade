@@ -1,0 +1,21 @@
+{
+  "name": "Cascade.Modules.UIExtras.Tests",
+  "rootNamespace": "Cascade.Modules.UIExtras.Tests",
+  "references": [
+    "Cascade.Modules.UIExtras",
+    "Cascade.Modules.UIExtras.Editor",
+    "Cascade.Core",
+    "UnityEngine.UI",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner"
+  ],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": ["nunit.framework.dll"],
+  "autoReferenced": false,
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,13 +1,12 @@
 {
-  "name": "Cascade.Core",
-  "rootNamespace": "Cascade.Core",
+  "name": "Cascade.Modules.UIExtras.Editor",
+  "rootNamespace": "Cascade.Modules.UIExtras.Editor",
   "references": [
-    "Cascade.Service",
-    "UniTask",
-    "UnityEngine.UI",
-    "Unity.TextMeshPro"
+    "Cascade.Modules.UIExtras",
+    "Cascade.Core",
+    "UnityEngine.UI"
   ],
-  "includePlatforms": [],
+  "includePlatforms": ["Editor"],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

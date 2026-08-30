@@ -15,7 +15,7 @@ namespace Cascade.Launcher
         private readonly ILauncherView _view;
         private readonly ILogService _log;
         private readonly IResourceService _resources;
-        private readonly ILocalizationService _localization;
+            private readonly ILocalizationService _localization;
         private readonly CodeLoader _codeLoader;
         private CancellationTokenSource _cts;
         private bool _running;
@@ -133,7 +133,7 @@ namespace Cascade.Launcher
                 await RunLaunchGameAsync(cancellationToken);
 
                 Stage = LauncherStage.Completed;
-                SetStatus(LauncherText.Format(LauncherText.Completed, _resources.ActivePackageVersion));
+                SetStatus(LauncherText.Format(LauncherText.Completed, ResourceUpdateBridge.ActivePackageVersion(_resources)));
                 _view?.SetProgress(1f);
                 // The game is up — the launcher UI's job is done.
                 _view?.HideWindow();
@@ -184,8 +184,8 @@ namespace Cascade.Launcher
             SetStatus(LauncherText.Get(LauncherText.CheckVersion));
             try
             {
-                var version = await _resources.RequestVersionAsync(cancellationToken);
-                if (_resources.IsUsingLocalVersion)
+                var version = await ResourceUpdateBridge.RequestVersionAsync(_resources, cancellationToken);
+                if (ResourceUpdateBridge.IsUsingLocalVersion(_resources))
                 {
                     SetStatus(LauncherText.Format(LauncherText.NetworkOfflineUseLocal, version));
                     _log.Warning("Launcher", $"CDN unavailable; fallback to local package version: {version}");
@@ -195,9 +195,9 @@ namespace Cascade.Launcher
                     _log.Info("Launcher", $"Package version: {version}");
                     SetStatus(LauncherText.Format(LauncherText.LoadManifest, version));
                 }
-                await _resources.UpdateManifestAsync(version, cancellationToken);
-                if (_resources.IsUsingLocalVersion)
-                    SetStatus(LauncherText.Format(LauncherText.NetworkOfflineUseLocal, _resources.ActivePackageVersion));
+                await ResourceUpdateBridge.UpdateManifestAsync(_resources, version, cancellationToken);
+                if (ResourceUpdateBridge.IsUsingLocalVersion(_resources))
+                    SetStatus(LauncherText.Format(LauncherText.NetworkOfflineUseLocal, ResourceUpdateBridge.ActivePackageVersion(_resources)));
             }
             catch (Exception exception)
             {
@@ -212,8 +212,8 @@ namespace Cascade.Launcher
             SetStatus(LauncherText.Get(LauncherText.CountingUpdate));
             try
             {
-                var plan = _resources.PrepareDownload();
-                if (_resources.IsUsingLocalVersion && plan.NeedsDownload)
+                var plan = ResourceUpdateBridge.PrepareDownload(_resources);
+                if (ResourceUpdateBridge.IsUsingLocalVersion(_resources) && plan.NeedsDownload)
                     throw new InvalidOperationException("本地资源缓存不完整，且当前无法连接更新服务器。");
 
                 if (plan.NeedsDownload)
@@ -224,14 +224,14 @@ namespace Cascade.Launcher
                         SetStatus(LauncherText.Format(LauncherText.UpdateFoundStartDownload, FormatBytes(plan.TotalBytes)));
 
                     SetStatus(LauncherText.Get(LauncherText.StartDownload));
-                    var progress = new Progress<ResourceDownloadProgress>(p =>
+                    var progress = new Progress<LauncherDownloadProgress>(p =>
                     {
                         if (_view != null)
                             _view.SetDownloadProgress(p);
                         else
                             StatusText = LauncherText.Format(LauncherText.DownloadingPercent, Mathf.RoundToInt(p.NormalizedProgress * 100f));
                     });
-                    await _resources.DownloadAsync(progress, cancellationToken);
+                    await ResourceUpdateBridge.DownloadAsync(_resources, progress, cancellationToken);
                     SetStatus(LauncherText.Get(LauncherText.DownloadComplete));
                     _log.Info("Launcher", "Package download completed.");
                 }
@@ -241,7 +241,7 @@ namespace Cascade.Launcher
                 }
 
                 SetStatus(LauncherText.Get(LauncherText.CleaningObsolete));
-                await _resources.ClearUnusedCacheAsync(cancellationToken);
+                await ResourceUpdateBridge.ClearUnusedCacheAsync(_resources, cancellationToken);
                 _view?.SetProgress(1f);
                 _log.Info("Launcher", "Unused cache cleared.");
             }
@@ -367,7 +367,7 @@ namespace Cascade.Launcher
                 case LauncherStage.CheckUpdate:
                     return LauncherText.Get(LauncherText.ErrorNoServerNoLocal);
                 case LauncherStage.DownloadPatch:
-                    return _resources.IsUsingLocalVersion
+                    return ResourceUpdateBridge.IsUsingLocalVersion(_resources)
                         ? LauncherText.Get(LauncherText.ErrorLocalIncomplete)
                         : LauncherText.Get(LauncherText.ErrorDownload);
                 case LauncherStage.InitializeLocalization:

@@ -69,7 +69,7 @@ namespace Cascade.Launcher
                 slider.value = Mathf.Clamp01(normalized01);
         }
 
-        public void SetDownloadProgress(ResourceDownloadProgress progress)
+        public void SetDownloadProgress(LauncherDownloadProgress progress)
         {
             SetProgress(progress.NormalizedProgress);
             var percent = Mathf.RoundToInt(progress.NormalizedProgress * 100f);

@@ -116,16 +116,9 @@ namespace Cascade.Tests
             private readonly Dictionary<string, byte[]> _raw = new Dictionary<string, byte[]>(StringComparer.Ordinal);
 
             public bool IsInitialized => true;
-            public string ActivePackageVersion => "test";
-            public bool IsUsingLocalVersion => true;
 
             public void Add(string location, string json) => _raw[location] = Encoding.UTF8.GetBytes(json);
             public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default) => UniTask.CompletedTask;
-            public UniTask<string> RequestVersionAsync(CancellationToken cancellationToken = default) => UniTask.FromResult("test");
-            public UniTask UpdateManifestAsync(string version, CancellationToken cancellationToken = default) => UniTask.CompletedTask;
-            public ResourceDownloadPlan PrepareDownload() => default;
-            public UniTask DownloadAsync(IProgress<ResourceDownloadProgress> progress = null, CancellationToken cancellationToken = default) => UniTask.CompletedTask;
-            public UniTask ClearUnusedCacheAsync(CancellationToken cancellationToken = default) => UniTask.CompletedTask;
             public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default) where T : UnityEngine.Object =>
                 UniTask.FromException<IAssetHandle<T>>(new NotSupportedException());
 

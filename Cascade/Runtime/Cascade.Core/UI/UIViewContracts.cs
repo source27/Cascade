@@ -11,16 +11,6 @@ namespace Cascade.Core
         void Clear();
     }
 
-    /// <summary>
-    /// Optional reset contract for pooled list cells.
-    /// LoopScrollListBinder calls Clear before Bind and when returning a cell to the pool,
-    /// so implementations can release data-bound state, listeners, spawned children,
-    /// and other resources before the GameObject is reused.
-    /// </summary>
-    public interface IResettableLoopScrollCellView
-    {
-        void Clear();
-    }
 
     /// <summary>
     /// Owns asset handles used by a View. Clear releases current assets while keeping

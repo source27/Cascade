@@ -1,11 +1,13 @@
 {
-  "name": "Cascade.Core",
-  "rootNamespace": "Cascade.Core",
+  "name": "Cascade.Modules.UIExtras",
+  "rootNamespace": "Cascade.Modules.UIExtras",
   "references": [
+    "Cascade.Core",
     "Cascade.Service",
-    "UniTask",
     "UnityEngine.UI",
-    "Unity.TextMeshPro"
+    "LoopScrollRect.Runtime",
+    "LitMotion",
+    "LitMotion.Extensions"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

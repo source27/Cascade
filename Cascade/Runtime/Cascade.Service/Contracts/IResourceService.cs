@@ -8,51 +8,10 @@ namespace Cascade.Service
     /// <summary>
     /// Provider-neutral resource initialization options. Resource providers (YooAsset,
     /// Addressables, …) subclass this with their own configuration; the composition root
-    /// assigns a concrete instance to <c>Cascade.Launcher.BootstrapConfiguration.ResourceInitOptions</c>.
+    /// assigns a concrete instance via Bootstrap configuration.
     /// </summary>
     public class ResourceInitOptions
     {
-    }
-
-    public readonly struct ResourceDownloadProgress
-    {
-        public ResourceDownloadProgress(int totalCount, int currentCount, long totalBytes, long currentBytes)
-        {
-            TotalCount = totalCount;
-            CurrentCount = currentCount;
-            TotalBytes = totalBytes;
-            CurrentBytes = currentBytes;
-        }
-
-        public int TotalCount { get; }
-        public int CurrentCount { get; }
-        public long TotalBytes { get; }
-        public long CurrentBytes { get; }
-
-        public float NormalizedProgress
-        {
-            get
-            {
-                if (TotalBytes > 0)
-                    return Mathf.Clamp01((float)CurrentBytes / TotalBytes);
-                if (TotalCount > 0)
-                    return Mathf.Clamp01((float)CurrentCount / TotalCount);
-                return 0f;
-            }
-        }
-    }
-
-    public readonly struct ResourceDownloadPlan
-    {
-        public ResourceDownloadPlan(int totalCount, long totalBytes)
-        {
-            TotalCount = totalCount;
-            TotalBytes = totalBytes;
-        }
-
-        public int TotalCount { get; }
-        public long TotalBytes { get; }
-        public bool NeedsDownload => TotalCount > 0 && TotalBytes > 0;
     }
 
     public interface IAssetHandle<out T> : IDisposable where T : UnityEngine.Object
@@ -76,22 +35,15 @@ namespace Cascade.Service
         void Release();
     }
 
+    /// <summary>
+    /// Load-only resource contract. Version/download/update APIs live on concrete
+    /// integration types (e.g. YooAssetResourceService), not on this interface.
+    /// </summary>
     public interface IResourceService
     {
         bool IsInitialized { get; }
-        string ActivePackageVersion { get; }
-        bool IsUsingLocalVersion { get; }
 
         UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default);
-        UniTask<string> RequestVersionAsync(CancellationToken cancellationToken = default);
-        UniTask UpdateManifestAsync(string version, CancellationToken cancellationToken = default);
-        ResourceDownloadPlan PrepareDownload();
-        UniTask DownloadAsync(IProgress<ResourceDownloadProgress> progress = null, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Clears unused bundle and manifest cache against the active package manifest.
-        /// </summary>
-        UniTask ClearUnusedCacheAsync(CancellationToken cancellationToken = default);
 
         UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)
             where T : UnityEngine.Object;
