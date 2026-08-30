@@ -73,7 +73,7 @@ namespace Cascade.Mobile.Editor
 
         private bool EmbedPackage => _resourcePackageMode == ResourcePackageMode.Full;
 
-        [MenuItem("Mobile/构建窗口", priority = 110)]
+        [MenuItem("Cascade/Mobile/构建窗口", priority = 110)]
         public static void Open()
         {
             var window = GetWindow<MobileBuildWindow>("Cascade 构建");
@@ -346,10 +346,10 @@ namespace Cascade.Mobile.Editor
 
             // YooAsset SBP + NormalIgnoreRule 不会收集 PluginImporter/.dll（常为 DefaultAsset）。
             // 落盘为 *.dll.bytes → TextAsset；AddressByFileName 去掉末尾扩展名后仍是 *.dll。
-            CopyFileAsAsset(hotUpdateDll, ToCodeAssetPath(BootstrapConfiguration.DefaultHotUpdateDllLocation));
+            CopyFileAsAsset(hotUpdateDll, ToCodeAssetPath(MobileBootstrapConfiguration.DefaultHotUpdateDllLocation));
 
             var metadataDirectory = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
-            foreach (var location in Cascade.Launcher.AotMetadataCatalog.ResolveLocations())
+            foreach (var location in AotMetadataCatalog.ResolveLocations())
             {
                 var source = Path.Combine(metadataDirectory, location);
                 if (!File.Exists(source))
@@ -721,8 +721,8 @@ namespace Cascade.Mobile.Editor
                 throw new InvalidOperationException($"YooAsset 报告不存在，无法校验 Code 资源：{outputPackageDirectory}");
 
             var reportJson = File.ReadAllText(reportPath);
-            var required = new List<string> { BootstrapConfiguration.DefaultHotUpdateDllLocation };
-            required.AddRange(Cascade.Launcher.AotMetadataCatalog.ResolveLocations());
+            var required = new List<string> { MobileBootstrapConfiguration.DefaultHotUpdateDllLocation };
+            required.AddRange(AotMetadataCatalog.ResolveLocations());
 
             var missing = required
                 .Where(location => !string.IsNullOrEmpty(location))

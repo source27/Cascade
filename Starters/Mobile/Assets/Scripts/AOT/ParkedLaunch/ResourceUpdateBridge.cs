@@ -1,145 +1,93 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using Cascade.Service;
+using Cascade.Service.YooAsset;
 using Cysharp.Threading.Tasks;
 
 namespace Cascade.Mobile
 {
     /// <summary>
-    /// Invokes provider-specific resource update APIs without a compile-time dependency
-    /// on any integration package. Removed when Mobile Starter owns the update pipeline.
+    /// Adapts YooAsset update APIs to launcher DTOs. Starter owns the update pipeline;
+    /// core IResourceService stays load-only.
     /// </summary>
     internal static class ResourceUpdateBridge
     {
         public static bool IsUsingLocalVersion(IResourceService resources)
         {
-            try
-            {
-                return (bool)((dynamic)resources).IsUsingLocalVersion;
-            }
-            catch
-            {
-                return false;
-            }
+            return AsYoo(resources).IsUsingLocalVersion;
         }
 
         public static string ActivePackageVersion(IResourceService resources)
         {
-            try
-            {
-                return (string)((dynamic)resources).ActivePackageVersion ?? string.Empty;
-            }
-            catch
-            {
-                return string.Empty;
-            }
+            return AsYoo(resources).ActivePackageVersion ?? string.Empty;
         }
 
-        public static async UniTask<string> RequestVersionAsync(
+        public static UniTask<string> RequestVersionAsync(
             IResourceService resources,
             CancellationToken cancellationToken)
         {
-            EnsureUpdater(resources);
-            return await ((dynamic)resources).RequestVersionAsync(cancellationToken);
+            return AsYoo(resources).RequestVersionAsync(cancellationToken);
         }
 
-        public static async UniTask UpdateManifestAsync(
+        public static UniTask UpdateManifestAsync(
             IResourceService resources,
             string version,
             CancellationToken cancellationToken)
         {
-            EnsureUpdater(resources);
-            await ((dynamic)resources).UpdateManifestAsync(version, cancellationToken);
+            return AsYoo(resources).UpdateManifestAsync(version, cancellationToken);
         }
 
         public static LauncherDownloadPlan PrepareDownload(IResourceService resources)
         {
-            EnsureUpdater(resources);
-            dynamic plan = ((dynamic)resources).PrepareDownload();
-            int totalCount = (int)plan.TotalCount;
-            long totalBytes = (long)plan.TotalBytes;
-            return new LauncherDownloadPlan(totalCount, totalBytes);
+            var plan = AsYoo(resources).PrepareDownload();
+            return new LauncherDownloadPlan(plan.TotalCount, plan.TotalBytes);
         }
 
-        public static async UniTask DownloadAsync(
+        public static UniTask DownloadAsync(
             IResourceService resources,
             IProgress<LauncherDownloadProgress> progress,
             CancellationToken cancellationToken)
         {
-            EnsureUpdater(resources);
-            object providerProgress = null;
-            if (progress != null)
-            {
-                var download = FindDownloadMethod(resources.GetType())
-                    ?? throw Missing(resources, "DownloadAsync");
-                var progressParam = download.GetParameters()[0].ParameterType;
-                if (progressParam.IsGenericType)
-                {
-                    var dtoType = progressParam.GetGenericArguments()[0];
-                    var adapterType = typeof(TypedProgressAdapter<>).MakeGenericType(dtoType);
-                    providerProgress = Activator.CreateInstance(adapterType, progress);
-                }
-            }
-
-            await ((dynamic)resources).DownloadAsync((dynamic)providerProgress, cancellationToken);
+            IProgress<YooAssetDownloadProgress> adapted = progress == null
+                ? null
+                : new ProgressAdapter(progress);
+            return AsYoo(resources).DownloadAsync(adapted, cancellationToken);
         }
 
-        public static async UniTask ClearUnusedCacheAsync(
+        public static UniTask ClearUnusedCacheAsync(
             IResourceService resources,
             CancellationToken cancellationToken)
         {
-            EnsureUpdater(resources);
-            await ((dynamic)resources).ClearUnusedCacheAsync(cancellationToken);
+            return AsYoo(resources).ClearUnusedCacheAsync(cancellationToken);
         }
 
-        private static MethodInfo FindDownloadMethod(Type type)
-        {
-            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (method.Name != "DownloadAsync")
-                    continue;
-                if (method.GetParameters().Length == 2)
-                    return method;
-            }
-
-            return null;
-        }
-
-        private static void EnsureUpdater(IResourceService resources)
+        private static YooAssetResourceService AsYoo(IResourceService resources)
         {
             if (resources == null)
                 throw new ArgumentNullException(nameof(resources));
-            if (resources.GetType().GetMethod("RequestVersionAsync") == null)
-                throw Missing(resources, "RequestVersionAsync");
+            if (resources is YooAssetResourceService yoo)
+                return yoo;
+            throw new InvalidOperationException(
+                $"Resource provider '{resources.GetType().FullName}' is not YooAssetResourceService. " +
+                "Mobile launch update pipeline requires Cascade.Service.YooAsset.");
         }
 
-        private static Exception Missing(IResourceService resources, string member)
-        {
-            return new InvalidOperationException(
-                $"Resource provider '{resources.GetType().FullName}' does not expose update API '{member}'. " +
-                "Use YooAssetResourceService (or Mobile Starter pipeline) for resource hot-update.");
-        }
-
-        private sealed class TypedProgressAdapter<TProvider> : IProgress<TProvider>
+        private sealed class ProgressAdapter : IProgress<YooAssetDownloadProgress>
         {
             private readonly IProgress<LauncherDownloadProgress> _inner;
 
-            public TypedProgressAdapter(IProgress<LauncherDownloadProgress> inner)
+            public ProgressAdapter(IProgress<LauncherDownloadProgress> inner)
             {
                 _inner = inner;
             }
 
-            public void Report(TProvider value)
+            public void Report(YooAssetDownloadProgress value)
             {
-                if (_inner == null || value == null)
-                    return;
-                dynamic v = value;
-                _inner.Report(new LauncherDownloadProgress(
-                    (int)v.TotalCount,
-                    (int)v.CurrentCount,
-                    (long)v.TotalBytes,
-                    (long)v.CurrentBytes));
+                _inner?.Report(new LauncherDownloadProgress(
+                    value.TotalCount,
+                    value.CurrentCount,
+                    value.TotalBytes,
+                    value.CurrentBytes));
             }
         }
     }

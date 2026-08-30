@@ -26,8 +26,8 @@ namespace Cascade.Mobile
         {
             _log = log ?? throw new ArgumentNullException(nameof(log));
             _assemblyLoadMode = assemblyLoadMode;
-            _entryTypeName = string.IsNullOrWhiteSpace(entryTypeName) ? BootstrapConfiguration.DefaultGameLogicEntryType : entryTypeName;
-            _hotUpdateAssemblyName = string.IsNullOrWhiteSpace(hotUpdateAssemblyName) ? BootstrapConfiguration.DefaultHotUpdateAssemblyName : hotUpdateAssemblyName;
+            _entryTypeName = string.IsNullOrWhiteSpace(entryTypeName) ? MobileBootstrapConfiguration.DefaultGameLogicEntryType : entryTypeName;
+            _hotUpdateAssemblyName = string.IsNullOrWhiteSpace(hotUpdateAssemblyName) ? MobileBootstrapConfiguration.DefaultHotUpdateAssemblyName : hotUpdateAssemblyName;
         }
 
         public void LoadMetadata(byte[] bytes, string location)
