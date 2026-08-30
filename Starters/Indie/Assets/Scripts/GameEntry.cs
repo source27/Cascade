@@ -30,7 +30,7 @@ namespace Cascade.Indie
             text.alignment = TextAnchor.MiddleCenter;
             text.fontSize = 36;
             text.color = Color.white;
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var locale = host.Localization != null ? host.Localization.CurrentLocale : "?";
             text.text = $"Cascade Indie Starter\nlocale={locale}\nAddressables OK";
 

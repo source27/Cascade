@@ -78,9 +78,9 @@ https://github.com/source27/Cascade.git?path=Cascade
 ### 独立游戏
 
 1. 打开 [`Starters/Indie`](Starters/Indie)  
-2. Addressables 中标记 `localization_catalog` 等 address（见该 README）  
-3. `Assets/Scenes/Bootstrap.unity` → Play  
-4. 组合根：`IndieBootstrapEntry` → `GameEntry`  
+2. `Assets/Scenes/Bootstrap.unity` → Play  
+3. 组合根：`IndieBootstrapEntry` → `GameEntry`  
+4. 说明：[`Starters/Indie/README.md`](Starters/Indie/README.md)
 
 从零组装、换后端：见 [`docs/assembly.md`](docs/assembly.md)。
 

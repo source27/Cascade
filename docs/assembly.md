@@ -56,9 +56,9 @@ Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter
 ### 独立游戏 — `Starters/Indie`
 
 1. 打开 `Starters/Indie`  
-2. Addressables Groups：为 `localization_catalog` / `loc_en` / `loc_zh` 设 address（见该 README）  
-3. `Assets/Scenes/Bootstrap.unity` → Play  
-4. 组合根：`IndieBootstrapEntry` → `GameEntry`（全 AOT，无热更）  
+2. `Assets/Scenes/Bootstrap.unity` → Play  
+3. 组合根：`IndieBootstrapEntry` → `GameEntry`（全 AOT，无热更）  
+4. 细节：`Starters/Indie/README.md`  
 
 ## 从零组装（不 fork Starter）
 
