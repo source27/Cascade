@@ -122,7 +122,10 @@ namespace Cascade.Service.YooAsset
                 _package = YooAssets.CreatePackage(opts.PackageName);
 
             if (_package.InitializeStatus == EOperationStatus.Succeeded)
+            {
+                await EnsureActiveManifestAsync(cancellationToken);
                 return;
+            }
 
             InitializePackageOperation operation;
             switch (opts.PlayMode)
@@ -176,6 +179,33 @@ namespace Cascade.Service.YooAsset
             await WaitAsync(operation, cancellationToken);
             if (operation.Status != EOperationStatus.Succeeded)
                 throw new InvalidOperationException(operation.Error);
+
+            // InitializePackageAsync only mounts file systems. IResourceService.Load*
+            // requires an active package manifest (Bootstrap localization runs next).
+            await EnsureActiveManifestAsync(cancellationToken);
+        }
+
+        private async UniTask EnsureActiveManifestAsync(CancellationToken cancellationToken)
+        {
+            if (HasActiveManifest())
+                return;
+
+            var version = await RequestVersionAsync(cancellationToken);
+            await UpdateManifestAsync(version, cancellationToken);
+        }
+
+        private bool HasActiveManifest()
+        {
+            if (!IsInitialized)
+                return false;
+            try
+            {
+                return !string.IsNullOrEmpty(_package.GetPackageVersion());
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async UniTask<string> RequestVersionAsync(CancellationToken cancellationToken = default)
