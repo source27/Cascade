@@ -11,8 +11,11 @@ namespace Cascade.Editor
     {
         public string name = "Main";
         public bool enabled = true;
+        [Tooltip("Google Sheet edit or CSV export URL.")]
         public string url = string.Empty;
+        [Tooltip("1-based row index of the header (Key / locale codes).")]
         public int headerRow = 3;
+        [Tooltip("1-based row index where key rows start.")]
         public int dataStartRow = 7;
     }
 
@@ -21,6 +24,7 @@ namespace Cascade.Editor
         public const string AssetPath = "Assets/Settings/LocalizationSyncSettings.asset";
         public const string DefaultSheetUrl = "";
 
+        [Tooltip("Normalized default locale code written into localization_catalog.json.")]
         public string defaultLocale = "en";
         public List<LocalizationCsvSource> sources = new List<LocalizationCsvSource>();
 
