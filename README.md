@@ -47,24 +47,37 @@ https://github.com/source27/Cascade.git?path=Cascade
 "com.source27.cascade": "file:../../../Cascade"
 ```
 
-### 可选包
+### 第三方依赖（需自行安装）
+
+`package.json` 依赖值只能是 SemVer；git URL 只允许出现在工程 `manifest.json`。第三方依赖须在工程里先装好（与仓库 pin 的提交一致，或经 OpenUPM 作用域 registry 装同名版本）：
+
+| 依赖包 | 版本 | 需要它的包 |
+|--------|------|-----------|
+| com.cysharp.unitask | 2.5.11 | 主包 / YooAsset / Addressables |
+| com.annulusgames.lit-motion | 2.0.2 | UiExtras |
+| com.annulusgames.lit-motion.animation | 2.0.2 | UiExtras |
+| me.qiankanglai.loopscrollrect | 1.1.5 | UiExtras |
+| com.tuyoogame.yooasset | 3.0.5 | YooAsset 集成 |
 
 ```json
-"com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset",
-"com.source27.cascade.integrations.addressables": "https://github.com/source27/Cascade.git?path=Integrations/Addressables",
-"com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
-"com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
+"com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",
+"com.annulusgames.lit-motion": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
+"com.annulusgames.lit-motion.animation": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation#0b4c588ee75a07198841d92aab653e6b39445089",
+"me.qiankanglai.loopscrollrect": "https://github.com/qiankanglai/LoopScrollRect.git#a74a705e1c9d0f73ea1a441dabb23b22f3283071",
+"com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae"
 ```
+
+先装齐所需第三方依赖，再添加 Cascade 各包。
 
 ### 主包依赖
 
 | 包 | 说明 |
 |----|------|
-| com.cysharp.unitask | 异步 |
+| com.cysharp.unitask | 异步（2.5.11，需自行安装，见上） |
 | com.unity.ugui / TMP | UI |
 | Unity 模块 | audio、webrequest、2d.sprite |
 
-**不含** HybridCLR、LitMotion、LoopScrollRect、YooAsset（后三者按需装 Modules/Integrations）。
+**不含** HybridCLR、LitMotion、LoopScrollRect、YooAsset（后三者按需装 Modules/Integrations，其第三方依赖见上）。
 
 ## 快速开始
 

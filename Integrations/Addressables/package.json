@@ -10,6 +10,6 @@
   "dependencies": {
     "com.source27.cascade": "0.1.0",
     "com.unity.addressables": "1.21.19",
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+    "com.cysharp.unitask": "2.5.11"
   }
 }

@@ -33,6 +33,22 @@ function requireDir(path, label = path) {
   return existsSync(path) && statSync(path).isDirectory();
 }
 
+// UPM rejects non-SemVer dependency values inside package.json (git/file refs
+// are only valid in a project's manifest.json). Enforce across all packages.
+const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/;
+function requireSemVerDeps(pkgJsonPath, label) {
+  const pkg = readJson(pkgJsonPath);
+  if (!pkg) return;
+  const deps = pkg.dependencies;
+  if (deps && typeof deps === 'object') {
+    for (const [dep, value] of Object.entries(deps)) {
+      if (typeof value !== 'string' || !SEMVER.test(value)) {
+        fail(`${label} dependency ${dep}: "${value}" is not SemVer (git/file refs only work in a project manifest.json)`);
+      }
+    }
+  }
+}
+
 // --- root layout ---
 if (existsSync(join(repoRoot, 'package.json'))) {
   fail('package.json must NOT live at repo root (use Cascade/package.json + ?path=Cascade)');
@@ -41,9 +57,9 @@ requireFile(join(repoRoot, 'LICENSE'), 'LICENSE');
 requireFile(join(repoRoot, 'README.md'), 'README.md');
 requireFile(join(repoRoot, 'CONTEXT.md'), 'CONTEXT.md');
 
-// --- main package ---
 const packageJsonPath = join(repoRoot, 'Cascade', 'package.json');
 requireFile(packageJsonPath, 'Cascade/package.json');
+requireSemVerDeps(packageJsonPath, 'Cascade');
 const pkg = readJson(packageJsonPath);
 if (pkg) {
   if (pkg.name !== 'com.source27.cascade') fail(`Cascade package name: expected com.source27.cascade, got ${pkg.name}`);
@@ -76,9 +92,9 @@ requireFile(
   'Cascade/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj',
 );
 
-// --- integration package ---
 const yooPath = join(repoRoot, 'Integrations', 'YooAsset', 'package.json');
 requireFile(yooPath, 'Integrations/YooAsset/package.json');
+requireSemVerDeps(yooPath, 'Integrations/YooAsset');
 const yoo = readJson(yooPath);
 if (yoo) {
   if (yoo.name !== 'com.source27.cascade.integrations.yooasset') {
@@ -91,9 +107,9 @@ if (yoo) {
   );
 }
 
-// --- localization tools module ---
 const locToolsPath = join(repoRoot, 'Modules', 'LocalizationTools', 'package.json');
 requireFile(locToolsPath, 'Modules/LocalizationTools/package.json');
+requireSemVerDeps(locToolsPath, 'Modules/LocalizationTools');
 const locTools = readJson(locToolsPath);
 if (locTools) {
   if (locTools.name !== 'com.source27.cascade.modules.localizationtools') {
@@ -139,10 +155,7 @@ const indieVersion = readFileSync(
 if (!/m_EditorVersion:\s*2022\.3\.62f3/.test(indieVersion)) {
   fail('Starters/Indie ProjectVersion.txt must pin Unity 2022.3.62f3');
 }
-requireFile(
-  join(repoRoot, 'Integrations', 'Addressables', 'package.json'),
-  'Integrations/Addressables/package.json',
-);
+requireSemVerDeps(join(repoRoot, 'Integrations', 'Addressables', 'package.json'), 'Integrations/Addressables');
 
 if (errors.length > 0) {
   console.error('validate-upm failed:');
