@@ -6,3 +6,5 @@
 - **LitMotion / LoopScrollRect**：仅服务 `ScaleButton`、`LoopScrollListBinder` 等；迁入可选 UPM **`cascade.ui.extras`**（ADR 0009），需要的 Starter/项目再声明依赖。
 
 **理由：** 主包必须可被「无热更、无循环列表/按钮动效」的 Indie 干净引用；第三方 UI 库是能力选项，不是底座税。
+
+**后续：** 凡不在 Unity 注册表的第三方（含 UniTask）均不进 `package.json` 硬依赖，见 [ADR 0021](0021-upm-peer-deps-not-on-unity-registry.md)。

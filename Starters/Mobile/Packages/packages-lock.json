@@ -39,8 +39,7 @@
         "com.unity.textmeshpro": "3.0.9",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.2d.sprite": "1.0.0",
-        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+        "com.unity.2d.sprite": "1.0.0"
       }
     },
     "com.source27.cascade.integrations.yooasset": {
@@ -48,9 +47,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.source27.cascade": "0.1.0",
-        "com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae",
-        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+        "com.source27.cascade": "0.1.0"
       }
     },
     "com.source27.cascade.modules.localizationtools": {
@@ -67,10 +64,7 @@
       "source": "local",
       "dependencies": {
         "com.source27.cascade": "0.1.0",
-        "com.unity.ugui": "1.0.0",
-        "com.annulusgames.lit-motion": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
-        "com.annulusgames.lit-motion.animation": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation#0b4c588ee75a07198841d92aab653e6b39445089",
-        "me.qiankanglai.loopscrollrect": "https://github.com/qiankanglai/LoopScrollRect.git#a74a705e1c9d0f73ea1a441dabb23b22f3283071"
+        "com.unity.ugui": "1.0.0"
       }
     },
     "com.tuyoogame.yooasset": {

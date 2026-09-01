@@ -41,11 +41,13 @@ https://github.com/source27/Cascade.git?path=Cascade
 
 Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter 一致）。
 
-### 第三方依赖（需自行安装）
+### 第三方 peer 依赖（工程 manifest 提供）
 
-`package.json` 依赖值只能是 SemVer；git URL 只允许出现在工程 `manifest.json`。第三方依赖须在工程里先装好（与仓库 pin 的提交一致，或经 OpenUPM 作用域 registry 装同名版本）：
+`package.json` **只**列 Unity 注册表可解析的依赖（`com.unity.*`）和本仓库包（`com.source27.cascade*`）。  
+第三方（UniTask / LitMotion / YooAsset 等）是 **peer**：写在工程 `manifest.json`（git/file 或 OpenUPM），不进各 UPM `package.json`。  
+原因：SemVer 硬依赖会在「仅 Add package from git URL」时被 UPM 当注册表包解析，直接 `cannot be found`（见 ADR 0021）。
 
-| 依赖包 | 版本 | 需要它的包 |
+| Peer 包 | 版本 | 需要它的包 |
 |--------|------|-----------|
 | com.cysharp.unitask | 2.5.11 | 主包 / YooAsset / Addressables |
 | com.annulusgames.lit-motion | 2.0.2 | UiExtras |
@@ -61,7 +63,7 @@ Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter
 "com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae"
 ```
 
-先装齐所需第三方依赖，再添加 Cascade 各包。
+主包 git URL 可单独添加；缺 peer 时是**编译**失败，不再是 Package Manager 解析失败。Starter 已写入上述 pin。
 
 主包 **不再** 依赖 HybridCLR、LitMotion、LoopScrollRect。
 

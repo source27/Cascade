@@ -33,10 +33,13 @@ function requireDir(path, label = path) {
   return existsSync(path) && statSync(path).isDirectory();
 }
 
-// UPM rejects non-SemVer dependency values inside package.json (git/file refs
-// are only valid in a project's manifest.json). Enforce across all packages.
+// UPM package.json deps: SemVer only (git/file refs belong in project manifest.json).
+// Third-party packages not on the Unity registry MUST NOT be listed — they break
+// "Add package from git URL" (UPM looks up SemVer on configured registries only).
+// Those are peer deps provided by the consuming project / Starter manifests.
 const SEMVER = /^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/;
-function requireSemVerDeps(pkgJsonPath, label) {
+const ALLOWED_DEP = /^(com\.unity\.|com\.source27\.cascade)/;
+function requirePackageDeps(pkgJsonPath, label) {
   const pkg = readJson(pkgJsonPath);
   if (!pkg) return;
   const deps = pkg.dependencies;
@@ -44,6 +47,9 @@ function requireSemVerDeps(pkgJsonPath, label) {
     for (const [dep, value] of Object.entries(deps)) {
       if (typeof value !== 'string' || !SEMVER.test(value)) {
         fail(`${label} dependency ${dep}: "${value}" is not SemVer (git/file refs only work in a project manifest.json)`);
+      }
+      if (!ALLOWED_DEP.test(dep)) {
+        fail(`${label} dependency ${dep}: not Unity-registry/com.source27.cascade* (declare as project peer dep instead)`);
       }
     }
   }
@@ -59,7 +65,7 @@ requireFile(join(repoRoot, 'CONTEXT.md'), 'CONTEXT.md');
 
 const packageJsonPath = join(repoRoot, 'Cascade', 'package.json');
 requireFile(packageJsonPath, 'Cascade/package.json');
-requireSemVerDeps(packageJsonPath, 'Cascade');
+requirePackageDeps(packageJsonPath, 'Cascade');
 const pkg = readJson(packageJsonPath);
 if (pkg) {
   if (pkg.name !== 'com.source27.cascade') fail(`Cascade package name: expected com.source27.cascade, got ${pkg.name}`);
@@ -68,7 +74,7 @@ if (pkg) {
   if (pkg.license !== 'MIT') fail(`Cascade/package.json license: expected MIT, got ${pkg.license}`);
   if (!pkg.dependencies || typeof pkg.dependencies !== 'object') fail('Cascade/package.json missing dependencies');
   for (const dep of Object.keys(pkg.dependencies)) {
-    if (/hybridclr|lit-motion|loopscroll/i.test(dep)) fail(`Cascade must not depend on ${dep}`);
+    if (/hybridclr|lit-motion|loopscroll|unitask|yooasset|cysharp/i.test(dep)) fail(`Cascade must not depend on ${dep}`);
   }
 }
 
@@ -94,7 +100,7 @@ requireFile(
 
 const yooPath = join(repoRoot, 'Integrations', 'YooAsset', 'package.json');
 requireFile(yooPath, 'Integrations/YooAsset/package.json');
-requireSemVerDeps(yooPath, 'Integrations/YooAsset');
+requirePackageDeps(yooPath, 'Integrations/YooAsset');
 const yoo = readJson(yooPath);
 if (yoo) {
   if (yoo.name !== 'com.source27.cascade.integrations.yooasset') {
@@ -109,7 +115,7 @@ if (yoo) {
 
 const locToolsPath = join(repoRoot, 'Modules', 'LocalizationTools', 'package.json');
 requireFile(locToolsPath, 'Modules/LocalizationTools/package.json');
-requireSemVerDeps(locToolsPath, 'Modules/LocalizationTools');
+requirePackageDeps(locToolsPath, 'Modules/LocalizationTools');
 const locTools = readJson(locToolsPath);
 if (locTools) {
   if (locTools.name !== 'com.source27.cascade.modules.localizationtools') {
@@ -155,7 +161,8 @@ const indieVersion = readFileSync(
 if (!/m_EditorVersion:\s*2022\.3\.62f3/.test(indieVersion)) {
   fail('Starters/Indie ProjectVersion.txt must pin Unity 2022.3.62f3');
 }
-requireSemVerDeps(join(repoRoot, 'Integrations', 'Addressables', 'package.json'), 'Integrations/Addressables');
+requirePackageDeps(join(repoRoot, 'Integrations', 'Addressables', 'package.json'), 'Integrations/Addressables');
+requirePackageDeps(join(repoRoot, 'Modules', 'UiExtras', 'package.json'), 'Modules/UiExtras');
 
 if (errors.length > 0) {
   console.error('validate-upm failed:');

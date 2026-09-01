@@ -9,9 +9,6 @@
   "license": "MIT",
   "dependencies": {
     "com.source27.cascade": "0.1.0",
-    "com.unity.ugui": "1.0.0",
-    "com.annulusgames.lit-motion": "2.0.2",
-    "com.annulusgames.lit-motion.animation": "2.0.2",
-    "me.qiankanglai.loopscrollrect": "1.1.5"
+    "com.unity.ugui": "1.0.0"
   }
 }

@@ -16,8 +16,7 @@
         "com.unity.textmeshpro": "3.0.9",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.2d.sprite": "1.0.0",
-        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+        "com.unity.2d.sprite": "1.0.0"
       }
     },
     "com.source27.cascade.integrations.addressables": {
@@ -26,8 +25,7 @@
       "source": "local",
       "dependencies": {
         "com.source27.cascade": "0.1.0",
-        "com.unity.addressables": "1.21.19",
-        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99"
+        "com.unity.addressables": "1.21.19"
       }
     },
     "com.source27.cascade.modules.localizationtools": {

@@ -47,17 +47,23 @@ https://github.com/source27/Cascade.git?path=Cascade
 "com.source27.cascade": "file:../../../Cascade"
 ```
 
-### 第三方依赖（需自行安装）
+### 第三方 peer 依赖（工程 manifest 提供）
 
-`package.json` 依赖值只能是 SemVer；git URL 只允许出现在工程 `manifest.json`。第三方依赖须在工程里先装好（与仓库 pin 的提交一致，或经 OpenUPM 作用域 registry 装同名版本）：
+UPM `package.json` **只**允许依赖 Unity 注册表包（`com.unity.*`）和本仓库包（`com.source27.cascade*`）。  
+不能把 UniTask 等写成 SemVer 硬依赖——它们不在 Unity 注册表，`Add package from git URL` 会直接报 `cannot be found`。  
+git/file URL 只属于**工程** `Packages/manifest.json`（或 OpenUPM scoped registry）。
 
-| 依赖包 | 版本 | 需要它的包 |
-|--------|------|-----------|
+asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败。Starter 已配好。
+
+| Peer 包 | 版本 pin | 需要它的包 |
+|--------|----------|-----------|
 | com.cysharp.unitask | 2.5.11 | 主包 / YooAsset / Addressables |
 | com.annulusgames.lit-motion | 2.0.2 | UiExtras |
 | com.annulusgames.lit-motion.animation | 2.0.2 | UiExtras |
 | me.qiankanglai.loopscrollrect | 1.1.5 | UiExtras |
 | com.tuyoogame.yooasset | 3.0.5 | YooAsset 集成 |
+
+推荐在工程 `manifest.json` 写入（与仓库 pin 的提交一致）：
 
 ```json
 "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2e993ff18f28c931602a07292df0b0804eebef99",
@@ -67,17 +73,17 @@ https://github.com/source27/Cascade.git?path=Cascade
 "com.tuyoogame.yooasset": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae"
 ```
 
-先装齐所需第三方依赖，再添加 Cascade 各包。
+也可经 OpenUPM 作用域 registry 装**同名同版本**。
 
-### 主包依赖
+### 主包 UPM 依赖（注册表可解析）
 
 | 包 | 说明 |
 |----|------|
-| com.cysharp.unitask | 异步（2.5.11，需自行安装，见上） |
 | com.unity.ugui / TMP | UI |
 | Unity 模块 | audio、webrequest、2d.sprite |
 
-**不含** HybridCLR、LitMotion、LoopScrollRect、YooAsset（后三者按需装 Modules/Integrations，其第三方依赖见上）。
+**编译期 peer：** `com.cysharp.unitask`（见上，不进 `package.json`）。  
+**不含** HybridCLR、LitMotion、LoopScrollRect、YooAsset（后三者按需装 Modules/Integrations）。
 
 ## 快速开始
 
