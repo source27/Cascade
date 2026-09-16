@@ -108,16 +108,17 @@ namespace Cascade.SourceGenerator
                     continue;
                 }
 
-                var bindingName = GeneratedNamespace + "." + page.Symbol.Name + "Bindings";
-                if (context.Compilation.GetTypeByMetadataName(bindingName) == null)
+                if (!TryResolveBindingsType(context.Compilation, page.Symbol, out var bindingsType))
                 {
                     context.ReportDiagnostic(Diagnostic.Create(
                         MissingBindings,
                         page.Location,
                         page.Symbol.Name,
-                        GeneratedNamespace));
+                        bindingsType ?? GeneratedNamespace + "." + page.Symbol.Name + "Bindings"));
                     continue;
                 }
+
+                page.BindingsTypeDisplay = bindingsType;
 
                 if (addresses.TryGetValue(page.Address, out var previous))
                 {
@@ -141,6 +142,42 @@ namespace Cascade.SourceGenerator
                 "UIRegistryGenerated.g.cs",
                 GenerateRegistry(validPages));
         }
+
+        /// <summary>
+        /// Prefer the bindings type from a generic base (e.g. UIPage&lt;TArgs,TBindings&gt;),
+        /// then fall back to Cascade.Generated.{Page}Bindings.
+        /// Returns the fully-qualified metadata name for codegen.
+        /// </summary>
+        private static bool TryResolveBindingsType(
+            Compilation compilation,
+            INamedTypeSymbol page,
+            out string bindingsTypeDisplay)
+        {
+            var expectedName = page.Name + "Bindings";
+            for (var baseType = page.BaseType; baseType != null; baseType = baseType.BaseType)
+            {
+                foreach (var arg in baseType.TypeArguments)
+                {
+                    if (!(arg is INamedTypeSymbol named) || named.Name != expectedName)
+                        continue;
+                    bindingsTypeDisplay = named.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                    return true;
+                }
+            }
+
+            var conventional = GeneratedNamespace + "." + expectedName;
+            var found = compilation.GetTypeByMetadataName(conventional);
+            if (found != null)
+            {
+                bindingsTypeDisplay = found.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+                return true;
+            }
+
+            bindingsTypeDisplay = conventional;
+            return false;
+        }
+
+
 
         private static bool HasValidArgs(INamedTypeSymbol page)
         {
@@ -336,7 +373,7 @@ namespace Cascade.SourceGenerator
                 builder.AppendLine("            public global::Cascade.Core.UIBase Create(GameObject root, object bindings, object pageContext)");
                 builder.AppendLine("            {");
                 builder.AppendLine("                var page = new global::" + page.Symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Substring("global::".Length) + "();");
-                builder.AppendLine("                page.Initialize(root, new " + page.Symbol.Name + "Bindings((global::Cascade.Core.UIBindingHost)bindings), pageContext);");
+                builder.AppendLine("                page.Initialize(root, new " + page.BindingsTypeDisplay + "((global::Cascade.Core.UIBindingHost)bindings), pageContext);");
                 builder.AppendLine("                return page;");
                 builder.AppendLine("            }");
                 builder.AppendLine("        }");
@@ -381,6 +418,7 @@ namespace Cascade.SourceGenerator
                 SafeArea = safeArea;
                 SafeAreaPath = safeAreaPath;
                 Location = symbol.Locations.FirstOrDefault();
+                BindingsTypeDisplay = "global::" + GeneratedNamespace + "." + symbol.Name + "Bindings";
             }
 
             public INamedTypeSymbol Symbol { get; }
@@ -396,6 +434,8 @@ namespace Cascade.SourceGenerator
             public int SafeArea { get; }
             public string SafeAreaPath { get; }
             public Location Location { get; }
+            public string BindingsTypeDisplay { get; set; }
+
         }
     }
 

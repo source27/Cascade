@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Cascade.Indie
 {
-    public sealed class IndieBootstrapEntry : BootstrapEntry
+    public sealed class IndieBootstrapEntry : BootstrapBase
     {
         protected override IResourceService CreateResourceService() => new AddressablesResourceService();
 

@@ -15,6 +15,13 @@ namespace Cascade.Editor
     {
         private const string MenuPath = "Assets/Generate UI Page";
         private const string ViewMenuPath = "Assets/Generate UI View";
+
+        /// <summary>
+        /// Optional project override at ProjectSettings/CascadeUIGeneration.json.
+        /// Absent → if Assets/Scripts/GameLogic/UI exists use GameLogic layout, else Cascade defaults.
+        /// </summary>
+        private static UIGenerationLayout Layout => UIGenerationLayout.Current;
+
         private static readonly BindingRule[] Rules =
         {
             new BindingRule("_scRect", "ScrollRect", typeof(ScrollRect)),
@@ -119,8 +126,8 @@ namespace Cascade.Editor
                 throw new InvalidOperationException($"Invalid prefab path: {prefabPath}");
 
             var pageName = Path.GetFileNameWithoutExtension(prefabPath);
-            var pageDirectory = "Assets/Scripts/UI";
-            var bindingDirectory = Path.Combine(pageDirectory, "Generated").Replace('\\', '/');
+            var pageDirectory = Layout.PageDirectory;
+            var bindingDirectory = Layout.BindingDirectory;
             Directory.CreateDirectory(bindingDirectory);
 
             var entries = new List<BindingEntry>();
@@ -221,8 +228,8 @@ namespace Cascade.Editor
                 throw new InvalidOperationException($"Invalid view prefab path: {prefabPath}");
 
             var viewName = Path.GetFileNameWithoutExtension(prefabPath);
-            var viewDirectory = "Assets/Scripts/UI/Views";
-            var bindingDirectory = "Assets/Scripts/UI/Generated";
+            var viewDirectory = Layout.ViewDirectory;
+            var bindingDirectory = Layout.BindingDirectory;
             Directory.CreateDirectory(viewDirectory);
             Directory.CreateDirectory(bindingDirectory);
 
@@ -391,11 +398,12 @@ namespace Cascade.Editor
 
         private static string CreatePageSource(string pageName)
         {
+            var layout = Layout;
             return
                 "using Cascade.Core;\n" +
-                "using Cascade.Generated;\n" +
+                $"using {layout.BindingNamespace};\n" +
                 "\n" +
-                "namespace Cascade.UI\n" +
+                $"namespace {layout.PageNamespace}\n" +
                 "{\n" +
                 $"    [UI(Address = \"{pageName}\")]\n" +
                 $"    public sealed class {pageName} : UIPage<{pageName}.Args, {pageName}Bindings>\n" +
@@ -417,11 +425,12 @@ namespace Cascade.Editor
 
         private static string CreateViewSource(string viewName)
         {
+            var layout = Layout;
             return
                 "using System.Threading;\n" +
-                "using Cascade.Generated;\n" +
+                $"using {layout.BindingNamespace};\n" +
                 "\n" +
-                "namespace Cascade.UI.Views\n" +
+                $"namespace {layout.ViewNamespace}\n" +
                 "{\n" +
                 $"    public sealed class {viewName} : UIView<object, {viewName}Bindings>\n" +
                 "    {\n" +
@@ -447,7 +456,7 @@ namespace Cascade.Editor
             if (entries.Any(entry => entry.ComponentType == typeof(TMP_Text)))
                 builder.AppendLine("using TMPro;");
             builder.AppendLine();
-            builder.AppendLine("namespace Cascade.Generated");
+            builder.AppendLine($"namespace {Layout.BindingNamespace}");
             builder.AppendLine("{");
             builder.AppendLine($"    public sealed class {pageName}Bindings");
             builder.AppendLine("    {");

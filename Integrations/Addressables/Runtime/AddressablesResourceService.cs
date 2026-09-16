@@ -48,16 +48,39 @@ namespace Cascade.Service.Addressables
             where T : UnityEngine.Object
         {
             EnsureInitialized();
-            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(location);
-            await handle.ToUniTask(cancellationToken: cancellationToken);
-            if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
-            {
-                if (handle.IsValid())
-                    UnityEngine.AddressableAssets.Addressables.Release(handle);
-                throw new InvalidOperationException($"Failed to load Addressables asset '{location}': {handle.OperationException}");
-            }
+            ValidateLocation(location);
 
-            return new AddressablesAssetHandle<T>(handle);
+            AsyncOperationHandle<T> handle = default;
+            try
+            {
+                handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<T>(location);
+                await handle.ToUniTask(cancellationToken: cancellationToken);
+                if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+                {
+                    var detail = FormatOperationFailure(handle.Status, handle.OperationException);
+                    ReleaseIfValid(handle);
+                    throw new InvalidOperationException(
+                        $"Failed to load Addressables asset type={typeof(T).Name} location='{location}': {detail}");
+                }
+
+                return new AddressablesAssetHandle<T>(handle);
+            }
+            catch (OperationCanceledException)
+            {
+                ReleaseIfValid(handle);
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                ReleaseIfValid(handle);
+                throw new InvalidOperationException(
+                    $"Failed to load Addressables asset type={typeof(T).Name} location='{location}'.",
+                    exception);
+            }
         }
 
         public async UniTask<ISceneHandle> LoadSceneAsync(
@@ -66,37 +89,81 @@ namespace Cascade.Service.Addressables
             CancellationToken cancellationToken = default)
         {
             EnsureInitialized();
-            var mode = loadMode == ResourceSceneLoadMode.Additive ? LoadSceneMode.Additive : LoadSceneMode.Single;
-            var handle = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(location, mode);
-            await handle.ToUniTask(cancellationToken: cancellationToken);
-            if (handle.Status != AsyncOperationStatus.Succeeded)
-            {
-                if (handle.IsValid())
-                    UnityEngine.AddressableAssets.Addressables.Release(handle);
-                throw new InvalidOperationException($"Failed to load Addressables scene '{location}': {handle.OperationException}");
-            }
+            ValidateLocation(location);
 
-            return new AddressablesSceneHandle(handle);
+            var mode = loadMode == ResourceSceneLoadMode.Additive ? LoadSceneMode.Additive : LoadSceneMode.Single;
+            AsyncOperationHandle<SceneInstance> handle = default;
+            try
+            {
+                handle = UnityEngine.AddressableAssets.Addressables.LoadSceneAsync(location, mode);
+                await handle.ToUniTask(cancellationToken: cancellationToken);
+                if (handle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    var detail = FormatOperationFailure(handle.Status, handle.OperationException);
+                    ReleaseIfValid(handle);
+                    throw new InvalidOperationException(
+                        $"Failed to load Addressables scene location='{location}': {detail}");
+                }
+
+                return new AddressablesSceneHandle(handle);
+            }
+            catch (OperationCanceledException)
+            {
+                ReleaseIfValid(handle);
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                ReleaseIfValid(handle);
+                throw new InvalidOperationException(
+                    $"Failed to load Addressables scene location='{location}'.",
+                    exception);
+            }
         }
 
         public async UniTask<byte[]> LoadRawBytesAsync(string location, CancellationToken cancellationToken = default)
         {
             EnsureInitialized();
-            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<TextAsset>(location);
+            ValidateLocation(location);
+
+            AsyncOperationHandle<TextAsset> handle = default;
             try
             {
+                handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<TextAsset>(location);
                 await handle.ToUniTask(cancellationToken: cancellationToken);
                 if (handle.Status != AsyncOperationStatus.Succeeded || handle.Result == null)
+                {
+                    var detail = FormatOperationFailure(handle.Status, handle.OperationException);
                     throw new InvalidOperationException(
-                        $"LoadRawBytesAsync expects a TextAsset address; failed for '{location}': {handle.OperationException}");
+                        $"LoadRawBytesAsync expects a TextAsset address; failed type=TextAsset location='{location}': {detail}");
+                }
+
                 return handle.Result.bytes;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    $"LoadRawBytesAsync failed type=TextAsset location='{location}'.",
+                    exception);
             }
             finally
             {
-                if (handle.IsValid())
-                    UnityEngine.AddressableAssets.Addressables.Release(handle);
+                ReleaseIfValid(handle);
             }
         }
+
 
         /// <summary>No-op: Addressables unloads via handle Release refcounts.</summary>
         public void UnloadUnused()
@@ -121,6 +188,26 @@ namespace Cascade.Service.Addressables
             if (_disposed)
                 throw new ObjectDisposedException(nameof(AddressablesResourceService));
         }
+
+        private static void ValidateLocation(string location)
+        {
+            if (string.IsNullOrWhiteSpace(location))
+                throw new ArgumentException("Addressables location is required.", nameof(location));
+        }
+
+        private static string FormatOperationFailure(AsyncOperationStatus status, Exception operationException)
+        {
+            if (operationException != null)
+                return operationException.ToString();
+            return $"status={status}";
+        }
+
+        private static void ReleaseIfValid<T>(AsyncOperationHandle<T> handle)
+        {
+            if (handle.IsValid())
+                UnityEngine.AddressableAssets.Addressables.Release(handle);
+        }
+
 
         private sealed class AddressablesAssetHandle<T> : IAssetHandle<T> where T : UnityEngine.Object
         {

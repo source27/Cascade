@@ -21,7 +21,7 @@
 | `Cascade.Mobile.HotUpdate` | 默认仍 `GameLogic`（入口类型 `GameLogic.GameLogicEntry`，程序集名 `GameLogic.HotUpdate`） | 热更逻辑；本轮不改 HybridCLR/打包默认字符串 |
 | `Cascade.Mobile.Editor` | `Cascade.Mobile.Editor` | 构建/打包窗 |
 
-- 组合根类型：**`MobileBootstrapEntry`**（`: BootstrapEntry`），场景名 `Bootstrap`。
+- 组合根类型：**`MobileBootstrapEntry`**（`: BootstrapBase`），场景名 `Bootstrap`。
 - 热更入口签名保持 ADR 0014 约定；配置默认值留在 Mobile。
 
 ## 与薄 Bootstrap 衔接

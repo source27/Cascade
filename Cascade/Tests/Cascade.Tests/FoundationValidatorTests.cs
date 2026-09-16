@@ -54,7 +54,7 @@ namespace Cascade.Tests
                 {
                     Source("/project/Runtime/Cascade.Core/Event/EventBus.cs", "namespace Cascade.Core { class EventBus {} }"),
                     Source("/project/Runtime/Cascade.Service/Log/UnityLogService.cs", "namespace Cascade.Service { class UnityLogService {} }"),
-                    Source("/project/Runtime/Cascade.Bootstrap/BootstrapEntry.cs", "namespace Cascade.Bootstrap { class BootstrapEntry {} }"),
+                    Source("/project/Runtime/Cascade.Bootstrap/BootstrapBase.cs", "namespace Cascade.Bootstrap { class BootstrapBase {} }"),
                 });
             Assert.That(result.IsValid, Is.True, string.Join("\n", result.Errors));
         }

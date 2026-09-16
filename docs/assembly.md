@@ -87,7 +87,7 @@ Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter
 ## 从零组装（不 fork Starter）
 
 1. 空工程安装主包 + 选定集成包  
-2. 场景挂载继承 `Cascade.Bootstrap.BootstrapEntry` 的组合根  
+2. 场景挂载继承 `Cascade.Bootstrap.BootstrapBase` 的组合根
 3. Override：
 
 ```csharp

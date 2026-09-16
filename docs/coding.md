@@ -4,13 +4,14 @@
 
 ## 组合根
 
-唯一注册服务、选择资源后端、决定是否热更的地方。继承 `BootstrapEntry`：
+唯一注册服务、选择资源后端、决定是否热更的地方。继承 `BootstrapBase`：
 
 | 钩子 | 用途 |
 |------|------|
 | `CreateResourceService` | 返回集成包中的 `IResourceService` 实现 |
 | `CreateResourceInitOptions` | 提供者专用 options |
-| `RegisterServices` | `base` + 增删替换；可不注册本地化 |
+| `RegisterDefaultLocalization` | 默认 `true` 注册 Cascade 本地化；Unity Localization 等项目 override `false` |
+| `RegisterServices` | `base` + 增游戏服务；本地化靠上一钩子跳过，勿重复 Register 同契约 |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
 
 游戏专有服务：
@@ -44,14 +45,13 @@ var f = host.Services.Get<IMyFeature>();
 Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 **TextAsset** 的 address；`UnloadUnused` 为 no-op（靠 Release 引用计数）。
 
 ## 本地化
-
 - 契约：`ILocalizationService`（主包运行时，只认 resource location）  
 - 默认实现：catalog + 语言表，经 `LoadRawBytesAsync`  
+- `IGameHost.Localization`：已注册时非 null；未注册（`RegisterDefaultLocalization => false`）为 null，用 `Services.TryGet` 亦可  
 - 磁盘目录：作者工具 `LocalizationSyncSettings.outputRoot`（默认 `Assets/Localization`）；**不是**框架品牌路径  
 - Google Sheet / 表导入：可选模块 `com.source27.cascade.modules.localizationtools`（Editor；**Cascade/更新多语言** 首次会询问是否创建 settings）  
 - 换配表格式：实现另一 `ILocalizationService`，在 `RegisterServices` 注册  
 - 流水线：仅当 registry 中有本地化服务时才 `InitializeAsync`  
-
 ## UI
 
 - 页面/绑定：Core + Roslyn 生成器（`[UI]` 等特性 → 注册表，运行时少反射）  

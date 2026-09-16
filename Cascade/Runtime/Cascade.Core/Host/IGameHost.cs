@@ -11,6 +11,7 @@ namespace Cascade.Core
         ILogService Log { get; }
         IEventBus Events { get; }
         IResourceService Resources { get; }
+        /// <summary>Cascade localization when registered; null if the game uses another stack.</summary>
         ILocalizationService Localization { get; }
         IUISystem UI { get; }
         UniTask<IUISystem> CreateUISystemAsync(

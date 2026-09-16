@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Cascade.Mobile
 {
-    public sealed class MobileBootstrapEntry : BootstrapEntry
+    public sealed class MobileBootstrapEntry : BootstrapBase
     {
         private const string PackageName = "CascadePak";
         private const string DevCdnRoot = "http://127.0.0.1:2727/Cascade/";

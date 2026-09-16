@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Cascade.Bootstrap
 {
-    public class BootstrapEntry : MonoBehaviour
+    public class BootstrapBase : MonoBehaviour
     {
         [SerializeField] private BootstrapEnvironment environment = BootstrapEnvironment.Dev;
         [SerializeField] private string appVersionOverride = string.Empty;
@@ -99,6 +99,12 @@ namespace Cascade.Bootstrap
 
         protected virtual ResourceInitOptions CreateResourceInitOptions() => null;
 
+        /// <summary>
+        /// When true (default), registers Cascade <see cref="ILocalizationService"/>.
+        /// Games on Unity Localization (or none) override to false so bootstrap does not load a catalog.
+        /// </summary>
+        protected virtual bool RegisterDefaultLocalization => true;
+
         protected virtual void RegisterServices(IServiceRegistry registry)
         {
             var log = new UnityLogService
@@ -115,7 +121,8 @@ namespace Cascade.Bootstrap
             registry.Register<IAudioService>(new AudioService(resources, log));
             var save = new PlayerPrefsSaveService();
             registry.Register<ISaveService>(save);
-            registry.Register<ILocalizationService>(new LocalizationService(resources, save, log));
+            if (RegisterDefaultLocalization)
+                registry.Register<ILocalizationService>(new LocalizationService(resources, save, log));
             registry.Register<INetworkService>(new NullNetworkService());
             registry.Register<IAtlasSpriteService>(new AtlasSpriteService(resources, log));
         }

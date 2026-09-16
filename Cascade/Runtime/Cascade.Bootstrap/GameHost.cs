@@ -17,7 +17,8 @@ namespace Cascade.Bootstrap
             Log = Services.Get<ILogService>();
             Events = Services.Get<IEventBus>();
             Resources = Services.Get<IResourceService>();
-            Localization = Services.Get<ILocalizationService>();
+            Services.TryGet<ILocalizationService>(out var localization);
+            Localization = localization;
         }
 
         public IServiceRegistry Services { get; }
