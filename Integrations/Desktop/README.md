@@ -1,35 +1,34 @@
 # Cascade Integrations — Desktop
 
-`com.source27.cascade.integrations.desktop` **0.2.0** — PC shell（设置 / 存档 / 重绑定 / 运行时 UI / 失焦暂停 / 音频与云冲突辅助）。**与 Steam 无关**；Steam 包依赖本包。
+`com.source27.cascade.integrations.desktop` **0.2.0** — PC 壳（设置 / 存档 / 重绑定 / 运行时 UI / 失焦暂停 / 音频与云冲突辅助）。**与 Steam 无关**；Steam 包依赖本包。
 
-命名空间：`Cascade.Integrations.Desktop`  
-程序集：`Cascade.Integrations.Desktop`（`Cascade.Service` + `Unity.InputSystem`）  
-Editor：`Cascade.Integrations.Desktop.Editor`（可选创建 Mixer）
+| | |
+|--|--|
+| 命名空间 | `Cascade.Integrations.Desktop` |
+| Runtime 程序集 | `Cascade.Integrations.Desktop`（`Cascade.Service` + `Unity.InputSystem`） |
+| Editor | `Cascade.Integrations.Desktop.Editor`（可选创建 Mixer） |
+| 依赖 | `com.unity.inputsystem` **1.14.2**（package.json） |
 
-依赖：`com.unity.inputsystem` **1.14.2**（package.json）。
-
----
+速查：[`Docs/INTEGRATION.md`](Docs/INTEGRATION.md)
 
 ## Desktop vs Steam
 
 | 包 | 职责 |
 |----|------|
-| **Desktop** | 本机/漫游设置、JSON 多槽存档、Rebind+冲突、运行时 uGUI、FocusLoss、AudioMixer 音量、光标、日志、退出门、成就接口、云冲突比较等 |
+| **Desktop** | 本机/漫游设置、JSON 多槽存档、Rebind+冲突、运行时 uGUI、FocusLoss、AudioMixer 音量、光标、日志、退出门、成就接口、云冲突比较 |
 | **Steam** | `ISteamClient`、Overlay 暂停、Remote Storage、成就实现、`SteamCloudSaveCoordinator` |
 
-组合根建议：**先注册 Desktop 服务，再挂 Steam 装饰器**。
+组合根：**先注册 Desktop，再挂 Steam 装饰器**。
 
----
+## 设置：Local vs Roaming
 
-## 设置：Local vs Roaming（跨 PC 安全）
-
-**硬性规则**：显示/画质只落本机；音量与可移植偏好才可云同步。
+**硬性**：显示/画质只落本机；音量与可移植偏好才可云同步。
 
 | 范围 | 文件 | 字段 | 云同步 |
 |------|------|------|--------|
-| **LOCAL ONLY** | `persistentDataPath/cascade-desktop/settings.local.json` | 分辨率、fullscreenMode、vSync、targetFrameRate、qualityLevel | **禁止** |
-| **CLOUD-ELIGIBLE** | `persistentDataPath/cascade-desktop/settings.roaming.json` | master/bgm/sfx、mouseSensitivity、gamepadDeadzone、language | 可选：`EnablePrefsMirror` 仅 roaming |
-| **ROAMING-ELIGIBLE（键位）** | `persistentDataPath/cascade-desktop/input_overrides.json` | Input System binding overrides | 概念上可云；**当前仅本机**；勿写入显示设置 |
+| **LOCAL** | `persistentDataPath/cascade-desktop/settings.local.json` | 分辨率、fullscreenMode、vSync、targetFrameRate、qualityLevel | **禁止** |
+| **ROAMING** | `…/settings.roaming.json` | master/bgm/sfx、mouseSensitivity、gamepadDeadzone、language | 可选：`EnablePrefsMirror` 仅 roaming |
+| **键位** | `…/input_overrides.json` | Input System binding overrides | 概念可云；**当前仅本机** |
 
 类型：`LocalDisplaySettings` / `RoamingGameSettings` / `GameSettingsModel` / `GameSettingsStore` / `GameSettingsService` / `GameSettingsApplier`。
 
@@ -40,23 +39,19 @@ settings.Apply();
 settings.Save(); // local + roaming；镜像只含 roaming
 ```
 
----
-
-## 输入重绑定 + 冲突
+## 输入重绑定
 
 ```csharp
 var rebind = new RebindHelper(actionAsset);
 rebind.LoadOverrides();
 rebind.StartRebindWithConflictCheck(action, bindingIndex,
-    onComplete: path => { /* ok */ },
+    onComplete: path => { },
     onCancel: () => { },
     onConflict: path => { /* 已自动撤销 */ });
 ```
 
 - `RebindConflictDetector` — 同 Map 路径冲突
-- Overrides 路径：`cascade-desktop/input_overrides.json`（roaming-eligible 概念；文件仍本地）
-
----
+- Overrides：`cascade-desktop/input_overrides.json`（勿写入显示设置）
 
 ## 运行时 UI（无二进制 Prefab）
 
@@ -65,35 +60,29 @@ rebind.StartRebindWithConflictCheck(action, bindingIndex,
 | `DesktopModalCanvas.Ensure()` | Overlay Canvas |
 | `QuitConfirmModal.Create(gate)` | Yes/No + `QuitConfirmGate` |
 | `GamepadDisconnectToast.Create(watcher)` | IToastHook / 事件 |
-| `SimpleSettingsPanel.Show(service)` | Local vs Roaming 分区标签；Save/Apply/Reset |
+| `SimpleSettingsPanel.Show(service)` | Local / Roaming 分区；Save/Apply/Reset |
 
 说明：`Samples~/Prefabs/README.md`。
 
----
-
 ## AudioMixer
 
-- 参数：`MasterVol` / `BgmVol` / `SfxVol`（dB）— 对齐 `AudioMixerVolumes`
-- 样例 YAML：`Samples~/Audio/DesktopMasterMixer.mixer`
-- Editor 菜单：`Cascade/Desktop/Create Desktop Master Mixer`
-- 赋给 `DesktopAudioService.Initialize(mixer: …)` 后 `BindAudioMixerVolumes`
-
----
+- Exposed：`MasterVol` / `BgmVol` / `SfxVol`（dB）→ `AudioMixerVolumes`
+- 样例：`Samples~/Audio/DesktopMasterMixer.mixer`
+- 菜单：`Cascade/Desktop/Create Desktop Master Mixer`
+- `DesktopAudioService.Initialize(mixer: …)` → `BindAudioMixerVolumes`
 
 ## JSON 多槽存档 + 云冲突
 
 路径：`cascade-desktop/saves/slot{N}.json`  
 API：`IJsonSaveStore` / `JsonFileSaveStore` / `JsonSaveEnvelope` / `JsonSaveSlotService`
 
-冲突：
+| 类型 | 作用 |
+|------|------|
+| `CloudSaveConflict` / `CloudSaveConflictResolution` | None / UseLocal / UseRemote / Manual |
+| `CloudSaveConflictResolver.Compare` | 较新 `updatedUtc` 胜；相等 → Manual；缺一侧 → 另一侧 |
+| `JsonSaveSlotService.TryLoadWithRemote(...)` | local + remote → conflict |
 
-- `CloudSaveConflict` / `CloudSaveConflictResolution`（None / UseLocal / UseRemote / Manual）
-- `CloudSaveConflictResolver.Compare` — 较新 `updatedUtc` 胜；相等 → Manual；缺一侧 → 另一侧
-- `JsonSaveSlotService.TryLoadWithRemote(local, remote, slot, out conflict)`
-
-Steam：`SteamCloudSaveCoordinator`（写选定侧到双端）。详见 Steam README。
-
----
+Steam 写回：`SteamCloudSaveCoordinator`（见 Steam README）。
 
 ## 其它 Runtime API
 
@@ -107,8 +96,6 @@ Steam：`SteamCloudSaveCoordinator`（写选定侧到双端）。详见 Steam RE
 | UI | `QuitConfirmGate`, `VersionLabelBinder`, runtime builders |
 | Achievements | `IAchievementService`, `NullAchievementService`（Steam 实现见 Steam 包） |
 | Localization | `SimpleStringTable` |
-
----
 
 ## 安装
 
@@ -126,21 +113,8 @@ Integrations/Desktop/
 ├── package.json          # 0.2.0
 ├── README.md
 ├── Docs/INTEGRATION.md
-├── Editor/               # CreateDesktopMixer + Editor asmdef
-├── Samples~/
-│   ├── Audio/
-│   └── Prefabs/README.md
-└── Runtime/
-    ├── Cascade.Integrations.Desktop.asmdef
-    ├── FocusLossPauseDriver.cs
-    ├── Settings/ …
-    ├── Save/             # + CloudSaveConflict*
-    ├── Audio/ …
-    ├── Boot/ …
-    ├── State/ …
-    ├── Logging/ …
-    ├── Input/            # + Rebind*
-    ├── UI/               # + runtime builders
-    ├── Achievements/ …
-    └── Localization/ …
+├── Editor/               # CreateDesktopMixer
+├── Samples~/Audio/  Prefabs/
+└── Runtime/              # Settings / Save / Audio / Boot / State /
+                          # Logging / Input / UI / Achievements / Localization
 ```

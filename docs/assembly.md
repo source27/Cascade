@@ -7,15 +7,15 @@
 | `Cascade/` | `com.source27.cascade` | 总是 |
 | `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | 手游 / Yoo 资源管线 |
 | `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 独立游戏 / Addressables |
-| `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等 |
-| `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam / PC 壳（peer Steamworks.NET） |
+| `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等（需 `com.unity.inputsystem`） |
+| `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam-only（依赖 Desktop；peer Steamworks.NET） |
 | `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs） |
 | `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时 |
 | `Modules/LocalizationTools/` | `com.source27.cascade.modules.localizationtools` | 需要 Google Sheet→JSON 等本地化作者工具时 |
 
 主包程序集：`Cascade.Service`、`Cascade.Core`、`Cascade.Bootstrap`、`Cascade.Editor`、`Cascade.Tests`。
 
-依赖方向：Integrations / Modules → 主包；Starter → 任选。
+依赖方向：Integrations / Modules → 主包；Starter → 任选。Steam → Desktop → 主包。
 
 ## 安装主包
 
@@ -41,13 +41,12 @@ https://github.com/source27/Cascade.git?path=Cascade
 "com.source27.cascade.integrations.desktop": "https://github.com/source27/Cascade.git?path=Integrations/Desktop",
 "com.source27.cascade.integrations.steam": "https://github.com/source27/Cascade.git?path=Integrations/Steam",
 "com.source27.cascade.integrations.inputglyphs": "https://github.com/source27/Cascade.git?path=Integrations/InputGlyphs",
-"com.source27.cascade.integrations.steam": "https://github.com/source27/Cascade.git?path=Integrations/Steam",
-"com.source27.cascade.integrations.inputglyphs": "https://github.com/source27/Cascade.git?path=Integrations/InputGlyphs",
 "com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
 "com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
 ```
 
-Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter 一致）。
+Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter 一致）。  
+Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json`；工程需可解析）。
 
 ### 第三方 peer 依赖（工程 manifest 提供）
 
@@ -91,6 +90,7 @@ Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter
 2. `Assets/Scenes/Bootstrap.unity` → Play  
 3. 组合根：`IndieBootstrapEntry` → `GameEntry`（全 AOT，无热更）  
 4. 细节：`Starters/Indie/README.md`  
+5. 可选 PC / Steam 壳接线：`Starters/Indie/Assets/Scripts/DesktopShell/README.md`
 
 ## 从零组装（不 fork Starter）
 
@@ -113,6 +113,7 @@ protected override async UniTask RunGameAsync(IGameHost host, CancellationToken 
 ```
 
 4. 需要 UI 动效/循环列表时再装 `modules.uiextras`  
+5. 需要 PC / Steam 壳时再装 Desktop（+ 可选 Steam / InputGlyphs），见下文
 
 ## 默认流水线止点
 
@@ -125,7 +126,6 @@ Bootstrap **只到** 资源 init（+ 可选本地化 init）和 `RunGameAsync`�
 Indie 示例：`GameEntry` 组状态 → `RunAsync("Main")`；`MainFlowState` / `BattleFlowState` 自管烟测 UI。  
 Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync(...)`。
 
-
 ## Mobile vs Indie 对照
 
 | | Mobile | Indie |
@@ -136,19 +136,35 @@ Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync
 | 构建窗 | Starter Editor | 自备 |
 | 组合根 | `MobileBootstrapEntry` | `IndieBootstrapEntry` |
 | ui.extras | 默认带（目标态） | 默认不带 |
+| PC / Steam 壳 | 通常不用 | 可选 Desktop ± Steam ± Glyphs |
 
 ## 换资源后端
 
 文档与契约只保证 **load-only** `IResourceService`。  
 若从 Yoo 换到 Addressables：改组合根工厂与 init options，并删除 Mobile 更新/热更段（或改用 Indie 形状）。更新编排 **不会** 经核心契约自动迁移。
 
-### Desktop 设置：Local vs Roaming
+## PC / Steam Integrations
 
-- **Local** `cascade-desktop/settings.local.json`：分辨率/全屏/VSync/帧率/画质 — **永不**上云。
-- **Roaming** `cascade-desktop/settings.roaming.json`：音量/灵敏度/语言 — 可选经 Steam Remote Storage。
+| 包 | 职责 | 依赖 |
+|----|------|------|
+| **Desktop** `0.2.0` | 本机/漫游设置、JSON 多槽存档、Rebind+冲突、运行时 uGUI、FocusLoss、AudioMixer、光标、日志、退出门、成就接口、云冲突比较 | `com.unity.inputsystem` **1.14.2** |
+| **Steam** `0.4.0` | `ISteamClient`、Overlay 暂停、Remote Storage、成就实现、`SteamCloudSaveCoordinator` | Desktop **0.2.0+**；peer Steamworks.NET |
+| **InputGlyphs** | `InputActionGlyphBridge` / `ControlSchemeWatcher` | Input System；peer InputGlyphs |
 
-### Desktop / Steam 增量（0.2 / 0.4）
+组合根建议：**先注册 Desktop 服务，再挂 Steam 装饰器**。
 
-- Desktop：`RebindHelper` / 冲突检测、运行时设置/退出/断柄 UI、云存冲突比较、`Samples~/Audio` Mixer。
-- Steam：`SteamAchievementService`、`SteamCloudSaveCoordinator`。
-- Indie：见 `Starters/Indie/Assets/Scripts/DesktopShell/README_APPLY.md`。
+### Local vs Roaming（硬性）
+
+| 范围 | 文件 | 云同步 |
+|------|------|--------|
+| **Local** | `cascade-desktop/settings.local.json`（分辨率/全屏/VSync/帧率/画质） | **永不** |
+| **Roaming** | `cascade-desktop/settings.roaming.json`（音量/灵敏度/语言） | 可选经 Steam Remote Storage |
+| **键位** | `cascade-desktop/input_overrides.json` | 概念可云；**当前仅本机** |
+
+### 增量能力（Desktop 0.2 / Steam 0.4）
+
+- Desktop：`RebindHelper` / 冲突检测、运行时设置/退出/断柄 UI、云存冲突比较、`Samples~/Audio` Mixer
+- Steam：`SteamAchievementService`、`SteamCloudSaveCoordinator`
+- Indie 接线：[`Starters/Indie/Assets/Scripts/DesktopShell/README.md`](../Starters/Indie/Assets/Scripts/DesktopShell/README.md)
+
+详见各包 README：[`Desktop`](../Integrations/Desktop/README.md) · [`Steam`](../Integrations/Steam/README.md) · [`InputGlyphs`](../Integrations/InputGlyphs/README.md)。

@@ -1,27 +1,31 @@
 # Steam 集成速查（0.4.0）
 
-详细见 [README.md](../README.md)。设置 / 存档 / 失焦 / Rebind / UI → **Desktop 0.2.0**。
+完整说明：[`../README.md`](../README.md)  
+**依赖 Desktop 0.2.0+**：设置 / 存档 / 失焦 / Rebind / UI 均在 Desktop。云同步 **仅 roaming**（local 显示设置永不上传）。
 
 ## 安装
 
-1. manifest：desktop **0.2.0** + steam **0.4.0**
-2. Steamworks.NET peer；`steam_appid.txt`
-3. Desktop 服务 → Steam bootstrap → Overlay → Remote 装饰 → Achievements / Cloud coordinator
+```json
+"com.source27.cascade.integrations.desktop": "file:../Integrations/Desktop",
+"com.source27.cascade.integrations.steam": "file:../Integrations/Steam",
+"com.unity.inputsystem": "1.14.2"
+```
+
+1. Peer：Steamworks.NET；项目根 `steam_appid.txt`
+2. 接线顺序：Desktop 服务 → `SteamClientBootstrap` → Overlay → Remote 装饰 → Achievements / `SteamCloudSaveCoordinator`
 
 ## 云同步清单
 
-| 数据 | 路径/键 | Steam Remote？ |
-|------|---------|----------------|
-| 显示/画质 | `settings.local.json` | **否** |
-| 音量/语言等 | roaming + prefs 键 | 可选 |
-| 键位 overrides | `input_overrides.json` | 概念可；当前未自动同步 |
-| JSON 槽位 | `slot{N}.json` / `cascade-desktop-slot{N}.json` | 可选 + 冲突 Resolve |
-| 成就 | SteamUserStats | 是（平台侧） |
+| 数据 | Steam Remote？ |
+|------|----------------|
+| `settings.local.json` | **否** |
+| roaming + prefs | 可选 |
+| `input_overrides.json` | 概念可；当前未自动同步 |
+| JSON 槽位 | 可选 + Resolve |
+| 成就 | 是（平台侧） |
 
-## Achievements
+## API 要点
 
-`SteamAchievementService.Create()` → `IAchievementService`。
-
-## 冲突
-
-`SteamCloudSaveCoordinator` + Desktop `CloudSaveConflictResolver`。
+- **客户端**：`SteamClientBootstrap.Create()` → `Init()`
+- **成就**：`SteamAchievementService.Create()` → Desktop `IAchievementService`
+- **云存**：`SteamCloudSaveCoordinator.TryCompare` / `Resolve`（写双端）

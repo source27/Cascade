@@ -1,44 +1,30 @@
 # Desktop 集成速查（0.2.0）
 
-## Local / Roaming 拆分
+完整说明：[`../README.md`](../README.md)
 
-```
-GameSettingsService.Load()
-  → settings.local.json + settings.roaming.json → Current
-  →（可选）prefs 仅补齐 roaming
+## 安装
 
-GameSettingsService.Save()
-  → 双文件；EnablePrefsMirror 时只上传 roaming JSON
+```json
+"com.source27.cascade.integrations.desktop": "file:../Integrations/Desktop",
+"com.unity.inputsystem": "1.14.2"
 ```
 
-**Steam 不得 FileWrite 显示设置。**
+## Local / Roaming
 
-键位 overrides：`cascade-desktop/input_overrides.json` — roaming-eligible 概念，当前本机；**不要**把 display 塞进 overrides。
-
-## Rebind
-
-`RebindHelper` / `RebindConflictDetector` / `StartRebindWithConflictCheck`。
-
-## Runtime UI
-
-`DesktopModalCanvas` · `QuitConfirmModal` · `GamepadDisconnectToast` · `SimpleSettingsPanel.Show(service)`  
-（面板标签区分 LOCAL / ROAMING）
-
-## Mixer
-
-Exposed：`MasterVol` `BgmVol` `SfxVol` → `AudioMixerVolumes`。  
-Samples 或菜单 `Cascade/Desktop/Create Desktop Master Mixer`。
-
-## 云存档冲突
+| 文件 | 内容 | 云 |
+|------|------|-----|
+| `settings.local.json` | 分辨率/全屏/VSync/帧率/画质 | **永不** |
+| `settings.roaming.json` | 音量/灵敏度/语言 | 可选（仅 roaming） |
+| `input_overrides.json` | 键位 overrides | 概念可；当前本机 |
 
 ```csharp
-slots.TryLoadWithRemote(localStore, remoteStore, slot, out var conflict);
-// conflict.suggested: None | UseLocal | UseRemote | Manual
+var settings = new GameSettingsService();
+settings.LoadAndApply();
+settings.Save(); // EnablePrefsMirror 时只镜像 roaming
 ```
 
-Steam 侧用 `SteamCloudSaveCoordinator.Resolve(slot, UseLocal|UseRemote)` 写回两侧。
+## API 要点
 
-## 与 Steam 组合
-
-1. Desktop：`GameSettingsService`、`JsonSaveSlotService`、`FocusLossPauseDriver`、`RebindHelper`
-2. Steam：`SteamClientBootstrap`、`SteamOverlayPauseDriver`、`SteamRemoteStorageSaveStore`、`SteamRemoteJsonSaveStore`、`SteamAchievementService.Create()`、`SteamCloudSaveCoordinator`
+- **设置**：`GameSettingsService` — LoadAndApply / Apply / Save；镜像不含 local
+- **存档**：`JsonSaveSlotService` + `TryLoadWithRemote` → `CloudSaveConflictResolution`
+- **Rebind / UI**：`RebindHelper.StartRebindWithConflictCheck` · `SimpleSettingsPanel.Show` · `QuitConfirmModal.Create`

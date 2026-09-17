@@ -1,8 +1,9 @@
 # Cascade Integrations — Steam
 
-`com.source27.cascade.integrations.steam` **0.4.0** — **仅 Steam** 能力。设置 / 本地存档 / 失焦 / Rebind / UI → **`com.source27.cascade.integrations.desktop` 0.2.0+**。
+`com.source27.cascade.integrations.steam` **0.4.0** — **仅 Steam** 能力。  
+设置 / 本地存档 / 失焦 / Rebind / UI → **`com.source27.cascade.integrations.desktop` 0.2.0+**（本包依赖 Desktop）。
 
-不捆绑 Steamworks 原生 DLL。
+不捆绑 Steamworks 原生 DLL。速查：[`Docs/INTEGRATION.md`](Docs/INTEGRATION.md)
 
 ## 依赖
 
@@ -27,7 +28,15 @@ Peer：`com.rlabrecque.steamworks.net` → asmdef `versionDefines` → `STEAMWOR
 
 **不在本包**：`GameSettings*`、`JsonFileSaveStore`、`FocusLossPauseDriver`、`RebindHelper` — 全部在 Desktop。
 
----
+## 云同步范围（仅 roaming）
+
+| 数据 | Steam Remote？ |
+|------|----------------|
+| `settings.local.json`（显示/画质） | **否** |
+| `settings.roaming.json` + prefs 键 | 可选 |
+| `input_overrides.json` | 概念可；当前未自动同步 |
+| JSON 槽位 `slot{N}.json` | 可选 + 冲突 Resolve |
+| 成就 SteamUserStats | 是（平台侧） |
 
 ## 成就
 
@@ -41,9 +50,7 @@ ach.Unlock("ACH_FIRST_WIN");
 
 接口以 Desktop `IAchievementService` / `NullAchievementService` 为规范。
 
----
-
-## 云存档冲突策略
+## 云存档冲突
 
 1. Desktop `CloudSaveConflictResolver`：较新 `updatedUtc` 胜；相等 → Manual；缺一侧 → 用另一侧。
 2. `SteamCloudSaveCoordinator`：
@@ -61,11 +68,11 @@ else
     coord.ResolveSuggested(0);
 ```
 
-**显示设置永不经 Remote Storage。** 仅 roaming prefs + JSON 槽位 +（可选未来）input_overrides JSON。
-
----
+**显示设置永不经 Remote Storage。**
 
 ## 组合根示例
+
+先 Desktop，再 Steam：
 
 ```csharp
 var settings = new GameSettingsService();
@@ -90,13 +97,9 @@ Integrations/Steam/
 ├── README.md
 ├── Docs/INTEGRATION.md
 └── Runtime/
-    ├── Cascade.Integrations.Steam.asmdef
-    ├── ISteamClient.cs / NullSteamClient.cs / SteamClientBootstrap.cs
-    ├── SteamOverlayPauseDriver.cs
-    ├── SteamRemoteStorageSaveStore.cs
-    ├── Achievements/SteamAchievementService.cs
-    └── Save/
-        ├── SteamRemoteJsonSaveStore.cs
-        ├── SteamRemoteOnlyJsonSaveStore.cs
-        └── SteamCloudSaveCoordinator.cs
+    ├── ISteamClient / NullSteamClient / SteamClientBootstrap
+    ├── SteamOverlayPauseDriver
+    ├── SteamRemoteStorageSaveStore
+    ├── Achievements/SteamAchievementService
+    └── Save/             # RemoteJson / RemoteOnlyJson / CloudSaveCoordinator
 ```

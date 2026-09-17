@@ -18,10 +18,10 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 │   └── package.json
 ├── Integrations/
 │   ├── YooAsset/                    可选资源集成（含更新 API 在具体类型上）
-│   ├── Desktop/                     # com.source27.cascade.integrations.desktop
 │   ├── Addressables/                可选资源集成（load-only）
-│   ├── Steam/                      # com.source27.cascade.integrations.steam
-│   └── InputGlyphs/                 # com.source27.cascade.integrations.inputglyphs
+│   ├── Desktop/                     PC 壳：设置 / 存档 / 重绑定 / 运行时 UI
+│   ├── Steam/                       Steam 能力（依赖 Desktop）
+│   └── InputGlyphs/                 手柄/键鼠 Glyph 桥接
 ├── Modules/
 │   ├── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
 │   └── LocalizationTools/           可选本地化作者工具（Sheet→JSON）
@@ -118,6 +118,20 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 主包 **无** HybridCLR 依赖。热更 dll 加载、AOT 元数据、Patch UI、构建窗均在 Mobile。  
 热更入口约定（Starter 侧）：`public static UniTask<string> Start(IGameHost, CancellationToken)`，默认 `GameLogic.GameLogicEntry`。
 
+## PC / Steam 壳
+
+可选 Integrations，面向桌面独立游戏（Indie Starter 已预留接线）：
+
+| 包 | 说明 |
+|----|------|
+| [`Integrations/Desktop`](Integrations/Desktop/README.md) | 本机/漫游设置、JSON 多槽存档、Rebind、运行时 UI、失焦暂停等（**与 Steam 无关**） |
+| [`Integrations/Steam`](Integrations/Steam/README.md) | Overlay / Remote Storage / 成就 / 云存协调（**依赖 Desktop**） |
+| [`Integrations/InputGlyphs`](Integrations/InputGlyphs/README.md) | 手柄/键鼠 Glyph 桥接 |
+
+Indie 接线步骤：[`Starters/Indie/Assets/Scripts/DesktopShell/README.md`](Starters/Indie/Assets/Scripts/DesktopShell/README.md)。
+
+硬性规则：**local 显示/画质永不云同步**；仅 roaming prefs + JSON 槽位可经 Steam Remote Storage。
+
 ## 文档索引
 
 | 文档 | 内容 |
@@ -128,6 +142,10 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 | [`docs/coding.md`](docs/coding.md) | 组合根 / 服务 / 资源 / UI / 事件 |
 | [`docs/adr/`](docs/adr/) | ADR（含 0006–0019 结构改造） |
 | Starter READMEs | 各工程 Play / 打包步骤 |
+| [`Integrations/Desktop/README.md`](Integrations/Desktop/README.md) | PC 壳：设置 / 存档 / Rebind / UI |
+| [`Integrations/Steam/README.md`](Integrations/Steam/README.md) | Steam（依赖 Desktop） |
+| [`Integrations/InputGlyphs/README.md`](Integrations/InputGlyphs/README.md) | Glyph 桥接 |
+| [`Starters/Indie/.../DesktopShell/README.md`](Starters/Indie/Assets/Scripts/DesktopShell/README.md) | Indie PC / Steam 接线 |
 
 ## 状态
 
