@@ -18,7 +18,10 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 │   └── package.json
 ├── Integrations/
 │   ├── YooAsset/                    可选资源集成（含更新 API 在具体类型上）
-│   └── Addressables/                可选资源集成（load-only）
+│   ├── Desktop/                     # com.source27.cascade.integrations.desktop
+│   ├── Addressables/                可选资源集成（load-only）
+│   ├── Steam/                      # com.source27.cascade.integrations.steam
+│   └── InputGlyphs/                 # com.source27.cascade.integrations.inputglyphs
 ├── Modules/
 │   ├── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
 │   └── LocalizationTools/           可选本地化作者工具（Sheet→JSON）

@@ -1,0 +1,30 @@
+{
+  "name": "com.source27.cascade.integrations.desktop",
+  "displayName": "Cascade Integrations Desktop",
+  "version": "0.2.0",
+  "unity": "2022.3",
+  "description": "PC shell helpers for Cascade: local/roaming game settings, JSON multi-slot saves, rebind+conflict, runtime UI builders, focus-loss pause, audio mixer volumes, cursor lock, logging, cloud-save conflict helpers. Steam-agnostic; Steam package depends on this.",
+  "author": {
+    "name": "source27"
+  },
+  "keywords": [
+    "cascade",
+    "desktop",
+    "pc",
+    "settings",
+    "save",
+    "rebind",
+    "integration"
+  ],
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.unity.inputsystem": "1.14.2"
+  },
+  "samples": [
+    {
+      "displayName": "Default Game Settings JSON",
+      "description": "Sample local/roaming settings JSON files.",
+      "path": "Samples~"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "resolutionWidth": 1920,
+  "resolutionHeight": 1080,
+  "fullscreenMode": 1,
+  "vSync": true,
+  "targetFrameRate": 60,
+  "qualityLevel": 2
+}

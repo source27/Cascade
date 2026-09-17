@@ -1,0 +1,20 @@
+{
+    "name": "Cascade.Integrations.InputGlyphs",
+    "rootNamespace": "Cascade.Integrations.InputGlyphs",
+    "references": [
+        "Cascade.Service",
+        "Unity.InputSystem",
+        "InputGlyphs",
+        "InputGlyphs.Display",
+        "InputGlyphs.Loaders"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

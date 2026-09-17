@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "resolutionWidth": 1920,
+  "resolutionHeight": 1080,
+  "fullscreenMode": 1,
+  "vSync": true,
+  "targetFrameRate": 60,
+  "qualityLevel": 2,
+  "masterVolume": 1.0,
+  "bgmVolume": 0.8,
+  "sfxVolume": 1.0,
+  "mouseSensitivity": 1.0,
+  "gamepadDeadzone": 0.15,
+  "language": "zh-CN",
+  "_comment": "Runtime uses settings.local.json + settings.roaming.json; this combined sample is for reference only."
+}

@@ -1,0 +1,21 @@
+{
+  "name": "com.source27.cascade.integrations.inputglyphs",
+  "displayName": "Cascade Integrations InputGlyphs",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "Game-agnostic Cascade bridge for InputGlyphs: bootstrap gate, InputAction glyph service, and control-scheme watcher. InputGlyphs itself is a peer dependency.",
+  "author": {
+    "name": "source27"
+  },
+  "keywords": [
+    "cascade",
+    "input",
+    "glyphs",
+    "inputglyphs",
+    "integration"
+  ],
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.unity.inputsystem": "1.14.2"
+  }
+}

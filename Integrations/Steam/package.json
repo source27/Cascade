@@ -1,0 +1,21 @@
+{
+  "name": "com.source27.cascade.integrations.steam",
+  "displayName": "Cascade Integrations Steam",
+  "version": "0.4.0",
+  "unity": "2022.3",
+  "description": "Optional Steamworks.NET peer integration for Cascade: client bootstrap, overlay pause, Remote Storage prefs decorator, JSON-slot remote sync, Steam achievements, cloud-save conflict coordinator. Settings/saves/focus-loss live in com.source27.cascade.integrations.desktop. Does not bundle Steamworks DLLs.",
+  "author": {
+    "name": "source27"
+  },
+  "keywords": [
+    "cascade",
+    "steam",
+    "steamworks",
+    "achievements",
+    "integration"
+  ],
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.source27.cascade.integrations.desktop": "0.2.0"
+  }
+}

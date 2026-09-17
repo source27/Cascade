@@ -1,0 +1,23 @@
+{
+    "name": "Cascade.Integrations.Steam",
+    "rootNamespace": "Cascade.Integrations.Steam",
+    "references": [
+        "Cascade.Service",
+        "Cascade.Integrations.Desktop"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "",
+            "define": "STEAMWORKS_NET"
+        }
+    ],
+    "noEngineReferences": false
+}

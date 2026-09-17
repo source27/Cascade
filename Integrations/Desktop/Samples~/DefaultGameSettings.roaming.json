@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "masterVolume": 1.0,
+  "bgmVolume": 0.8,
+  "sfxVolume": 1.0,
+  "mouseSensitivity": 1.0,
+  "gamepadDeadzone": 0.15,
+  "language": "zh-CN"
+}

@@ -7,6 +7,9 @@
 | `Cascade/` | `com.source27.cascade` | 总是 |
 | `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | 手游 / Yoo 资源管线 |
 | `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 独立游戏 / Addressables |
+| `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等 |
+| `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam / PC 壳（peer Steamworks.NET） |
+| `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs） |
 | `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时 |
 | `Modules/LocalizationTools/` | `com.source27.cascade.modules.localizationtools` | 需要 Google Sheet→JSON 等本地化作者工具时 |
 
@@ -35,6 +38,11 @@ https://github.com/source27/Cascade.git?path=Cascade
 ```json
 "com.source27.cascade.integrations.yooasset": "https://github.com/source27/Cascade.git?path=Integrations/YooAsset",
 "com.source27.cascade.integrations.addressables": "https://github.com/source27/Cascade.git?path=Integrations/Addressables",
+"com.source27.cascade.integrations.desktop": "https://github.com/source27/Cascade.git?path=Integrations/Desktop",
+"com.source27.cascade.integrations.steam": "https://github.com/source27/Cascade.git?path=Integrations/Steam",
+"com.source27.cascade.integrations.inputglyphs": "https://github.com/source27/Cascade.git?path=Integrations/InputGlyphs",
+"com.source27.cascade.integrations.steam": "https://github.com/source27/Cascade.git?path=Integrations/Steam",
+"com.source27.cascade.integrations.inputglyphs": "https://github.com/source27/Cascade.git?path=Integrations/InputGlyphs",
 "com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
 "com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
 ```
@@ -133,3 +141,14 @@ Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync
 
 文档与契约只保证 **load-only** `IResourceService`。  
 若从 Yoo 换到 Addressables：改组合根工厂与 init options，并删除 Mobile 更新/热更段（或改用 Indie 形状）。更新编排 **不会** 经核心契约自动迁移。
+
+### Desktop 设置：Local vs Roaming
+
+- **Local** `cascade-desktop/settings.local.json`：分辨率/全屏/VSync/帧率/画质 — **永不**上云。
+- **Roaming** `cascade-desktop/settings.roaming.json`：音量/灵敏度/语言 — 可选经 Steam Remote Storage。
+
+### Desktop / Steam 增量（0.2 / 0.4）
+
+- Desktop：`RebindHelper` / 冲突检测、运行时设置/退出/断柄 UI、云存冲突比较、`Samples~/Audio` Mixer。
+- Steam：`SteamAchievementService`、`SteamCloudSaveCoordinator`。
+- Indie：见 `Starters/Indie/Assets/Scripts/DesktopShell/README_APPLY.md`。
