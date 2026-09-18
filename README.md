@@ -110,6 +110,7 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 `IResourceService` **仅** init/load/unload（无版本/下载方法）。
 
+- **默认**：`UnityResourcesService`（主包内置，Unity `Resources` + `SceneManager`）——不装集成包也能跑
 - **YooAsset**：集成包；更新 API 在 `YooAssetResourceService` 具体类型上，由 Mobile `RunGameAsync` 调用  
 - **Addressables**：集成包 load-only；`LoadRawBytesAsync` = TextAsset address  
 

@@ -55,7 +55,7 @@ _Avoid_: 把 `IGameHost` 当服务目录、在 Host 上挂 UI/本地化、为方
 _Avoid_: 把 `UpdateLoop` 具体类型塞进宿主、让每个消费者各自 `AddComponent` 一个 MonoBehaviour 循环
 
 **资源提供者（Resource Provider）**:
-`IResourceService` 的具体实现，只存在于集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。
+`IResourceService` 的具体实现。**默认实现** `UnityResourcesService`（`UnityEngine.Resources` + `SceneManager`）在主包，作为 Bootstrap 的默认资源服务；YooAsset / Addressables 等实现在集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。换 provider 只改组合根的 `CreateResourceService()`。
 
 **代码热更 / 资源热更**:
 仅 Mobile Starter（及 fork 项目）领域内的概念与实现。Cascade 主包不依赖 HybridCLR，也不编排资源更新。

@@ -9,11 +9,14 @@
 | 钩子 | 用途 |
 |------|------|
 | `CreateLogService` | 返回 `ILogService`（默认 `UnityLogService` + `LogLevel.Info`）；日志级别策略与 `environment` 字段写在子类 |
-| `CreateResourceService` | 返回集成包中的 `IResourceService` 实现 |
-| `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`） |
+| `CreateResourceService` | 返回 `IResourceService`（默认 `UnityResourcesService`，即 Unity `Resources`） |
+| `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`；Resources 实现忽略它） |
+| `CreateSaveService` / `CreateAudioService` / `CreateNetworkService` / `CreateAtlasSpriteService` | 其余默认服务的工厂（PlayerPrefs / Resource 驱动 / Null / 图集索引）；**返回 null = 不注册该服务** |
 | `CreateUpdateLoop` | 创建注册为 `IUpdateLoop` 的循环（默认 `UpdateLoop`；`RegisterServices` 里已注册者优先） |
 | `RegisterServices` | `base` + 增游戏服务；本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
+
+`CreateLogService` / `CreateResourceService` 返回 null 会直接报错（流水线必需）；其余默认服务 null 即跳过注册。追加自定义服务：`override RegisterServices` 里 `base` 之后 `registry.Register<T>(…)`。
 
 环境分级（`BootstrapEnvironment` Dev/Beta/Gold）、版本覆盖、`[SerializeField]` 配置字段都在 **Starter 子类**：主包 `BootstrapBase` 不含这些，也没有 `BootstrapConfiguration`（ADR 0023）。
 
@@ -42,6 +45,8 @@ var f = host.Services.Get<IMyFeature>();
 - `UnloadUnused` + 句柄 `Release`  
 
 **没有** `RequestVersion` / `Download` 等。  
+
+**默认实现**：`UnityResourcesService`（主包，`UnityEngine.Resources` + `SceneManager`）——资源放 `Resources/` 文件夹、原始字节用 TextAsset、场景进 Build Settings；不装任何集成包即可跑通。方法签名仍是异步，换 provider 不动调用点。
 
 手游资源热更：持有 `YooAssetResourceService` 具体类型（或 Starter 内包装），在 `RunGameAsync` 里调其公开更新 API。DTO 名为 `YooAssetDownloadProgress` / `YooAssetDownloadPlan`。
 

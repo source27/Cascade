@@ -16,7 +16,7 @@ Cascade 同时交付两样东西：
 主包提供：
 
 - 薄 **Bootstrap** 流水线与组合根基类  
-- **Service** 契约与默认实现（日志、音频、存档…；本地化只留契约）  
+- **Service** 契约与默认实现：日志 = Unity 日志、资源 = Unity `Resources`、存档 = PlayerPrefs、音频 = Resource 驱动、网络 = Null、图集 = 索引服务（本地化只留契约，实现见模块）  
 - **Core** 基础设施（事件、更新循环、GameFlow）  
 
 可选 Module 提供：
@@ -59,7 +59,7 @@ Bootstrap 默认顺序：
 
 ## 资源契约 load-only
 
-`IResourceService` 只有 init / load / unload。版本与下载 API 留在具体集成类型上（如 `YooAssetResourceService`），由 Mobile 组合根持有具体引用并调用。Addressables 集成刻意不对称：只做加载，不封装 catalog 更新。
+`IResourceService` 只有 init / load / unload。**默认实现**在主包：`UnityResourcesService`（`UnityEngine.Resources`）——核心包只给最基础的实现，不装集成包也能跑。版本与下载 API 留在具体集成类型上（如 `YooAssetResourceService`），由 Mobile 组合根持有具体引用并调用。Addressables 集成刻意不对称：只做加载，不封装 catalog 更新。
 
 ## 扩展方式
 

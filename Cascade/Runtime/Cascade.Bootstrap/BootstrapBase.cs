@@ -74,7 +74,13 @@ namespace Cascade.Bootstrap
             return UniTask.CompletedTask;
         }
 
-        protected virtual IResourceService CreateResourceService() => null;
+        /// <summary>
+        /// The registered <see cref="IResourceService"/>. Defaults to <see cref="UnityResourcesService"/>
+        /// (UnityEngine.Resources) so a project runs with no integration package; override to plug in
+        /// YooAsset / Addressables. Returning null skips registration (the pipeline then fails on
+        /// <c>Services.Get&lt;IResourceService&gt;()</c>).
+        /// </summary>
+        protected virtual IResourceService CreateResourceService() => new UnityResourcesService();
 
         /// <summary>
         /// Provider-specific resource options. Environment, version and other project policy live in the
@@ -92,6 +98,20 @@ namespace Cascade.Bootstrap
             MinimumLevel = LogLevel.Info
         };
 
+        /// <summary>Registered <see cref="ISaveService"/>; default is PlayerPrefs.</summary>
+        protected virtual ISaveService CreateSaveService() => new PlayerPrefsSaveService();
+
+        /// <summary>Registered <see cref="IAudioService"/>; default is Resource-backed with a nullable log.</summary>
+        protected virtual IAudioService CreateAudioService(IResourceService resources, ILogService log) =>
+            new AudioService(resources, log);
+
+        /// <summary>Registered <see cref="INetworkService"/>; default is the null implementation.</summary>
+        protected virtual INetworkService CreateNetworkService() => new NullNetworkService();
+
+        /// <summary>Registered <see cref="IAtlasSpriteService"/>; default reads the AtlasMapping index through <see cref="IResourceService"/>.</summary>
+        protected virtual IAtlasSpriteService CreateAtlasSpriteService(IResourceService resources, ILogService log) =>
+            new AtlasSpriteService(resources, log);
+
         /// <summary>
         /// Creates the frame loop registered as <see cref="IUpdateLoop"/> once <see cref="RegisterServices"/>
         /// has returned (the log service must exist first). An <see cref="IUpdateLoop"/> registered inside
@@ -99,20 +119,37 @@ namespace Cascade.Bootstrap
         /// </summary>
         protected virtual IUpdateLoop CreateUpdateLoop(ILogService log) => new UpdateLoop(log);
 
+        /// <summary>
+        /// Registers the framework defaults. Call <c>base.RegisterServices(registry)</c> first, then add or
+        /// replace: every default comes from a <c>Create…</c> hook (override the hook) and extra services are
+        /// just <c>registry.Register&lt;T&gt;(…)</c>.
+        /// </summary>
         protected virtual void RegisterServices(IServiceRegistry registry)
         {
             var log = CreateLogService()
-                ?? throw new InvalidOperationException("CreateLogService() returned null. Provide an ILogService.");
+                ?? throw new InvalidOperationException(
+                    "CreateLogService() returned null; the pipeline needs an ILogService.");
             registry.Register<ILogService>(log);
             registry.Register<IEventBus>(new EventBus(log));
+
             var resources = CreateResourceService()
                 ?? throw new InvalidOperationException(
-                    "CreateResourceService() returned null. Provide an IResourceService from an integration package.");
+                    "CreateResourceService() returned null; the pipeline needs an IResourceService. " +
+                    "Return the default UnityResourcesService or a provider from an integration package.");
             registry.Register<IResourceService>(resources);
-            registry.Register<IAudioService>(new AudioService(resources, log));
-            registry.Register<ISaveService>(new PlayerPrefsSaveService());
-            registry.Register<INetworkService>(new NullNetworkService());
-            registry.Register<IAtlasSpriteService>(new AtlasSpriteService(resources, log));
+
+            RegisterIfNotNull(registry, CreateAudioService(resources, log));
+            RegisterIfNotNull(registry, CreateSaveService());
+            RegisterIfNotNull(registry, CreateNetworkService());
+            RegisterIfNotNull(registry, CreateAtlasSpriteService(resources, log));
+        }
+
+        /// <summary>Optional defaults: a hook returning null simply means “do not register this service”.</summary>
+        private static void RegisterIfNotNull<TService>(IServiceRegistry registry, TService service)
+            where TService : class
+        {
+            if (service != null)
+                registry.Register(service);
         }
 
         private void OnDestroy()

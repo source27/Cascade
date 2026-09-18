@@ -5,8 +5,8 @@
 | 路径 | UPM name | 何时安装 |
 |------|----------|----------|
 | `Cascade/` | `com.source27.cascade` | 总是 |
-| `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | 手游 / Yoo 资源管线 |
-| `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 独立游戏 / Addressables |
+| `Integrations/YooAsset/` | `com.source27.cascade.integrations.yooasset` | 需要 Yoo 资源管线 / 资源热更编排时（默认用主包 `UnityResourcesService`） |
+| `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 需要 Addressables catalog/远端加载时 |
 | `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等（需 `com.unity.inputsystem`） |
 | `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam-only（依赖 Desktop；peer Steamworks.NET） |
 | `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs `com.eviltwo.input-glyphs`；两者必须同装） |
@@ -96,7 +96,7 @@ Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json
 
 ## 从零组装（不 fork Starter）
 
-1. 空工程安装主包 + 选定集成包  
+1. 空工程安装主包（默认已经能跑：Unity 日志 / Unity `Resources` / PlayerPrefs；需要 bundle、catalog 或资源更新编排时再加 `Integrations/*`）  
 2. 场景挂载继承 `Cascade.Bootstrap.BootstrapBase` 的组合根
 3. Override：
 
@@ -152,7 +152,7 @@ Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync
 
 ## 换资源后端
 
-文档与契约只保证 **load-only** `IResourceService`。  
+文档与契约只保证 **load-only** `IResourceService`。默认实现是主包的 `UnityResourcesService`（`Resources/` 文件夹），因此不装集成包也能从零跑通。  
 若从 Yoo 换到 Addressables：改组合根工厂与 init options，并删除 Mobile 更新/热更段（或改用 Indie 形状）。更新编排 **不会** 经核心契约自动迁移。
 
 ## PC / Steam Integrations
