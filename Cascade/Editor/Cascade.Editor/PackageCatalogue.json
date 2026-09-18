@@ -1,0 +1,112 @@
+{
+  "repository": "https://github.com/source27/Cascade.git",
+  "note": "可选包目录：Cascade/集成与模块 窗口据此列出并安装。新增/删除模块或集成时必须同步此文件（validate-upm.mjs 会校验目录与条目一一对应）。",
+  "packages": [
+    {
+      "name": "com.source27.cascade.modules.ui",
+      "displayName": "Cascade UI",
+      "kind": "模块",
+      "path": "Modules/UI",
+      "when": "需要 UI 栈：页面/视图基类、UI 树分区、Roslyn 页面注册表生成器、图集精灵服务",
+      "peers": []
+    },
+    {
+      "name": "com.source27.cascade.modules.audio",
+      "displayName": "Cascade Audio",
+      "kind": "模块",
+      "path": "Modules/Audio",
+      "when": "需要音频：BGM/SFX/Voice 三通道、AudioSource 池、Mixer 路由（Bootstrap 不默认注册，装后在组合根登记）",
+      "peers": []
+    },
+    {
+      "name": "com.source27.cascade.modules.localization",
+      "displayName": "Cascade Localization",
+      "kind": "模块",
+      "path": "Modules/Localization",
+      "when": "需要默认本地化栈（资源 catalog + 语言表）或 Google Sheet→JSON 作者工具",
+      "peers": []
+    },
+    {
+      "name": "com.source27.cascade.modules.uiextras",
+      "displayName": "Cascade UI Extras",
+      "kind": "模块",
+      "path": "Modules/UiExtras",
+      "when": "需要 ScaleButton / LoopScroll 列表绑定（依赖 Cascade UI 模块）",
+      "peers": [
+        {
+          "name": "com.annulusgames.lit-motion",
+          "url": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion#0b4c588ee75a07198841d92aab653e6b39445089",
+          "note": "LitMotion"
+        },
+        {
+          "name": "com.annulusgames.lit-motion.animation",
+          "url": "https://github.com/AnnulusGames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation#0b4c588ee75a07198841d92aab653e6b39445089",
+          "note": "LitMotion.Animation"
+        },
+        {
+          "name": "me.qiankanglai.loopscrollrect",
+          "url": "https://github.com/qiankanglai/LoopScrollRect.git#a74a705e1c9d0f73ea1a441dabb23b22f3283071",
+          "note": "LoopScrollRect"
+        }
+      ]
+    },
+    {
+      "name": "com.source27.cascade.integrations.yooasset",
+      "displayName": "Cascade YooAsset",
+      "kind": "集成",
+      "path": "Integrations/YooAsset",
+      "when": "需要 Yoo 资源管线 / 资源热更编排（默认用主包 UnityResourcesService）",
+      "peers": [
+        {
+          "name": "com.tuyoogame.yooasset",
+          "url": "https://github.com/tuyoogame/YooAsset.git?path=Assets/YooAsset#94422fc41491228eed0999ce4845d7b23ee2b8ae",
+          "note": "YooAsset"
+        }
+      ]
+    },
+    {
+      "name": "com.source27.cascade.integrations.addressables",
+      "displayName": "Cascade Addressables",
+      "kind": "集成",
+      "path": "Integrations/Addressables",
+      "when": "需要 Addressables catalog / 远端加载（load-only，不含更新编排）",
+      "peers": []
+    },
+    {
+      "name": "com.source27.cascade.integrations.desktop",
+      "displayName": "Cascade Desktop",
+      "kind": "集成",
+      "path": "Integrations/Desktop",
+      "when": "PC 壳：local/roaming 设置、JSON 多槽存档、改键、运行时设置 UI、焦点暂停",
+      "peers": []
+    },
+    {
+      "name": "com.source27.cascade.integrations.steam",
+      "displayName": "Cascade Steam",
+      "kind": "集成",
+      "path": "Integrations/Steam",
+      "when": "Steam：Overlay 暂停、Remote Storage、成就、云存协调（依赖 Desktop 集成）",
+      "peers": [
+        {
+          "name": "com.rlabrecque.steamworks.net",
+          "url": "",
+          "note": "Steamworks.NET（Asset Store / 官方仓库自装，本窗口不代装）"
+        }
+      ]
+    },
+    {
+      "name": "com.source27.cascade.integrations.inputglyphs",
+      "displayName": "Cascade InputGlyphs",
+      "kind": "集成",
+      "path": "Integrations/InputGlyphs",
+      "when": "手柄/键鼠 Glyph 桥接；必须与 peer InputGlyphs 同时安装，否则整工程编译失败",
+      "peers": [
+        {
+          "name": "com.eviltwo.input-glyphs",
+          "url": "https://github.com/eviltwo/InputGlyphs.git?path=InputGlyphs/Assets/InputGlyphs",
+          "note": "InputGlyphs（程序集名须为 InputGlyphs / InputGlyphs.Display / InputGlyphs.Loaders）"
+        }
+      ]
+    }
+  ]
+}

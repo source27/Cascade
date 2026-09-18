@@ -16,6 +16,8 @@
 
 主包程序集：`Cascade.Service`、`Cascade.Core`、`Cascade.Bootstrap`、`Cascade.Editor`、`Cascade.Tests`。
 
+> 上面这些可选包可在 Unity 里用 **Cascade → 集成与模块** 窗口装/卸（本地 monorepo 用相对 `file:` 路径，git 安装的主包用 `?path=` + 同 revision pin），不必手改 `manifest.json`。
+
 依赖方向：Integrations / Modules → 主包；Starter → 任选。Steam → Desktop → 主包。UI 栈与本地化栈互不依赖。
 
 ## 安装主包

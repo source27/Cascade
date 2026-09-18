@@ -87,6 +87,15 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 **编译期 peer：** `com.cysharp.unitask`（见上，不进 `package.json`）。  
 主包**不含** uGUI/TMP、2d.sprite、audio、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI（含图集精灵）→ `Modules/UI`，本地化 → `Modules/Localization`，音频 → `Modules/Audio`，其余见 Modules/Integrations。
 
+## 安装可选包
+
+打开 Unity 菜单 **Cascade → 集成与模块**：窗口列出全部可选模块（UI / Audio / Localization / UiExtras）与集成（YooAsset / Addressables / Desktop / Steam / InputGlyphs），显示是否已装，可一键安装/移除或复制 manifest 片段。
+
+- 本地 monorepo 检出 → 用相对 `file:` 路径安装同级目录；
+- git 安装的主包 → 用 `<repo>?path=…` 并按主包同一 revision pin。
+
+实现走 Unity 官方 UPM client（`Client.Add/Remove/List`），不手改 `manifest.json`；第三方 peer（UniTask / LitMotion / LoopScrollRect / YooAsset / InputGlyphs）只展示与复制，版本由项目自己决定。详见 [ADR 0031](docs/adr/0031-package-manager-window.md)。
+
 ## 快速开始
 
 ### 手游
@@ -140,7 +149,7 @@ Indie 接线步骤：[`Starters/Indie/Assets/Scripts/DesktopShell/README.md`](St
 | [`docs/philosophy.md`](docs/philosophy.md) | 设计思想 |
 | [`docs/assembly.md`](docs/assembly.md) | 选包与组装 |
 | [`docs/coding.md`](docs/coding.md) | 组合根 / 服务 / 资源 / UI / 事件 |
-| [`docs/adr/`](docs/adr/) | ADR（含 0006–0022 结构改造） |
+| [`docs/adr/`](docs/adr/) | ADR（含 0006–0031 结构改造） |
 | Starter READMEs | 各工程 Play / 打包步骤 |
 | [`Integrations/Desktop/README.md`](Integrations/Desktop/README.md) | PC 壳：设置 / 存档 / Rebind / UI |
 | [`Integrations/Steam/README.md`](Integrations/Steam/README.md) | Steam（依赖 Desktop） |

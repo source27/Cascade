@@ -224,6 +224,85 @@ for (const [label, path] of Object.entries(starterManifests)) {
   }
 }
 
+// --- optional-package catalogue must mirror the repo layout ---
+const cataloguePath = join(repoRoot, 'Cascade', 'Editor', 'Cascade.Editor', 'PackageCatalogue.json');
+requireFile(cataloguePath, 'Cascade/Editor/Cascade.Editor/PackageCatalogue.json');
+const catalogue = readJson(cataloguePath);
+if (catalogue) {
+  const entries = catalogue.packages ?? [];
+  const listed = new Map(entries.map((entry) => [entry.path, entry]));
+  const actual = [];
+  for (const root of ['Modules', 'Integrations']) {
+    const dir = join(repoRoot, root);
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (statSync(full).isDirectory() && existsSync(join(full, 'package.json'))) actual.push(`${root}/${name}`);
+    }
+  }
+  for (const dir of actual) {
+    if (!listed.has(dir)) fail(`PackageCatalogue.json is missing ${dir} (Cascade 集成与模块 window would not list it)`);
+  }
+  for (const [dir, entry] of listed) {
+    if (!actual.includes(dir)) fail(`PackageCatalogue.json lists ${dir}, but no package.json lives there`);
+    for (const field of ['name', 'displayName', 'kind', 'path', 'when']) {
+      if (!entry[field]) fail(`PackageCatalogue.json entry ${dir} is missing "${field}"`);
+    }
+    const pkg = readJson(join(repoRoot, dir, 'package.json'));
+    if (pkg && pkg.name !== entry.name) {
+      fail(`PackageCatalogue.json entry ${dir} name mismatch: ${entry.name} vs ${pkg.name}`);
+    }
+  }
+}
+
+// --- every Cascade module/integration assembly a starter references must be in its manifest ---
+const assemblyToPackage = {};
+for (const root of ['Modules', 'Integrations']) {
+  const dir = join(repoRoot, root);
+  if (!existsSync(dir)) continue;
+  for (const name of readdirSync(dir)) {
+    const packageJson = join(dir, name, 'package.json');
+    if (!existsSync(packageJson)) continue;
+    const pkg = readJson(packageJson);
+    if (!pkg) continue;
+    const stack = [join(dir, name)];
+    while (stack.length > 0) {
+      const current = stack.pop();
+      for (const entry of readdirSync(current, { withFileTypes: true })) {
+        if (entry.name.endsWith('~')) continue;
+        const full = join(current, entry.name);
+        if (entry.isDirectory()) stack.push(full);
+        else if (entry.name.endsWith('.asmdef')) {
+          const asmdef = readJson(full);
+          if (asmdef && asmdef.name) assemblyToPackage[asmdef.name] = pkg.name;
+        }
+      }
+    }
+  }
+}
+for (const [label, path] of Object.entries(starterManifests)) {
+  const manifest = readJson(path);
+  if (!manifest || !manifest.dependencies) continue;
+  const stack = [join(repoRoot, label, 'Assets')];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!existsSync(current)) continue;
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const full = join(current, entry.name);
+      if (entry.isDirectory()) stack.push(full);
+      else if (entry.name.endsWith('.asmdef')) {
+        const asmdef = readJson(full);
+        for (const reference of asmdef?.references ?? []) {
+          const pkgName = assemblyToPackage[reference];
+          if (pkgName && !manifest.dependencies[pkgName]) {
+            fail(`${label} references ${reference} (${pkgName}) but Packages/manifest.json does not depend on it`);
+          }
+        }
+      }
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error('validate-upm failed:');
   for (const error of errors) console.error(`  - ${error}`);
