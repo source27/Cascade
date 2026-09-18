@@ -11,8 +11,6 @@ namespace Cascade.Bootstrap
     public class BootstrapBase : MonoBehaviour
     {
         private ServiceRegistry _registry;
-        private IUpdateLoop _updateLoop;
-        private UnityUpdateDriver _updateDriver;
         private IGameHost _host;
         private CancellationTokenSource _runCts;
 
@@ -45,10 +43,6 @@ namespace Cascade.Bootstrap
             RegisterDefaultServices(_registry);
 
             var log = _registry.Get<ILogService>();
-            _updateLoop = ResolveUpdateLoop(log);
-            _updateDriver = gameObject.GetComponent<UnityUpdateDriver>()
-                            ?? gameObject.AddComponent<UnityUpdateDriver>();
-            _updateDriver.Bind(_updateLoop);
             _host = new GameHost(_registry);
 
             try
@@ -115,6 +109,11 @@ namespace Cascade.Bootstrap
 
             if (!registry.TryGet<ISaveService>(out _))
                 registry.Register<ISaveService>(new PlayerPrefsSaveService());
+
+            // Self-hosted: the loop owns its DontDestroyOnLoad object, so bootstrap holds nothing.
+            // Register (or Replace) another IUpdateLoop to drive time differently — nothing else drives it.
+            if (!registry.TryGet<IUpdateLoop>(out _))
+                registry.Register<IUpdateLoop>(UnityUpdateLoop.Create(log));
         }
 
         private void OnDestroy()
@@ -123,21 +122,6 @@ namespace Cascade.Bootstrap
             _runCts?.Dispose();
             _runCts = null;
             _registry?.Dispose();
-        }
-
-        /// <summary>
-        /// Resolves the frame loop: an <see cref="IUpdateLoop"/> registered in
-        /// <see cref="RegisterServices"/> wins, otherwise the default <see cref="UpdateLoop"/> is created and
-        /// registered (swap it later with <c>registry.Replace&lt;IUpdateLoop&gt;(…)</c>).
-        /// </summary>
-        private IUpdateLoop ResolveUpdateLoop(ILogService log)
-        {
-            if (_registry.TryGet<IUpdateLoop>(out var registered))
-                return registered;
-
-            var loop = new UpdateLoop(log);
-            _registry.Register<IUpdateLoop>(loop);
-            return loop;
         }
     }
 }

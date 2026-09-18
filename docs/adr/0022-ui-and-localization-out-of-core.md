@@ -50,7 +50,7 @@
 
 ## 5. UpdateLoop 注册为服务
 
-- `IUpdateLoop` 增加 `TickUpdate/TickLateUpdate/TickFixedUpdate`（驱动者视角），`UpdateLoop : IUpdateLoop, IDisposable`，`UnityUpdateDriver.Bind(IUpdateLoop)`。
+- `IUpdateLoop` 增加 `TickUpdate/TickLateUpdate/TickFixedUpdate`（驱动者视角）——**后续修订见 [ADR 0032](0032-update-loop-contract-and-implementations.md)：Tick* 已收回实现，契约只留 Register*，默认实现自持宿主**，`UpdateLoop : IUpdateLoop, IDisposable`，`UnityUpdateDriver.Bind(IUpdateLoop)`。
 - `BootstrapBase` 在 `RegisterServices` 之后解析：注册表里已有 `IUpdateLoop` 则采用，否则 `CreateUpdateLoop(log)` 创建并注册；`RegisterServices` 期间 `IUpdateLoop` 不可用。
 
 ## 迁移

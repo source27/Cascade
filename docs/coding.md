@@ -21,6 +21,7 @@
 | `IResourceService` | `UnityResourcesService`（Unity `Resources`） |
 | `IEventBus` | `EventBus`（用上面那份 log） |
 | `ISaveService` | `PlayerPrefsSaveService` |
+| `IUpdateLoop` | `UnityUpdateLoop`（自持隐藏宿主对象；可换 `PlayerLoopUpdateLoop` 或自定义实现） |
 
 音频不在默认集合里——`IAudioService`/`AudioService` 属可选模块 `com.source27.cascade.modules.audio`，需要时在 `RegisterServices` 自行注册。
 

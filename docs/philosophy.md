@@ -48,7 +48,7 @@ Starter  ──►  Cascade + 选定的 Integrations / Modules
 Bootstrap 默认顺序：
 
 1. `RegisterServices`（项目自己的实现先登记，框架默认按缺失补：log / resource / eventbus / save）  
-2. 解析/注册 `IUpdateLoop` + 建 `IGameHost`（只有 `Services`）  
+2. 默认注册 `IUpdateLoop`（`UnityUpdateLoop`，自持宿主）+ 建 `IGameHost`（只有 `Services`）  
 3. `IResourceService.InitializeAsync`（provider 的 options 是它自己的构造参数，见 ADR 0029）  
 4. 虚方法 `RunGameAsync(IGameHost, CancellationToken)`  
 

@@ -3,6 +3,11 @@ using Cascade.Service;
 
 namespace Cascade.Core
 {
+    /// <summary>
+    /// Plain C# core of a frame loop: three callback lists plus <c>Tick*</c> entry points and
+    /// <c>Dispose</c>. The Unity hosts (<see cref="UnityUpdateLoop"/>, <see cref="PlayerLoopUpdateLoop"/>)
+    /// own one of these and drive its ticks; a headless or custom driver can do the same.
+    /// </summary>
     public sealed class UpdateLoop : IUpdateLoop, global::System.IDisposable
     {
         private readonly List<global::System.Action> _updates = new List<global::System.Action>();

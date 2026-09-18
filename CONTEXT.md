@@ -55,8 +55,8 @@ _Avoid_: 把 `IGameHost` 当服务目录、在 Host 上挂 UI/本地化、为方
 显式 `Register` / `Get` / `TryGet` 的服务容器，另有 `Replace`（换实现并 Dispose 旧的、占用原槽位）与 `Remove`（移除并 Dispose）；不使用 DI 框架。`Register` 对同契约重复注册抛异常。扩展方式：组合根 `RegisterServices` 里注册，而非改宿主类型。
 
 **更新循环（Update Loop）**:
-注册表服务 `IUpdateLoop`：消费者 `RegisterUpdate` / `RegisterLateUpdate` / `RegisterFixedUpdate` 拿 `IDisposable`；驱动者（`UnityUpdateDriver` 或自实现）调 `Tick*`。由 Bootstrap 在 `RegisterServices` 与默认补齐之后解析：组合根已注册 `IUpdateLoop` 就用它，否则创建默认 `UpdateLoop`（事后可用 `registry.Replace<IUpdateLoop>(…)` 换）；实现 `IDisposable`，随注册表释放。
-_Avoid_: 把 `UpdateLoop` 具体类型塞进宿主、让每个消费者各自 `AddComponent` 一个 MonoBehaviour 循环
+注册表服务 `IUpdateLoop`：消费者 `RegisterUpdate` / `RegisterLateUpdate` / `RegisterFixedUpdate` 拿 `IDisposable`，**Dispose token 即注销**（不提供 `UnRegister(callback)`——闭包不匹配会静默失败）。契约只面向订阅者，驱动方式由实现决定：默认 `UnityUpdateLoop`（自持 `DontDestroyOnLoad` 宿主对象 + 自身 MonoBehaviour 消息）、可选 `PlayerLoopUpdateLoop`（注入 PlayerLoop、零 GameObject）、纯 C# 内核 `UpdateLoop`（自行驱动或测试）。Bootstrap 默认注册 `UnityUpdateLoop`；换循环 = `Register/Replace<IUpdateLoop>`，`IDisposable` 随注册表释放。
+_Avoid_: 把 `Tick*` 放回契约、由框架持有并驱动循环（`BootstrapBase` 不再有 loop/driver 字段）、提供 `UnRegister(callback)` 形式的反注册、每个消费者各自 `AddComponent` 一个循环
 
 **资源提供者（Resource Provider）**:
 `IResourceService` 的具体实现。**默认实现** `UnityResourcesService`（`UnityEngine.Resources` + `SceneManager`）在主包，作为 Bootstrap 的默认资源服务；YooAsset / Addressables 等实现在集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。换 provider ＝ 在自己的 `RegisterServices` 里 `registry.Register<IResourceService>(…)`（或事后 `registry.Replace<IResourceService>(…)`）。
