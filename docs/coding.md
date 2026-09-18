@@ -8,11 +8,14 @@
 
 | 钩子 | 用途 |
 |------|------|
+| `CreateLogService` | 返回 `ILogService`（默认 `UnityLogService` + `LogLevel.Info`）；日志级别策略与 `environment` 字段写在子类 |
 | `CreateResourceService` | 返回集成包中的 `IResourceService` 实现 |
-| `CreateResourceInitOptions` | 提供者专用 options |
+| `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`） |
 | `CreateUpdateLoop` | 创建注册为 `IUpdateLoop` 的循环（默认 `UpdateLoop`；`RegisterServices` 里已注册者优先） |
 | `RegisterServices` | `base` + 增游戏服务；本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
+
+环境分级（`BootstrapEnvironment` Dev/Beta/Gold）、版本覆盖、`[SerializeField]` 配置字段都在 **Starter 子类**：主包 `BootstrapBase` 不含这些，也没有 `BootstrapConfiguration`（ADR 0023）。
 
 游戏专有服务：
 

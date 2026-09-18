@@ -9,7 +9,10 @@ Unity **2022.3.62f3**. Open `Starters/Indie`.
 1. Open `Assets/Scenes/Bootstrap.unity` and Play.
 2. DoD: Bootstrap → Addressables + localization → `GameFlow` **Main** smoke UI → button **Enter Battle** / **Return Main**.
 
-Composition root: `IndieBootstrapEntry` → `GameEntry` → `Cascade.Core.GameFlow`.
+Composition root: `IndieBootstrapEntry` → `GameEntry` → `Cascade.Core.GameFlow`。
+
+`IndieBootstrapEntry` 自己持有 `environment`（Dev/Beta/Gold，经 `CreateLogService` 决定日志级别）；主包
+`BootstrapBase` 不含环境/版本/配置字段（ADR 0023）。
 
 | Layer | Where |
 | --- | --- |

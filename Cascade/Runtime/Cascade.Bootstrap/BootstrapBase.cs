@@ -10,10 +10,6 @@ namespace Cascade.Bootstrap
 {
     public class BootstrapBase : MonoBehaviour
     {
-        [SerializeField] private BootstrapEnvironment environment = BootstrapEnvironment.Dev;
-        [SerializeField] private string appVersionOverride = string.Empty;
-
-        private BootstrapConfiguration _configuration;
         private ServiceRegistry _registry;
         private IUpdateLoop _updateLoop;
         private UnityUpdateDriver _updateDriver;
@@ -21,11 +17,6 @@ namespace Cascade.Bootstrap
         private IGameHost _host;
         private CancellationTokenSource _runCts;
 
-        public BootstrapEnvironment InspectorEnvironment => environment;
-        public string AppVersion =>
-            string.IsNullOrWhiteSpace(appVersionOverride) ? Application.version : appVersionOverride;
-
-        protected BootstrapConfiguration Configuration => _configuration;
         protected IServiceRegistry Services => _registry;
         protected IGameHost Host => _host;
 
@@ -50,11 +41,6 @@ namespace Cascade.Bootstrap
 
         private async UniTaskVoid RunBootstrapAsync(CancellationToken cancellationToken)
         {
-            _configuration = new BootstrapConfiguration(ResolveEnvironment(), AppVersion)
-            {
-                ResourceInitOptions = CreateResourceInitOptions()
-            };
-
             _registry = new ServiceRegistry();
             RegisterServices(_registry);
 
@@ -69,7 +55,7 @@ namespace Cascade.Bootstrap
             try
             {
                 var resources = _registry.Get<IResourceService>();
-                var options = _configuration.ResourceInitOptions ?? new ResourceInitOptions();
+                var options = CreateResourceInitOptions() ?? new ResourceInitOptions();
                 await resources.InitializeAsync(options, cancellationToken);
 
                 await RunGameAsync(_host, cancellationToken);
@@ -92,7 +78,21 @@ namespace Cascade.Bootstrap
 
         protected virtual IResourceService CreateResourceService() => null;
 
+        /// <summary>
+        /// Provider-specific resource options. Environment, version and other project policy live in the
+        /// starter subclass (<c>MobileBootstrapEntry</c> / <c>IndieBootstrapEntry</c>), not in the framework.
+        /// </summary>
         protected virtual ResourceInitOptions CreateResourceInitOptions() => null;
+
+        /// <summary>
+        /// Creates the registered <see cref="ILogService"/>. Log level policy (dev/beta/gold …) belongs to the
+        /// subclass; the default is a plain info-level Unity logger.
+        /// </summary>
+        protected virtual ILogService CreateLogService() => new UnityLogService
+        {
+            Enabled = true,
+            MinimumLevel = LogLevel.Info
+        };
 
         /// <summary>
         /// Creates the frame loop registered as <see cref="IUpdateLoop"/> once <see cref="RegisterServices"/>
@@ -103,11 +103,8 @@ namespace Cascade.Bootstrap
 
         protected virtual void RegisterServices(IServiceRegistry registry)
         {
-            var log = new UnityLogService
-            {
-                Enabled = true,
-                MinimumLevel = BootstrapConfiguration.DefaultLogLevel(_configuration.Environment)
-            };
+            var log = CreateLogService()
+                ?? throw new InvalidOperationException("CreateLogService() returned null. Provide an ILogService.");
             registry.Register<ILogService>(log);
             registry.Register<IEventBus>(new EventBus(log));
             var resources = CreateResourceService()
@@ -138,15 +135,6 @@ namespace Cascade.Bootstrap
                 ?? throw new InvalidOperationException("CreateUpdateLoop() returned null.");
             _registry.Register<IUpdateLoop>(loop);
             return loop;
-        }
-
-        private BootstrapEnvironment ResolveEnvironment()
-        {
-#if UNITY_EDITOR
-            return environment;
-#else
-            return BootstrapConfiguration.ResolvePlayerEnvironment();
-#endif
         }
     }
 }

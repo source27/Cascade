@@ -112,7 +112,7 @@ namespace Cascade.Service.YooAsset
             ThrowIfDisposed();
             var opts = options as YooAssetResourceInitOptions
                 ?? throw new InvalidOperationException(
-                    "YooAssetResourceService requires YooAssetResourceInitOptions (assign one to BootstrapConfiguration.ResourceInitOptions).");
+                    "YooAssetResourceService requires YooAssetResourceInitOptions (return one from BootstrapBase.CreateResourceInitOptions()).");
             _options = opts;
 
             if (!YooAssets.IsInitialized)

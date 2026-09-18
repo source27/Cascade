@@ -21,6 +21,9 @@ Unity **2022.3.62f3**. Open `Starters/Mobile`.
 Localization is installed by the launch flow (`LocalizationInstaller`); the UI system is created and disposed
 by `GameLogicEntry` (`UISystem.CreateAsync` / `Stop`) — neither lives on the host.
 
+Build policy lives on `MobileBootstrapEntry` itself: `environment` (Dev/Beta/Gold → 日志级别)、`appVersionOverride`、
+`playMode`；主包 `BootstrapBase` 不含这些字段（ADR 0023）。
+
 ## Packages
 
 - `com.source27.cascade` (file)

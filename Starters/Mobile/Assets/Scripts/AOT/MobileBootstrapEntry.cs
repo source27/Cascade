@@ -16,10 +16,21 @@ namespace Cascade.Mobile
         private const string PackageName = "CascadePak";
         private const string DevCdnRoot = "http://127.0.0.1:2727/Cascade/";
 
+        [SerializeField] private BootstrapEnvironment environment = BootstrapEnvironment.Dev;
+        [SerializeField] private string appVersionOverride = string.Empty;
         [SerializeField] private BootstrapPlayMode playMode = BootstrapPlayMode.Host;
         [SerializeField] private PatchWindow patchWindow;
 
+        public BootstrapEnvironment InspectorEnvironment => environment;
         public BootstrapPlayMode InspectorPlayMode => playMode;
+        public string AppVersion =>
+            string.IsNullOrWhiteSpace(appVersionOverride) ? Application.version : appVersionOverride;
+
+        protected override ILogService CreateLogService() => new UnityLogService
+        {
+            Enabled = true,
+            MinimumLevel = ResolveMinimumLogLevel()
+        };
 
         protected override IResourceService CreateResourceService() => new YooAssetResourceService();
 
@@ -44,11 +55,11 @@ namespace Cascade.Mobile
         protected override UniTask RunGameAsync(IGameHost host, CancellationToken cancellationToken)
         {
             var mobileConfig = new MobileBootstrapConfiguration(
-                Configuration.Environment,
+                ResolveEnvironment(),
                 ResolvePlayMode(),
                 AppVersion)
             {
-                ResourceInitOptions = Configuration.ResourceInitOptions
+                ResourceInitOptions = CreateResourceInitOptions()
             };
 
             LauncherText.Initialize(Services.Get<ISaveService>().GetString(LocalizationService.LocaleSaveKey));
@@ -60,6 +71,28 @@ namespace Cascade.Mobile
             flow.Start();
             cancellationToken.ThrowIfCancellationRequested();
             return UniTask.CompletedTask;
+        }
+
+        private BootstrapEnvironment ResolveEnvironment()
+        {
+#if UNITY_EDITOR
+            return environment;
+#else
+            return BootstrapEnvironment.Gold;
+#endif
+        }
+
+        private LogLevel ResolveMinimumLogLevel()
+        {
+            switch (ResolveEnvironment())
+            {
+                case BootstrapEnvironment.Dev:
+                    return LogLevel.Trace;
+                case BootstrapEnvironment.Beta:
+                    return LogLevel.Debug;
+                default:
+                    return LogLevel.Info;
+            }
         }
 
         private BootstrapPlayMode ResolvePlayMode()

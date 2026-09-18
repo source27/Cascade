@@ -3,6 +3,8 @@
 **Status:** accepted — resolves [决策：Bootstrap 切割与主逻辑入口约定](https://github.com/source27/Cascade/issues/22)
 
 > **部分被 [ADR 0022](0022-ui-and-localization-out-of-core.md) 取代：** 本地化不再由 Bootstrap 注册/初始化；`IGameHost` 只剩 `Services`。
+>
+> **进一步被 [ADR 0023](0023-bootstrap-policy-lives-in-starter.md) 取代：** 主包不再保留 `BootstrapConfiguration`；环境/版本/日志策略归 Starter 子类。
 
 主包 `Cascade.Bootstrap` 提供 **薄默认流水线**（非纯零件、非热更全家桶）：
 
