@@ -59,7 +59,7 @@ namespace Cascade.Service.YooAsset
     }
 
     /// <summary>YooAsset-specific resource initialization options.</summary>
-    public sealed class YooAssetResourceInitOptions : ResourceInitOptions
+    public sealed class YooAssetResourceInitOptions
     {
         public YooAssetResourceInitOptions(
             string packageName,
@@ -81,11 +81,16 @@ namespace Cascade.Service.YooAsset
 
     public sealed class YooAssetResourceService : IResourceService, IDisposable
     {
+        private readonly YooAssetResourceInitOptions _options;
         private ResourcePackage _package;
-        private YooAssetResourceInitOptions _options;
         private ResourceDownloaderOperation _pendingDownloader;
         private bool _isUsingLocalVersion;
         private bool _disposed;
+
+        public YooAssetResourceService(YooAssetResourceInitOptions options)
+        {
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+        }
 
         public bool IsInitialized => _package != null && _package.InitializeStatus == EOperationStatus.Succeeded;
         public bool IsUsingLocalVersion => _isUsingLocalVersion;
@@ -107,13 +112,10 @@ namespace Cascade.Service.YooAsset
             }
         }
 
-        public async UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
+        public async UniTask InitializeAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
-            var opts = options as YooAssetResourceInitOptions
-                ?? throw new InvalidOperationException(
-                    "YooAssetResourceService requires YooAssetResourceInitOptions (return one from BootstrapBase.CreateResourceInitOptions()).");
-            _options = opts;
+            var opts = _options;
 
             if (!YooAssets.IsInitialized)
                 YooAssets.Initialize();
@@ -405,7 +407,7 @@ namespace Cascade.Service.YooAsset
             }
 
 #if UNITY_EDITOR
-            if (_options != null && _options.PlayMode == YooAssetResourcePlayMode.EditorSimulate)
+            if (_options.PlayMode == YooAssetResourcePlayMode.EditorSimulate)
             {
                 if (!assetInfo.IsValid)
                     throw new InvalidOperationException(
@@ -450,7 +452,6 @@ namespace Cascade.Service.YooAsset
         {
             _disposed = true;
             _package = null;
-            _options = null;
         }
 
         private void EnsureInitialized()
@@ -484,7 +485,7 @@ namespace Cascade.Service.YooAsset
 
         private async UniTask<string> ReadBuiltinPackageVersionAsync(CancellationToken cancellationToken)
         {
-            if (_options == null || !_options.UseBuiltinPackage)
+            if (!_options.UseBuiltinPackage)
                 return null;
 
             // Builtin root includes YooFolderName (assetpack), then package name.

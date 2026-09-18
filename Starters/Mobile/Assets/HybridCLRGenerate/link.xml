@@ -23,8 +23,10 @@
     <type fullname="Cascade.Modules.UI.UIRegistry" preserve="all" />
     <type fullname="Cascade.Modules.UI.UISafeAreaPolicy" preserve="all" />
   </assembly>
+  <assembly fullname="Cascade.Modules.Audio">
+    <type fullname="Cascade.Modules.Audio.IAudioService" preserve="all" />
+  </assembly>
   <assembly fullname="Cascade.Service">
-    <type fullname="Cascade.Service.IAudioService" preserve="all" />
     <type fullname="Cascade.Service.ILocalizationService" preserve="all" />
     <type fullname="Cascade.Service.IResourceService" preserve="all" />
     <type fullname="Cascade.Service.ISaveService" preserve="all" />

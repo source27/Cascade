@@ -23,12 +23,12 @@ namespace Cascade.Tests
         }
 
         [Test]
-        public void InitializeIsOptionlessAndDisposeResetsState()
+        public void InitializeRequiresOnlyACancellationTokenAndDisposeResetsState()
         {
             using (var service = new UnityResourcesService())
             {
                 Assert.That(service.IsInitialized, Is.False);
-                service.InitializeAsync(null).GetAwaiter().GetResult();
+                service.InitializeAsync().GetAwaiter().GetResult();
                 Assert.That(service.IsInitialized, Is.True);
             }
 
@@ -36,14 +36,14 @@ namespace Cascade.Tests
             disposed.Dispose();
             Assert.That(disposed.IsInitialized, Is.False);
             Assert.Throws<ObjectDisposedException>(
-                () => disposed.InitializeAsync(new ResourceInitOptions()).GetAwaiter().GetResult());
+                () => disposed.InitializeAsync().GetAwaiter().GetResult());
         }
 
         [Test]
         public void EmptyLocationIsRejected()
         {
             using var service = new UnityResourcesService();
-            service.InitializeAsync(new ResourceInitOptions()).GetAwaiter().GetResult();
+            service.InitializeAsync().GetAwaiter().GetResult();
 
             Assert.Throws<ArgumentException>(
                 () => service.LoadAssetAsync<GameObject>("  ").GetAwaiter().GetResult());
@@ -55,7 +55,7 @@ namespace Cascade.Tests
         public void MissingAssetErrorNamesLocationAndType()
         {
             using var service = new UnityResourcesService();
-            service.InitializeAsync(new ResourceInitOptions()).GetAwaiter().GetResult();
+            service.InitializeAsync().GetAwaiter().GetResult();
 
             var assetError = Assert.Throws<InvalidOperationException>(
                 () => service.LoadAssetAsync<GameObject>("no_such_asset").GetAwaiter().GetResult());

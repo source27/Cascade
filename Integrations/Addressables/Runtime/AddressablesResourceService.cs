@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 namespace Cascade.Service.Addressables
 {
     /// <summary>Slim init options; most behavior comes from AddressableAssetSettings.</summary>
-    public sealed class AddressablesResourceInitOptions : ResourceInitOptions
+    public sealed class AddressablesResourceInitOptions
     {
         public AddressablesResourceInitOptions(bool autoReleaseInitHandle = true)
         {
@@ -28,16 +28,22 @@ namespace Cascade.Service.Addressables
     /// </summary>
     public sealed class AddressablesResourceService : IResourceService, IDisposable
     {
+        private readonly AddressablesResourceInitOptions _options;
         private bool _initialized;
         private bool _disposed;
 
+        /// <summary>Options are construction-time state; <c>null</c> means "Addressables defaults".</summary>
+        public AddressablesResourceService(AddressablesResourceInitOptions options = null)
+        {
+            _options = options ?? new AddressablesResourceInitOptions();
+        }
+
         public bool IsInitialized => _initialized;
 
-        public async UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
+        public async UniTask InitializeAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
-            var opts = options as AddressablesResourceInitOptions ?? new AddressablesResourceInitOptions();
-            var handle = UnityEngine.AddressableAssets.Addressables.InitializeAsync(opts.AutoReleaseInitHandle);
+            var handle = UnityEngine.AddressableAssets.Addressables.InitializeAsync(_options.AutoReleaseInitHandle);
             await handle.ToUniTask(cancellationToken: cancellationToken);
             if (handle.Status != AsyncOperationStatus.Succeeded)
                 throw new InvalidOperationException($"Addressables.InitializeAsync failed: {handle.OperationException}");

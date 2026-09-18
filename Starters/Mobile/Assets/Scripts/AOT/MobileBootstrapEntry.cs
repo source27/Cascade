@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cascade.Bootstrap;
 using Cascade.Core;
+using Cascade.Modules.Audio;
 using Cascade.Modules.Localization;
 using Cascade.Mobile;
 using Cascade.Service;
@@ -33,10 +34,12 @@ namespace Cascade.Mobile
                 Enabled = true,
                 MinimumLevel = ResolveMinimumLogLevel()
             });
-            registry.Register<IResourceService>(new YooAssetResourceService());
+            registry.Register<IResourceService>(new YooAssetResourceService(CreateYooOptions()));
+            registry.Register<IAudioService>(new AudioService(
+                registry.Get<IResourceService>(), registry.Get<ILogService>()));
         }
 
-        protected override ResourceInitOptions CreateResourceInitOptions()
+        private YooAssetResourceInitOptions CreateYooOptions()
         {
             switch (playMode)
             {
@@ -59,10 +62,7 @@ namespace Cascade.Mobile
             var mobileConfig = new MobileBootstrapConfiguration(
                 ResolveEnvironment(),
                 ResolvePlayMode(),
-                AppVersion)
-            {
-                ResourceInitOptions = CreateResourceInitOptions()
-            };
+                AppVersion);
 
             LauncherText.Initialize(Services.Get<ISaveService>().GetString(LocalizationService.LocaleSaveKey));
 

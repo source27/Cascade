@@ -54,8 +54,7 @@ namespace Cascade.Bootstrap
             try
             {
                 var resources = _registry.Get<IResourceService>();
-                var options = CreateResourceInitOptions() ?? new ResourceInitOptions();
-                await resources.InitializeAsync(options, cancellationToken);
+                await resources.InitializeAsync(cancellationToken);
 
                 await RunGameAsync(_host, cancellationToken);
             }
@@ -76,19 +75,12 @@ namespace Cascade.Bootstrap
         }
 
         /// <summary>
-        /// Provider-specific resource options. Environment, version and other project policy live in the
-        /// starter subclass (<c>MobileBootstrapEntry</c> / <c>IndieBootstrapEntry</c>), not in the framework.
-        /// </summary>
-        protected virtual ResourceInitOptions CreateResourceInitOptions() => null;
-
-        /// <summary>
         /// The single composition-root extension point: register your own implementations and game services
         /// here (the same <c>registry.Register&lt;T&gt;(…)</c> call for both).
         /// <para>
         /// It runs <b>before</b> the framework defaults, so what you register is what the defaults are built
-        /// on — your <see cref="ILogService"/> / <see cref="IResourceService"/> feed <c>EventBus</c> and
-        /// <c>AudioService</c> — and <see cref="RegisterDefaultServices"/> only fills contracts you left
-        /// unregistered. No <c>base</c> call needed.
+        /// on — your <see cref="ILogService"/> feeds <c>EventBus</c> — and <see cref="RegisterDefaultServices"/>
+        /// only fills contracts you left unregistered. No <c>base</c> call needed.
         /// </para>
         /// <para>
         /// Swap something that is already registered with <c>registry.Replace&lt;T&gt;(…)</c> (it disposes the
@@ -100,7 +92,10 @@ namespace Cascade.Bootstrap
         {
         }
 
-        /// <summary>Framework defaults, registered after <see cref="RegisterServices"/> for contracts still missing.</summary>
+        /// <summary>
+        /// Framework defaults, registered after <see cref="RegisterServices"/> for contracts still missing.
+        /// Audio is not here on purpose — it lives in the optional <c>com.source27.cascade.modules.audio</c>.
+        /// </summary>
         private void RegisterDefaultServices(IServiceRegistry registry)
         {
             if (!registry.TryGet<ILogService>(out var log))
@@ -117,9 +112,6 @@ namespace Cascade.Bootstrap
 
             if (!registry.TryGet<IEventBus>(out _))
                 registry.Register<IEventBus>(new EventBus(log));
-
-            if (!registry.TryGet<IAudioService>(out _))
-                registry.Register<IAudioService>(new AudioService(resources, log));
 
             if (!registry.TryGet<ISaveService>(out _))
                 registry.Register<ISaveService>(new PlayerPrefsSaveService());

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Audio;
 
-namespace Cascade.Service
+namespace Cascade.Modules.Audio
 {
     /// <summary>
     /// Tunables for <see cref="AudioService"/> one-shot budget, pool, and mixer routing.

@@ -11,10 +11,7 @@
       "version": "file:../../../Cascade",
       "depth": 0,
       "source": "local",
-      "dependencies": {
-        "com.unity.modules.audio": "1.0.0",
-        "com.unity.modules.unitywebrequest": "1.0.0"
-      }
+      "dependencies": {}
     },
     "com.source27.cascade.integrations.addressables": {
       "version": "file:../../../Integrations/Addressables",

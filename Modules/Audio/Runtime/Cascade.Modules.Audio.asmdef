@@ -1,0 +1,17 @@
+{
+  "name": "Cascade.Modules.Audio",
+  "rootNamespace": "Cascade.Modules.Audio",
+  "references": [
+    "Cascade.Service",
+    "UniTask"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

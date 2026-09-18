@@ -50,7 +50,7 @@ namespace Cascade.Tests
         public void LoadOnlyFake_CanInitializeAndLoadRawBytes()
         {
             var resources = new LoadOnlyFake();
-            resources.InitializeAsync(new ResourceInitOptions()).GetAwaiter().GetResult();
+            resources.InitializeAsync().GetAwaiter().GetResult();
             Assert.That(resources.IsInitialized, Is.True);
 
             var bytes = resources.LoadRawBytesAsync("x").GetAwaiter().GetResult();
@@ -61,7 +61,7 @@ namespace Cascade.Tests
         {
             public bool IsInitialized { get; private set; }
 
-            public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
+            public UniTask InitializeAsync(CancellationToken cancellationToken = default)
             {
                 IsInitialized = true;
                 return UniTask.CompletedTask;

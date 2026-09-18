@@ -9,8 +9,9 @@
 | 成员 | 用途 |
 |------|------|
 | `RegisterServices(registry)` | **唯一的服务注册接缝**：注册自己的实现与游戏服务（都走 `registry.Register<T>(…)`）。它在框架默认之前执行，**不需要调 base** |
-| `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`；Resources 实现忽略它） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
+
+`BootstrapBase` 的项目侧虚方法就这两个；provider 的 options 是它自己的构造参数（ADR 0029）。
 
 默认服务在 `RegisterServices` 之后由框架**按缺失补**（`TryGet` 为空才登记）：
 
@@ -19,8 +20,9 @@
 | `ILogService` | `UnityLogService`（`LogLevel.Info`） |
 | `IResourceService` | `UnityResourcesService`（Unity `Resources`） |
 | `IEventBus` | `EventBus`（用上面那份 log） |
-| `IAudioService` | `AudioService`（用上面那份 resource + log） |
 | `ISaveService` | `PlayerPrefsSaveService` |
+
+音频不在默认集合里——`IAudioService`/`AudioService` 属可选模块 `com.source27.cascade.modules.audio`，需要时在 `RegisterServices` 自行注册。
 
 所以：**换实现** = 在 `RegisterServices` 里 `registry.Register<T>(你的实现)`（你的实例就是默认依赖采用的那份）；**事后替换** = `registry.Replace<T>(…)`（Dispose 被换掉的实例、占用原槽位，仅限组合根阶段）；**不要某个默认** = `registry.Remove<T>()`。同契约重复 `Register` 仍抛异常——要换就用 `Replace`。
 

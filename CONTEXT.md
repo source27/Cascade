@@ -24,6 +24,10 @@ _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮
 可选 UPM 模块 `com.source27.cascade.modules.ui`（`Modules/UI`，程序集/命名空间 `Cascade.Modules.UI`）：`UISystem` 页面栈、`UIBase`/`UIRegistry`/`UIContextId` 等 UI 底座、`IAtlasSpriteService` 图集精灵服务、Roslyn 页面注册表生成器与其编辑器工具。**UI 实例归游戏**（游戏入口创建、自存、自释放），不挂在宿主上。不装则主包无 uGUI/TMP 依赖。
 _Avoid_: 把 UI 底座当主包必装能力、在主包或 Core 引用 uGUI/TMP、让宿主持有 UI
 
+**音频栈（Audio Stack）**:
+可选 UPM 模块 `com.source27.cascade.modules.audio`（`Modules/Audio`，程序集/命名空间 `Cascade.Modules.Audio`）：`IAudioService` 契约 + `AudioService`（BGM/SFX/Voice 三通道、AudioSource 池、Mixer 路由）+ `AudioServiceOptions`。**不随 Bootstrap 默认注册**，需要的工程在组合根登记；不装则主包无音频依赖。
+_Avoid_: 把音频实现留在主包、默认注册音频服务、让 UI/本地化模块反依赖音频
+
 **启动编排（Bootstrap）**:
 主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：`RegisterServices`（项目自己的实现先登记，框架默认按缺失补 log/resource/eventbus/audio/save）→ 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**环境分级、版本覆盖、日志级别、资源 options 等策略写在 Starter 子类**（含各自的 `BootstrapEnvironment` 枚举，见 `MobileBootstrapEntry`/`IndieBootstrapEntry`），主包不含这些字段与类型，也没有 `BootstrapConfiguration`。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
 _Avoid_: 热更包、cascade.hotupdate、框架管热更、默认跑资源更新、Cascade.Launcher（旧名）、Cascade.Module（已删空壳）、纯零件无流水线（已否决）

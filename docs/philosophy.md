@@ -16,7 +16,7 @@ Cascade 同时交付两样东西：
 主包提供：
 
 - 薄 **Bootstrap** 流水线与组合根基类  
-- **Service** 契约与默认实现：日志 = Unity 日志、资源 = Unity `Resources`、存档 = PlayerPrefs、音频 = Resource 驱动（本地化只留契约；图集精灵随 UI 栈在 `Modules/UI`）  
+- **Service** 契约与默认实现：日志 = Unity 日志、资源 = Unity `Resources`、存档 = PlayerPrefs（本地化只留契约；音频、图集精灵随各自模块）  
 - **Core** 基础设施（事件、更新循环、GameFlow）  
 
 可选 Module 提供：
@@ -47,9 +47,9 @@ Starter  ──►  Cascade + 选定的 Integrations / Modules
 
 Bootstrap 默认顺序：
 
-1. `RegisterServices`（项目自己的实现先登记，框架默认按缺失补：log / resource / eventbus / audio / save）  
+1. `RegisterServices`（项目自己的实现先登记，框架默认按缺失补：log / resource / eventbus / save）  
 2. 解析/注册 `IUpdateLoop` + 建 `IGameHost`（只有 `Services`）  
-3. `IResourceService.InitializeAsync`（options 来自 `CreateResourceInitOptions()`）  
+3. `IResourceService.InitializeAsync`（provider 的 options 是它自己的构造参数，见 ADR 0029）  
 4. 虚方法 `RunGameAsync(IGameHost, CancellationToken)`  
 
 默认 `RunGameAsync`：警告 + no-op。差异全在 Starter override：
@@ -63,13 +63,14 @@ Bootstrap 默认顺序：
 
 ## 扩展方式
 
-- 组合根 override：`RegisterServices`（唯一注册缝）、`CreateResourceInitOptions`、`RunGameAsync`；事后替换用 `IServiceRegistry.Replace/Remove`（环境分级、版本覆盖、日志级别等策略写在 Starter 子类，见 ADR 0023/0028）  
+- 组合根 override：`RegisterServices`（唯一注册缝）、`RunGameAsync`；事后替换用 `IServiceRegistry.Replace/Remove`（环境分级、版本覆盖、日志级别等策略写在 Starter 子类，见 ADR 0023/0028/0029）  
 - 游戏专有服务：`Register` 进 `ServiceRegistry`，热更/主逻辑经 `host.Services.Get<T>()`  
 - 游戏流程：主包 `GameFlow` + 游戏实现 `IGameFlowState`（状态 id 自定）；**不**提供 GF 式通用 FSM  
 - **不**使用 DI 容器（AOT 侧）；**不**把 `IGameHost` 扩成服务目录（只剩 `Services`）  
 - 本地化：契约在主包；默认实现 + 作者工具在 `modules.localization`，由 Starter 安装；可换成别家实现  
+- 音频：`modules.audio` 提供 `IAudioService`/`AudioService`，不默认注册，需要的工程在组合根登记  
 - UI：`modules.ui` 提供底座，UISystem 由游戏创建并持有，宿主不参与
 
 ## 可选能力
 
-真正可选 = 独立 UPM（`Modules/UI`、`Modules/Localization`、`Modules/UiExtras`、未来红点/多设备输入等），不是「主包永远编译进来但不 Register」。
+真正可选 = 独立 UPM（`Modules/UI`、`Modules/Localization`、`Modules/Audio`、`Modules/UiExtras`、未来红点/多设备输入等），不是「主包永远编译进来但不 Register」。

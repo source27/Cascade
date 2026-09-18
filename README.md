@@ -24,6 +24,7 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 │   └── InputGlyphs/                 手柄/键鼠 Glyph 桥接
 ├── Modules/
 │   ├── UI/                          可选 UI 栈（页面/视图/生成器；内含 Roslyn 生成器）
+│   ├── Audio/                       可选音频栈（BGM/SFX/Voice + 池化 + Mixer 路由）
 │   ├── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
 │   └── Localization/                可选本地化栈（运行时 + Sheet→JSON 作者工具）
 ├── Starters/
@@ -61,7 +62,7 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 | Peer 包 | 版本 pin | 需要它的包 |
 |--------|----------|-----------|
-| com.cysharp.unitask | 2.5.11 | 主包 / Modules(UI, Localization) / YooAsset / Addressables |
+| com.cysharp.unitask | 2.5.11 | 主包 / Modules(UI, Audio, Localization) / YooAsset / Addressables |
 | com.annulusgames.lit-motion | 2.0.2 | UiExtras |
 | com.annulusgames.lit-motion.animation | 2.0.2 | UiExtras |
 | me.qiankanglai.loopscrollrect | 1.1.5 | UiExtras |
@@ -81,12 +82,10 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 ### 主包 UPM 依赖（注册表可解析）
 
-| 包 | 说明 |
-|----|------|
-| Unity 模块 | audio、webrequest |
+主包 `package.json` **没有任何依赖**：只用 Unity 自带 API（`Resources`、`PlayerPrefs`、`Debug`、`SceneManager`）。
 
 **编译期 peer：** `com.cysharp.unitask`（见上，不进 `package.json`）。  
-主包**不含** uGUI/TMP、2d.sprite、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI（含图集精灵）与本地化按需装 `Modules/UI` / `Modules/Localization`，其余见 Modules/Integrations。
+主包**不含** uGUI/TMP、2d.sprite、audio、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI（含图集精灵）→ `Modules/UI`，本地化 → `Modules/Localization`，音频 → `Modules/Audio`，其余见 Modules/Integrations。
 
 ## 快速开始
 

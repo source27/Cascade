@@ -20,8 +20,8 @@ namespace Cascade.Service
 
         public bool IsInitialized => _initialized;
 
-        /// <summary>There is nothing to configure for Resources; options are ignored.</summary>
-        public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default)
+        /// <summary>Nothing to initialize for Resources; kept for pipeline symmetry.</summary>
+        public UniTask InitializeAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
             _initialized = true;

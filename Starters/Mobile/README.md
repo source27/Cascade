@@ -29,6 +29,7 @@ Build policy lives on `MobileBootstrapEntry` itself: `environment` (Dev/Beta/Gol
 - `com.source27.cascade` (file)
 - `com.source27.cascade.integrations.yooasset` (file)
 - `com.source27.cascade.modules.ui` (file) — UI 底座（页面/视图/生成器）
+- `com.source27.cascade.modules.audio` (file) — 音频栈（组合根注册 `IAudioService`）
 - `com.source27.cascade.modules.uiextras` (file)
 - `com.source27.cascade.modules.localization` (file) — 默认本地化运行时 + Sheet→JSON（`Cascade/更新多语言`，首次询问是否创建 settings）
 - HybridCLR, YooAsset, UniTask, LitMotion, LoopScroll (vendored under Packages/)

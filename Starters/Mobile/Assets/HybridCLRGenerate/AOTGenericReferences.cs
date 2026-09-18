@@ -6,6 +6,7 @@ public class AOTGenericReferences : UnityEngine.MonoBehaviour
 	public static readonly IReadOnlyList<string> PatchedAOTAssemblyList = new List<string>
 	{
 		"Cascade.Core.dll",
+		"Cascade.Modules.Audio.dll",
 		"Cascade.Modules.Localization.dll",
 		"Cascade.Modules.UI.dll",
 		"UniTask.dll",

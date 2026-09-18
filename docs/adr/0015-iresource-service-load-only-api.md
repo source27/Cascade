@@ -7,7 +7,7 @@
 保留：
 
 - `bool IsInitialized`
-- `UniTask InitializeAsync(ResourceInitOptions options, CancellationToken)`
+- `UniTask InitializeAsync(ResourceInitOptions options, CancellationToken)` — **后续修订见 [ADR 0029](0029-resource-options-belong-to-provider-ctor.md)：参数只剩 `CancellationToken`，options 归 provider 构造函数，`ResourceInitOptions` 基类已删除**
 - `UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken)`
 - `UniTask<ISceneHandle> LoadSceneAsync(string location, ResourceSceneLoadMode mode, CancellationToken)`
 - `UniTask<byte[]> LoadRawBytesAsync(string location, CancellationToken)`

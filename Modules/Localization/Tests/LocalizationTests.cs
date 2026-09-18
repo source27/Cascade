@@ -99,7 +99,7 @@ namespace Cascade.Modules.Localization.Tests
 
             public void Add(string location, string json) => _raw[location] = Encoding.UTF8.GetBytes(json);
 
-            public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default) =>
+            public UniTask InitializeAsync(CancellationToken cancellationToken = default) =>
                 UniTask.CompletedTask;
 
             public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)

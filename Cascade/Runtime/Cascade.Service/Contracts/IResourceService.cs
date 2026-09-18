@@ -5,15 +5,6 @@ using UnityEngine;
 
 namespace Cascade.Service
 {
-    /// <summary>
-    /// Provider-neutral resource initialization options. Resource providers (YooAsset,
-    /// Addressables, …) subclass this with their own configuration; the composition root
-    /// assigns a concrete instance via Bootstrap configuration.
-    /// </summary>
-    public class ResourceInitOptions
-    {
-    }
-
     public interface IAssetHandle<out T> : IDisposable where T : UnityEngine.Object
     {
         T Asset { get; }
@@ -38,12 +29,14 @@ namespace Cascade.Service
     /// <summary>
     /// Load-only resource contract. Version/download/update APIs live on concrete
     /// integration types (e.g. YooAssetResourceService), not on this interface.
+    /// Provider configuration is construction-time state (provider-specific options class in its
+    /// own constructor) — initialization itself takes nothing but a cancellation token.
     /// </summary>
     public interface IResourceService
     {
         bool IsInitialized { get; }
 
-        UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default);
+        UniTask InitializeAsync(CancellationToken cancellationToken = default);
 
         UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)
             where T : UnityEngine.Object;

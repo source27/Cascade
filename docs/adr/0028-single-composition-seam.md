@@ -4,7 +4,7 @@
 
 ## 决策
 
-1. `BootstrapBase` 的项目侧扩展面收敛为 **3 个虚方法**：`RegisterServices(registry)`（唯一服务注册接缝）、`CreateResourceInitOptions()`、`RunGameAsync(...)`。删除 `CreateLogService` / `CreateResourceService` / `CreateSaveService` / `CreateAudioService` / `CreateUpdateLoop` / `RegisterIfNotNull`。
+1. `BootstrapBase` 的项目侧扩展面收敛为 **3 个虚方法**：`RegisterServices(registry)`（唯一服务注册接缝）、`CreateResourceInitOptions()`、`RunGameAsync(...)`。删除 `CreateLogService` / `CreateResourceService` / `CreateSaveService` / `CreateAudioService` / `CreateUpdateLoop` / `RegisterIfNotNull`。（**后续修订见 [ADR 0029](0029-resource-options-belong-to-provider-ctor.md)：`CreateResourceInitOptions` 亦删除，项目侧只剩 2 个虚方法。**）
 2. **执行顺序**：`RegisterServices`（项目）→ 框架默认**按缺失补**（`TryGet` 为空才登记 log / resource / eventbus / audio / save）→ 解析/注册 `IUpdateLoop` → 资源 init → `RunGameAsync`。
 3. `IServiceRegistry` 增加 `Replace<T>(instance)` 与 `Remove<T>()`：
    - `Replace`：契约缺失时等价 `Register`；同一实例 → no-op；否则**立即 Dispose 旧实例**（当它实现 `IDisposable`）并**占用旧槽位**（注册序驱动逆序释放，换实现不得改变别人的拆解次序）；`null` → `ArgumentNullException`；槽位查找用 `ReferenceEquals`（`UnityEngine.Object.Equals` 比较的是对象身份）。

@@ -164,8 +164,7 @@ namespace Cascade.Mobile
 
             try
             {
-                var options = _configuration.ResourceInitOptions ?? new ResourceInitOptions();
-                await _resources.InitializeAsync(options, cancellationToken);
+                await _resources.InitializeAsync(cancellationToken);
                 _log.Info("Launcher", "Resource package initialized.");
             }
             catch (Exception exception)

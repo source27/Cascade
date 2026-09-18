@@ -9,7 +9,7 @@
 - **默认组合**：日志 = `UnityLogService`；资源 = `UnityResourcesService`（`Resources/` 文件夹、原始字节用 TextAsset、场景进 Build Settings）；存档 = `PlayerPrefsSaveService`；音频 = `AudioService`。全部在主包，只用 Unity 自带 API。（网络服务一项已改：见 [ADR 0027](0027-remove-network-service.md)——`INetworkService` 已删除。）（图集精灵一项已改：见 [ADR 0026](0026-atlas-sprite-service-belongs-to-ui.md)——服务归 `Modules/UI`、不再默认注册。）
 > **后续修正：** 下面这条「每个默认一个独立钩子」已被 [ADR 0028](0028-single-composition-seam.md) 取代（收敛为单一 `RegisterServices` 接缝 + 注册表 `Replace/Remove`）；默认实现清单本身不变。
 
-- ~~**每个默认都由独立钩子产出**：`CreateLogService` / `CreateResourceService` / `CreateResourceInitOptions` / `CreateSaveService` / `CreateAudioService` / `CreateUpdateLoop`。返回 null = 不注册该服务（`log` 与 `resource` 是流水线必需，返回 null 直接报错）。
+- ~~**每个默认都由独立钩子产出**：`CreateLogService` / `CreateResourceService` / `CreateResourceInitOptions` / `CreateSaveService` / `CreateAudioService`（音频一项亦已随之出包，见 [ADR 0030](0030-audio-module-and-dependency-cleanup.md)）/ `CreateUpdateLoop`。返回 null = 不注册该服务（`log` 与 `resource` 是流水线必需，返回 null 直接报错）。
 - **追加**自定义服务：`override RegisterServices` 里 `base` 之后 `registry.Register<T>(…)`。
 - 集成包（YooAsset / Addressables）从「必需」变为「需要 bundle / catalog / 更新编排时才装」。
 

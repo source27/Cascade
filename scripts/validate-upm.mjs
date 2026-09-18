@@ -132,6 +132,19 @@ if (loc) {
   }
 }
 
+const audioPath = join(repoRoot, 'Modules', 'Audio', 'package.json');
+requireFile(audioPath, 'Modules/Audio/package.json');
+requirePackageDeps(audioPath, 'Modules/Audio');
+const audio = readJson(audioPath);
+if (audio) {
+  if (audio.name !== 'com.source27.cascade.modules.audio') {
+    fail(`Audio package name mismatch: ${audio.name}`);
+  }
+  if (audio.license !== 'MIT') {
+    fail(`Modules/Audio/package.json license: expected MIT, got ${audio.license}`);
+  }
+}
+
 const uiPath = join(repoRoot, 'Modules', 'UI', 'package.json');
 requireFile(uiPath, 'Modules/UI/package.json');
 requirePackageDeps(uiPath, 'Modules/UI');

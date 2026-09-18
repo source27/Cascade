@@ -4,6 +4,7 @@
     "references": [
         "Cascade.Service",
         "Cascade.Core",
+        "Cascade.Modules.Audio",
         "Cascade.Modules.UI",
         "UniTask"
     ],

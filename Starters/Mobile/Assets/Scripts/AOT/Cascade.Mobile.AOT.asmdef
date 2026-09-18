@@ -5,6 +5,7 @@
         "Cascade.Bootstrap",
         "Cascade.Service",
         "Cascade.Core",
+        "Cascade.Modules.Audio",
         "Cascade.Modules.Localization",
         "Cascade.Service.YooAsset",
         "HybridCLR.Runtime",

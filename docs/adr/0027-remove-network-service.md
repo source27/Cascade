@@ -5,7 +5,7 @@
 ## 决策
 
 - 删除 `Cascade.Service` 的 `INetworkService`（含 `NetworkConnectionState`）与 `NullNetworkService`（整个 `Stubs/` 目录随之消失）。
-- `BootstrapBase` 删除 `CreateNetworkService` 钩子与注册：核心默认服务集收敛为 **日志 / 资源 / 存档 / 音频 + 更新循环**。
+- `BootstrapBase` 删除 `CreateNetworkService` 钩子与注册：核心默认服务集收敛为 **日志 / 资源 / 存档 / 音频 + 更新循环**。（音频随后也出包，见 [ADR 0030](0030-audio-module-and-dependency-cleanup.md)：现为 日志 / 资源 / 存档 / 事件总线 + 更新循环。）
 - 需要网络的工程在自己程序集里定义并注册自己的网络服务（`registry.Register<IMyNetwork>(…)`），核心包不再提供空契约与空实现。
 
 ## 理由

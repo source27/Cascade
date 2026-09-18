@@ -101,15 +101,12 @@ Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json
 3. Override：
 
 ```csharp
-// 你自己的实现先登记，框架默认按缺失补（EventBus/AudioService 会用你这份 log/resource）
+// 你自己的实现先登记，框架默认按缺失补（EventBus 会用你这份 log）
 protected override void RegisterServices(IServiceRegistry registry)
 {
     registry.Register<ILogService>(new UnityLogService { Enabled = true, MinimumLevel = LogLevel.Info });
-    registry.Register<IResourceService>(new YooAssetResourceService()); // 或 AddressablesResourceService
+    registry.Register<IResourceService>(new YooAssetResourceService(options)); // 或 new AddressablesResourceService(...)
 }
-
-protected override ResourceInitOptions CreateResourceInitOptions() =>
-    new YooAssetResourceInitOptions(...); // 或 AddressablesResourceInitOptions
 
 protected override async UniTask RunGameAsync(IGameHost host, CancellationToken ct)
 {

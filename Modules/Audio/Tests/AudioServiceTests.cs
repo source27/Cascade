@@ -9,7 +9,9 @@ using UnityEngine;
 using Cascade.Service;
 
 
-namespace Cascade.Tests
+using Cascade.Modules.Audio;
+
+namespace Cascade.Modules.Audio.Tests
 {
     public sealed class AudioServiceTests
     {
@@ -250,7 +252,7 @@ namespace Cascade.Tests
                 _clips[location] = clip;
             }
 
-            public UniTask InitializeAsync(ResourceInitOptions options, CancellationToken cancellationToken = default) =>
+            public UniTask InitializeAsync(CancellationToken cancellationToken = default) =>
                 UniTask.CompletedTask;
 
             public UniTask<IAssetHandle<T>> LoadAssetAsync<T>(string location, CancellationToken cancellationToken = default)

@@ -1,0 +1,14 @@
+{
+  "name": "com.source27.cascade.modules.audio",
+  "version": "0.1.0",
+  "displayName": "Cascade Audio",
+  "description": "Optional audio stack for Cascade: BGM/SFX/Voice channels, AudioSource pooling, mixer routing.",
+  "unity": "2022.3",
+  "keywords": ["cascade", "audio", "bgm", "sfx"],
+  "author": {"name": "source27"},
+  "license": "MIT",
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.unity.modules.audio": "1.0.0"
+  }
+}

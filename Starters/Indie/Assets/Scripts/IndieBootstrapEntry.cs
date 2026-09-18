@@ -21,11 +21,9 @@ namespace Cascade.Indie
                 Enabled = true,
                 MinimumLevel = ResolveMinimumLogLevel()
             });
-            registry.Register<IResourceService>(new AddressablesResourceService());
+            registry.Register<IResourceService>(new AddressablesResourceService(
+                new AddressablesResourceInitOptions(autoReleaseInitHandle: true)));
         }
-
-        protected override ResourceInitOptions CreateResourceInitOptions() =>
-            new AddressablesResourceInitOptions(autoReleaseInitHandle: true);
 
         protected override async UniTask RunGameAsync(IGameHost host, CancellationToken cancellationToken)
         {

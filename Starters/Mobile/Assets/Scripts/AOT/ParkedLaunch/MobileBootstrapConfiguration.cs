@@ -39,7 +39,6 @@ namespace Cascade.Mobile
         public string HotUpdateDllLocation { get; }
         public string HotUpdateAssemblyName { get; }
         public string GameLogicEntryType { get; }
-        public ResourceInitOptions ResourceInitOptions { get; set; }
         public IReadOnlyList<string> AotMetadataLocations { get; }
         public BootstrapAssemblyLoadMode AssemblyLoadMode { get; }
 

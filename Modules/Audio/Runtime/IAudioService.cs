@@ -2,7 +2,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Cascade.Service
+namespace Cascade.Modules.Audio
 {
     public enum AudioChannel
     {

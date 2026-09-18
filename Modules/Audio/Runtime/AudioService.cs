@@ -4,8 +4,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Audio;
+using Cascade.Service;
 
-namespace Cascade.Service
+namespace Cascade.Modules.Audio
 {
     public sealed class AudioService : IAudioService, IDisposable
     {
