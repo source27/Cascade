@@ -1,0 +1,22 @@
+{
+  "name": "Cascade.Modules.Localization.Editor",
+  "rootNamespace": "Cascade.Modules.Localization.Editor",
+  "references": [
+    "Cascade.Modules.Localization",
+    "Cascade.Service",
+    "UniTask",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

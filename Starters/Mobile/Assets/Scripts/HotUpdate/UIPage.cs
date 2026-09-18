@@ -1,5 +1,5 @@
 using System;
-using Cascade.Core;
+using Cascade.Modules.UI;
 
 namespace GameLogic
 {

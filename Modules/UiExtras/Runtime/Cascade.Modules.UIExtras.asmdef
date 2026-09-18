@@ -2,7 +2,6 @@
   "name": "Cascade.Modules.UIExtras",
   "rootNamespace": "Cascade.Modules.UIExtras",
   "references": [
-    "Cascade.Core",
     "UnityEngine.UI",
     "LoopScrollRect.Runtime",
     "LitMotion",

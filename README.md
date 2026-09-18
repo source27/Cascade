@@ -1,7 +1,7 @@
 # Cascade
 
 Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。  
-薄 Bootstrap、提供者无关服务层、Core UI/事件/生命周期、Roslyn UI 生成器。  
+薄 Bootstrap、提供者无关服务层、Core 事件/更新/生命周期/流程；**UI 栈**与**本地化栈**是可装可卸的 Module。  
 **不管** HybridCLR 热更编排与资源下载流水线——那些在 Mobile Starter。
 
 术语：[`CONTEXT.md`](CONTEXT.md) · 决策：[`docs/adr/`](docs/adr/) · 指南：[`docs/philosophy.md`](docs/philosophy.md) · [`docs/assembly.md`](docs/assembly.md) · [`docs/coding.md`](docs/coding.md)
@@ -11,10 +11,10 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 ```
 仓库根
 ├── Cascade/                         UPM 主包 com.source27.cascade（?path=Cascade）
-│   ├── Runtime/Cascade.Service/     契约 + 默认实现
-│   ├── Runtime/Cascade.Core/        UI / 事件 / 更新循环 / 生命周期
+│   ├── Runtime/Cascade.Service/     契约 + 默认实现（含 ILocalizationService 契约）
+│   ├── Runtime/Cascade.Core/        事件 / 更新循环 / 生命周期 / GameFlow（无 UI 依赖）
 │   ├── Runtime/Cascade.Bootstrap/   薄启动编排 + 组合根基类
-│   ├── Editor/  Tests/  Roslyn/  Tools~/
+│   ├── Editor/  Tests/
 │   └── package.json
 ├── Integrations/
 │   ├── YooAsset/                    可选资源集成（含更新 API 在具体类型上）
@@ -23,8 +23,9 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 │   ├── Steam/                       Steam 能力（依赖 Desktop）
 │   └── InputGlyphs/                 手柄/键鼠 Glyph 桥接
 ├── Modules/
+│   ├── UI/                          可选 UI 栈（页面/视图/生成器；内含 Roslyn 生成器）
 │   ├── UiExtras/                    可选 UI（ScaleButton / LoopScroll）
-│   └── LocalizationTools/           可选本地化作者工具（Sheet→JSON）
+│   └── Localization/                可选本地化栈（运行时 + Sheet→JSON 作者工具）
 ├── Starters/
 │   ├── Mobile/                      手游生产起点（Yoo + HybridCLR + 构建窗）
 │   └── Indie/                       独立游戏起点（Addressables，无热更）
@@ -60,7 +61,7 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 | Peer 包 | 版本 pin | 需要它的包 |
 |--------|----------|-----------|
-| com.cysharp.unitask | 2.5.11 | 主包 / YooAsset / Addressables |
+| com.cysharp.unitask | 2.5.11 | 主包 / Modules(UI, Localization) / YooAsset / Addressables |
 | com.annulusgames.lit-motion | 2.0.2 | UiExtras |
 | com.annulusgames.lit-motion.animation | 2.0.2 | UiExtras |
 | me.qiankanglai.loopscrollrect | 1.1.5 | UiExtras |
@@ -82,11 +83,10 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 | 包 | 说明 |
 |----|------|
-| com.unity.ugui / TMP | UI |
 | Unity 模块 | audio、webrequest、2d.sprite |
 
 **编译期 peer：** `com.cysharp.unitask`（见上，不进 `package.json`）。  
-**不含** HybridCLR、LitMotion、LoopScrollRect、YooAsset（后三者按需装 Modules/Integrations）。
+主包**不含** uGUI/TMP、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI 与本地化按需装 `Modules/UI` / `Modules/Localization`，其余见 Modules/Integrations。
 
 ## 快速开始
 
@@ -140,7 +140,7 @@ Indie 接线步骤：[`Starters/Indie/Assets/Scripts/DesktopShell/README.md`](St
 | [`docs/philosophy.md`](docs/philosophy.md) | 设计思想 |
 | [`docs/assembly.md`](docs/assembly.md) | 选包与组装 |
 | [`docs/coding.md`](docs/coding.md) | 组合根 / 服务 / 资源 / UI / 事件 |
-| [`docs/adr/`](docs/adr/) | ADR（含 0006–0019 结构改造） |
+| [`docs/adr/`](docs/adr/) | ADR（含 0006–0022 结构改造） |
 | Starter READMEs | 各工程 Play / 打包步骤 |
 | [`Integrations/Desktop/README.md`](Integrations/Desktop/README.md) | PC 壳：设置 / 存档 / Rebind / UI |
 | [`Integrations/Steam/README.md`](Integrations/Steam/README.md) | Steam（依赖 Desktop） |
@@ -149,5 +149,5 @@ Indie 接线步骤：[`Starters/Indie/Assets/Scripts/DesktopShell/README.md`](St
 
 ## 状态
 
-结构改造（双交付物、薄 Bootstrap、load-only 资源契约、双 Starter）已落地。  
+结构改造（双交付物、薄 Bootstrap、load-only 资源契约、双 Starter、UI/本地化出主包、Host 收窄为注册表）已落地。  
 开新项目：fork **Mobile** 或 **Indie**，不要再找 Example。

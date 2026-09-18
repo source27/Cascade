@@ -1,13 +1,7 @@
 {
   "name": "Cascade.Editor",
   "rootNamespace": "Cascade.Editor",
-  "references": [
-    "Cascade.Service",
-    "Cascade.Core",
-    "UniTask",
-    "UnityEngine.UI",
-    "Unity.TextMeshPro"
-  ],
+  "references": [],
   "includePlatforms": [
     "Editor"
   ],

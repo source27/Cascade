@@ -32,7 +32,7 @@ jobs:
         run: node scripts/validate-upm.mjs
 
       - name: Build Roslyn source generator
-        run: dotnet build Cascade/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj -c Release --verbosity minimal
+        run: dotnet build Modules/UI/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj -c Release --verbosity minimal
 
   # EditMode tests need a Unity license (Personal/Plus/Pro).
   # Enable by setting repository secrets:
@@ -51,7 +51,7 @@ jobs:
   #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
   #       with:
-  #         projectPath: Examples/CascadeExample
+  #         projectPath: Starters/Indie
   #         unityVersion: 2022.3.62f3
   #         testMode: editmode
   #         githubToken: ${{ secrets.GITHUB_TOKEN }}

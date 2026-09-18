@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cascade.Bootstrap;
 using Cascade.Core;
+using Cascade.Modules.Localization;
 using Cascade.Mobile;
 using Cascade.Service;
 using Cascade.Service.YooAsset;

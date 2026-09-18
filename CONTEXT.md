@@ -9,7 +9,7 @@ Unity 游戏客户端能力库与可 fork Starter 的领域词汇。本文件是
 _Avoid_: 框架全家桶、引擎、中台、热更框架
 
 **能力（Capability）**:
-Cascade 对外提供的一块可独立理解、可按需依赖的功能边界（如 UI 底座、事件、资源契约、Bootstrap）。可选能力以独立 UPM 子包分发，不进主包默认依赖。
+Cascade 对外提供的一块可独立理解、可按需依赖的功能边界（如事件、资源契约、Bootstrap、UI 底座、本地化栈）。可选能力以独立 UPM 子包分发，不进主包默认依赖。
 _Avoid_: 插件、插件包、Module（作统称时）
 
 **集成包（Integration）**:
@@ -17,19 +17,23 @@ _Avoid_: 插件、插件包、Module（作统称时）
 _Avoid_: 第三方封装、adapter 包（口语可说 adapter，正式称集成包）
 
 **UI 扩展包（UI Extras）**:
-可选 UPM 子包（约定名 `cascade.ui.extras`），承载依赖第三方 UI 库的能力（如 LoopScroll 列表绑定、LitMotion 驱动的 ScaleButton）。主包 UI 底座不依赖 LitMotion / LoopScrollRect。
+可选 UPM 子包（约定名 `cascade.ui.extras`），承载依赖第三方 UI 库的能力（如 LoopScroll 列表绑定、LitMotion 驱动的 ScaleButton）。UI 栈（`cascade.modules.ui`）不依赖 LitMotion / LoopScrollRect。
 _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮动画（若跨项目复用）
 
+**UI 栈（UI Stack）**:
+可选 UPM 模块 `com.source27.cascade.modules.ui`（`Modules/UI`，程序集/命名空间 `Cascade.Modules.UI`）：`UISystem` 页面栈、`UIBase`/`UIRegistry`/`UIContextId` 等 UI 底座、Roslyn 页面注册表生成器与其编辑器工具。**UI 实例归游戏**（游戏入口创建、自存、自释放），不挂在宿主上。不装则主包无 uGUI/TMP 依赖。
+_Avoid_: 把 UI 底座当主包必装能力、在主包或 Core 引用 uGUI/TMP、让宿主持有 UI
+
 **启动编排（Bootstrap）**:
-主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：注册服务 → 建 Host → 资源 **初始化** →（若已注册）本地化初始化 → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
+主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：注册服务 → 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
 _Avoid_: 热更包、cascade.hotupdate、框架管热更、默认跑资源更新、Cascade.Launcher（旧名）、Cascade.Module（已删空壳）、纯零件无流水线（已否决）
 
 **本地化提供者**:
-实现 `ILocalizationService` 的运行时；默认实现经资源加载 catalog 与语言表。可替换为本地配表等其它实现并在组合根注册。
+实现 `ILocalizationService` 的运行时。**契约**在主包 `Cascade.Service`；**默认实现**（经资源加载 catalog 与语言表）在可选模块 `com.source27.cascade.modules.localization`，由 `LocalizationInstaller.InstallAsync` 安装（初始化即绑定 `LocalizationAccess`，Dispose 解绑）。可换成 Unity Localization、本地配表等其它实现而只依赖契约。
 _Avoid_: 把 Sheet 当成唯一本地化实现、无契约的硬编码文案服务、把作者工具包当成运行时提供者
 
 **本地化作者工具（Localization Tools）**:
-可选 UPM 模块 `com.source27.cascade.modules.localizationtools`（Editor-only）：Google Sheet 等表源 → 运行时同款 catalog/locale JSON。依赖方向：tools → 主包。不装则仍可用已提交的 JSON + 主包场景预览。
+与默认实现同属模块 `com.source27.cascade.modules.localization` 的 Editor 半边：Google Sheet 等表源 → 运行时同款 catalog/locale JSON（schema 单一来源，不再跨包靠约定对齐）。不装该模块则主包仍可在场景里预览已提交的 JSON 之外无本地化栈。
 _Avoid_: 塞进主包的 Sheet 同步、runtime 依赖 Excel/Sheet 库、与 `ILocalizationService` 混为一谈
 
 **Starter**:
@@ -40,10 +44,15 @@ _Avoid_: Example、示例工程、Demo、Sample、Examples/
 工程内唯一负责注册服务并启动流程的入口。库提供默认可 override 的基类/骨架；最终注册集、资源后端、是否热更属于 Starter（或具体项目）。
 
 **宿主（Host）**:
-主逻辑入口通过 `IGameHost` 访问的稳定门面：服务注册表、更新循环、日志、事件、资源、本地化、UI 系统所有权等。游戏专有服务进注册表，不随意扩 `IGameHost` 属性。
+主逻辑入口通过 `IGameHost` 拿到的**唯一门面**：`IGameHost.Services`（服务注册表）。日志、事件、资源、更新循环、本地化、UI 一律从注册表取，由游戏自建 context 保存；Host 不再缓存服务、不再持有 UI 实例。游戏专有服务进注册表，不扩 `IGameHost`。
+_Avoid_: 把 `IGameHost` 当服务目录、在 Host 上挂 UI/本地化、为方便再加属性
 
 **服务注册表（ServiceRegistry）**:
 显式 `Register` / `Get` 的服务容器；不使用 DI 框架。扩展方式：组合根 override 注册，而非改宿主类型。
+
+**更新循环（Update Loop）**:
+注册表服务 `IUpdateLoop`：消费者 `RegisterUpdate` / `RegisterLateUpdate` / `RegisterFixedUpdate` 拿 `IDisposable`；驱动者（`UnityUpdateDriver` 或自实现）调 `Tick*`。由 Bootstrap 在 `RegisterServices` 之后解析（已注册者优先，否则 `CreateUpdateLoop`）或组合根自注册；实现 `IDisposable`，随注册表释放。
+_Avoid_: 把 `UpdateLoop` 具体类型塞进宿主、让每个消费者各自 `AddComponent` 一个 MonoBehaviour 循环
 
 **资源提供者（Resource Provider）**:
 `IResourceService` 的具体实现，只存在于集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。

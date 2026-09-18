@@ -20,6 +20,8 @@
 
 或 Asset Store 导入。程序集名须与 asmdef 一致：`InputGlyphs`、`InputGlyphs.Display`、`InputGlyphs.Loaders`（fork 命名不同则改 `Cascade.Integrations.InputGlyphs.asmdef`）。
 
+> Indie / Mobile Starter **默认不装本包**：缺 peer 时本程序集编译失败。需要时把 integration 与 peer 一起加进工程 manifest。
+
 4. 场景放 InputGlyphs 自带的 `InputGlyphsSetup`，或启动时：
 
 ```csharp

@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Cascade.Core;
+using Cascade.Modules.UI;
 using Cascade.Generated;
 using Cascade.Service;
 using Cysharp.Threading.Tasks;

@@ -1,4 +1,4 @@
-using Cascade.Core;
+using Cascade.Modules.UI;
 using UnityEngine.UI;
 
 namespace Cascade.Generated

@@ -16,9 +16,14 @@ Cascade 同时交付两样东西：
 主包提供：
 
 - 薄 **Bootstrap** 流水线与组合根基类  
-- **Service** 契约与默认实现（日志、本地化、音频、存档…）  
-- **Core** 基础设施（UI 栈、事件、更新循环、生命周期）  
-- Roslyn UI 生成器  
+- **Service** 契约与默认实现（日志、音频、存档…；本地化只留契约）  
+- **Core** 基础设施（事件、更新循环、生命周期、GameFlow）  
+
+可选 Module 提供：
+
+- **UI 栈**（`com.source27.cascade.modules.ui`）：页面/视图基类、UI 树分区、Roslyn UI 生成器  
+- **本地化栈**（`com.source27.cascade.modules.localization`）：默认 provider + Sheet→JSON 作者工具  
+- **UI 扩展**（`com.source27.cascade.modules.uiextras`）：ScaleButton / LoopScroll
 
 主包 **不** 负责：
 
@@ -43,15 +48,14 @@ Starter  ──►  Cascade + 选定的 Integrations / Modules
 Bootstrap 默认顺序：
 
 1. `RegisterServices`  
-2. 建 `UpdateLoop` + `IGameHost`  
+2. 解析/注册 `IUpdateLoop` + 建 `IGameHost`（只有 `Services`）  
 3. `IResourceService.InitializeAsync`  
-4. 若已注册：`ILocalizationService.InitializeAsync`  
-5. 虚方法 `RunGameAsync(IGameHost, CancellationToken)`  
+4. 虚方法 `RunGameAsync(IGameHost, CancellationToken)`  
 
 默认 `RunGameAsync`：警告 + no-op。差异全在 Starter override：
 
-- **Mobile**：Yoo 更新 API → HybridCLR / CodeLoader → 热更 `Start`  
-- **Indie**：同进程 `GameEntry.Start`  
+- **Mobile**：本地化安装（`LocalizationInstaller`）→ Yoo 更新 API → HybridCLR / CodeLoader → 热更 `Start`（热更入口自建并持有 UISystem）  
+- **Indie**：本地化安装 → 同进程 `GameEntry.Start`（烟测 UI 自带）
 
 ## 资源契约 load-only
 
@@ -59,12 +63,13 @@ Bootstrap 默认顺序：
 
 ## 扩展方式
 
-- 组合根 override：`CreateResourceService`、`CreateResourceInitOptions`、`RegisterServices`、`RunGameAsync`  
+- 组合根 override：`CreateResourceService`、`CreateResourceInitOptions`、`CreateUpdateLoop`、`RegisterServices`、`RunGameAsync`  
 - 游戏专有服务：`Register` 进 `ServiceRegistry`，热更/主逻辑经 `host.Services.Get<T>()`  
 - 游戏流程：主包 `GameFlow` + 游戏实现 `IGameFlowState`（状态 id 自定）；**不**提供 GF 式通用 FSM  
-- **不**使用 DI 容器（AOT 侧）；**不**把 `IGameHost` 扩成服务目录  
-- 本地化：契约在主包；默认实现 = 资源 catalog + 表；Google Sheet 等是作者工具，可换成其它 `ILocalizationService` 实现  
+- **不**使用 DI 容器（AOT 侧）；**不**把 `IGameHost` 扩成服务目录（只剩 `Services`）  
+- 本地化：契约在主包；默认实现 + 作者工具在 `modules.localization`，由 Starter 安装；可换成别家实现  
+- UI：`modules.ui` 提供底座，UISystem 由游戏创建并持有，宿主不参与
 
 ## 可选能力
 
-真正可选 = 独立 UPM（`Modules/UiExtras`、未来红点/多设备输入等），不是「主包永远编译进来但不 Register」。
+真正可选 = 独立 UPM（`Modules/UI`、`Modules/Localization`、`Modules/UiExtras`、未来红点/多设备输入等），不是「主包永远编译进来但不 Register」。

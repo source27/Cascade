@@ -3,9 +3,7 @@
   "rootNamespace": "Cascade.Core",
   "references": [
     "Cascade.Service",
-    "UniTask",
-    "UnityEngine.UI",
-    "Unity.TextMeshPro"
+    "UniTask"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

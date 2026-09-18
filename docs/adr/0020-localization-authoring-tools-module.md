@@ -2,6 +2,8 @@
 
 **Status:** accepted — implements [#36](https://github.com/source27/Cascade/issues/36) / [#38](https://github.com/source27/Cascade/issues/38)
 
+> **被 [ADR 0022](0022-ui-and-localization-out-of-core.md) 取代：** 作者管线与主包本地化实现合并为 `com.source27.cascade.modules.localization`（`Modules/Localization`）；原来的「运行时留主包」已不再成立。
+
 Google Sheet（及后续 Excel 等）表 → 运行时 catalog/locale JSON 的 **Editor 作者管线**，以可选 Module 分发：
 
 | 目录 | UPM name | 程序集 |

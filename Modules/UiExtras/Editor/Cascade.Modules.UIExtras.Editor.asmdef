@@ -3,10 +3,11 @@
   "rootNamespace": "Cascade.Modules.UIExtras.Editor",
   "references": [
     "Cascade.Modules.UIExtras",
-    "Cascade.Core",
-    "UnityEngine.UI"
+    "Cascade.Modules.UI"
   ],
-  "includePlatforms": ["Editor"],
+  "includePlatforms": [
+    "Editor"
+  ],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": false,

@@ -74,7 +74,9 @@ if (pkg) {
   if (pkg.license !== 'MIT') fail(`Cascade/package.json license: expected MIT, got ${pkg.license}`);
   if (!pkg.dependencies || typeof pkg.dependencies !== 'object') fail('Cascade/package.json missing dependencies');
   for (const dep of Object.keys(pkg.dependencies)) {
-    if (/hybridclr|lit-motion|loopscroll|unitask|yooasset|cysharp/i.test(dep)) fail(`Cascade must not depend on ${dep}`);
+    if (/hybridclr|lit-motion|loopscroll|unitask|yooasset|cysharp|ugui|textmeshpro/i.test(dep)) {
+      fail(`Cascade must not depend on ${dep} (UI lives in Modules/UI, localization in Modules/Localization)`);
+    }
   }
 }
 
@@ -84,18 +86,22 @@ const requiredAsmdefs = [
   'Cascade/Runtime/Cascade.Core/Cascade.Core.asmdef',
   'Cascade/Editor/Cascade.Editor/Cascade.Editor.asmdef',
   'Cascade/Tests/Cascade.Tests/Cascade.Tests.asmdef',
+  'Modules/UI/Runtime/Cascade.Modules.UI.asmdef',
+  'Modules/UI/Editor/Cascade.Modules.UI.Editor.asmdef',
+  'Modules/Localization/Runtime/Cascade.Modules.Localization.asmdef',
+  'Modules/Localization/Editor/Cascade.Modules.Localization.Editor.asmdef',
 ];
 for (const rel of requiredAsmdefs) requireFile(join(repoRoot, rel), rel);
 
-requireDir(join(repoRoot, 'Cascade', 'Roslyn'), 'Cascade/Roslyn');
-const roslynDlls = existsSync(join(repoRoot, 'Cascade', 'Roslyn'))
-  ? readdirSync(join(repoRoot, 'Cascade', 'Roslyn')).filter((name) => name.endsWith('.dll'))
+requireDir(join(repoRoot, 'Modules', 'UI', 'Roslyn'), 'Modules/UI/Roslyn');
+const roslynDlls = existsSync(join(repoRoot, 'Modules', 'UI', 'Roslyn'))
+  ? readdirSync(join(repoRoot, 'Modules', 'UI', 'Roslyn')).filter((name) => name.endsWith('.dll'))
   : [];
-if (roslynDlls.length === 0) fail('Cascade/Roslyn must contain at least one source-generator .dll');
+if (roslynDlls.length === 0) fail('Modules/UI/Roslyn must contain at least one source-generator .dll');
 
 requireFile(
-  join(repoRoot, 'Cascade', 'Tools~', 'Cascade.SourceGenerator', 'Cascade.SourceGenerator.csproj'),
-  'Cascade/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj',
+  join(repoRoot, 'Modules', 'UI', 'Tools~', 'Cascade.SourceGenerator', 'Cascade.SourceGenerator.csproj'),
+  'Modules/UI/Tools~/Cascade.SourceGenerator/Cascade.SourceGenerator.csproj',
 );
 
 const yooPath = join(repoRoot, 'Integrations', 'YooAsset', 'package.json');
@@ -113,21 +119,30 @@ if (yoo) {
   );
 }
 
-const locToolsPath = join(repoRoot, 'Modules', 'LocalizationTools', 'package.json');
-requireFile(locToolsPath, 'Modules/LocalizationTools/package.json');
-requirePackageDeps(locToolsPath, 'Modules/LocalizationTools');
-const locTools = readJson(locToolsPath);
-if (locTools) {
-  if (locTools.name !== 'com.source27.cascade.modules.localizationtools') {
-    fail(`LocalizationTools package name mismatch: ${locTools.name}`);
+const locPath = join(repoRoot, 'Modules', 'Localization', 'package.json');
+requireFile(locPath, 'Modules/Localization/package.json');
+requirePackageDeps(locPath, 'Modules/Localization');
+const loc = readJson(locPath);
+if (loc) {
+  if (loc.name !== 'com.source27.cascade.modules.localization') {
+    fail(`Localization package name mismatch: ${loc.name}`);
   }
-  if (locTools.license !== 'MIT') {
-    fail(`Modules/LocalizationTools/package.json license: expected MIT, got ${locTools.license}`);
+  if (loc.license !== 'MIT') {
+    fail(`Modules/Localization/package.json license: expected MIT, got ${loc.license}`);
   }
-  requireFile(
-    join(repoRoot, 'Modules', 'LocalizationTools', 'Editor', 'Cascade.Modules.LocalizationTools.Editor.asmdef'),
-    'Modules/LocalizationTools/Editor/Cascade.Modules.LocalizationTools.Editor.asmdef',
-  );
+}
+
+const uiPath = join(repoRoot, 'Modules', 'UI', 'package.json');
+requireFile(uiPath, 'Modules/UI/package.json');
+requirePackageDeps(uiPath, 'Modules/UI');
+const ui = readJson(uiPath);
+if (ui) {
+  if (ui.name !== 'com.source27.cascade.modules.ui') {
+    fail(`UI package name mismatch: ${ui.name}`);
+  }
+  if (ui.license !== 'MIT') {
+    fail(`Modules/UI/package.json license: expected MIT, got ${ui.license}`);
+  }
 }
 
 // --- starters ---
@@ -164,6 +179,38 @@ if (!/m_EditorVersion:\s*2022\.3\.62f3/.test(indieVersion)) {
 requirePackageDeps(join(repoRoot, 'Integrations', 'Addressables', 'package.json'), 'Integrations/Addressables');
 requirePackageDeps(join(repoRoot, 'Modules', 'UiExtras', 'package.json'), 'Modules/UiExtras');
 
+// --- starters must track the current module names/paths ---
+const starterManifests = {
+  'Starters/Mobile': join(repoRoot, 'Starters', 'Mobile', 'Packages', 'manifest.json'),
+  'Starters/Indie': join(repoRoot, 'Starters', 'Indie', 'Packages', 'manifest.json'),
+};
+for (const [label, path] of Object.entries(starterManifests)) {
+  const manifest = readJson(path);
+  if (!manifest || !manifest.dependencies) continue;
+  for (const dep of Object.keys(manifest.dependencies)) {
+    if (/localizationtools/i.test(dep)) {
+      fail(`${label} manifest still depends on ${dep}; use com.source27.cascade.modules.localization`);
+    }
+    if (dep.startsWith('com.source27.cascade.modules.') && !manifest.dependencies[dep]) {
+      fail(`${label} manifest has an empty module dependency: ${dep}`);
+    }
+  }
+  if (!manifest.dependencies['com.source27.cascade.modules.localization']) {
+    fail(`${label} manifest must depend on com.source27.cascade.modules.localization`);
+  }
+  if (label === 'Starters/Mobile' && !manifest.dependencies['com.source27.cascade.modules.ui']) {
+    fail(`${label} manifest must depend on com.source27.cascade.modules.ui (hot-update UI stack)`);
+  }
+  if (label === 'Starters/Indie' && manifest.dependencies['com.source27.cascade.modules.ui']) {
+    fail(`${label} manifest must NOT depend on com.source27.cascade.modules.ui (keeps the module optional)`);
+  }
+  // The InputGlyphs integration cannot compile without its peer; installing one half breaks the project.
+  if (manifest.dependencies['com.source27.cascade.integrations.inputglyphs'] &&
+      !manifest.dependencies['com.eviltwo.input-glyphs']) {
+    fail(`${label} installs com.source27.cascade.integrations.inputglyphs without its peer com.eviltwo.input-glyphs`);
+  }
+}
+
 if (errors.length > 0) {
   console.error('validate-upm failed:');
   for (const error of errors) console.error(`  - ${error}`);
@@ -172,5 +219,5 @@ if (errors.length > 0) {
 
 console.log('validate-upm OK');
 console.log(`  package ${pkg?.name}@${pkg?.version} (unity ${pkg?.unity})`);
-console.log(`  roslyn dlls: ${roslynDlls.join(', ')}`);
+console.log(`  roslyn dlls (Modules/UI/Roslyn): ${roslynDlls.join(', ')}`);
 console.log(`  starters editor: 2022.3.62f3`);

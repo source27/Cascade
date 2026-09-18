@@ -4,8 +4,7 @@
   "references": [
     "Cascade.Service",
     "Cascade.Core",
-    "UniTask",
-    "UnityEngine.UI"
+    "UniTask"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

@@ -1,20 +1,25 @@
 using System.Threading;
 using Cascade.Core;
+using Cascade.Modules.Localization;
+using Cascade.Service;
 using Cysharp.Threading.Tasks;
 
 namespace Cascade.Indie
 {
     /// <summary>
-    /// Game logic entry after Bootstrap: smoke resource check → context/managers → <see cref="GameFlow.RunAsync"/>.
+    /// Game logic entry after Bootstrap: localization install → context/managers → <see cref="GameFlow.RunAsync"/>.
     /// </summary>
     public static class GameEntry
     {
         public static async UniTask Start(IGameHost host, CancellationToken cancellationToken = default)
         {
-            var bytes = await host.Resources.LoadRawBytesAsync("localization_catalog", cancellationToken);
-            host.Log.Info("Indie", $"Loaded localization_catalog ({bytes.Length} bytes).");
+            var services = host.Services;
+            var log = services.Get<ILogService>();
 
-            var context = new IndieGameContext(host);
+            var localization = await LocalizationInstaller.InstallAsync(services, cancellationToken);
+            log.Info("Indie", $"Localization ready: {localization.CurrentLocale}");
+
+            var context = new IndieGameContext(services);
             // settings / tables / managers: init here as the project grows
 
             var flow = new GameFlow(
@@ -23,12 +28,12 @@ namespace Cascade.Indie
                     new MainFlowState(context),
                     new BattleFlowState(context),
                 },
-                host.Log);
+                log);
             context.Flow = flow;
-            host.Services.Register<IGameFlowQuery>(flow);
+            services.Register<IGameFlowQuery>(flow);
 
             await flow.RunAsync(IndieFlowIds.Main, cancellationToken);
-            host.Log.Info("Indie", $"GameEntry ready. flow={flow.CurrentStateId}");
+            log.Info("Indie", $"GameEntry ready. flow={flow.CurrentStateId}");
         }
     }
 }

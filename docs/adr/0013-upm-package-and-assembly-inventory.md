@@ -2,6 +2,8 @@
 
 **Status:** accepted — resolves [决策：改造后 UPM 包与程序集清单](https://github.com/source27/Cascade/issues/21)
 
+> **部分被 [ADR 0022](0022-ui-and-localization-out-of-core.md) 取代：** UI 底座不再是主包程序集，改为可选 Module `Modules/UI`（`Cascade.Modules.UI`）。
+
 | 目录 | UPM name | 程序集 |
 |------|----------|--------|
 | `Cascade/` | `com.source27.cascade` | `Cascade.Service`, `Cascade.Core`, **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）, `Cascade.Editor`, `Cascade.Tests` |

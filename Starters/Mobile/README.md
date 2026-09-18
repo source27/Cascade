@@ -15,13 +15,17 @@ Unity **2022.3.62f3**. Open `Starters/Mobile`.
 | Assembly | Role |
 |----------|------|
 | `Cascade.Mobile.AOT` | `MobileBootstrapEntry`, launch/hot-update pipeline, Patch UI |
-| `GameLogic.HotUpdate` | Hot-update game entry (default type name) |
+| `GameLogic.HotUpdate` | Hot-update game entry (default type name); owns the UI system |
 | `Cascade.Mobile.Editor` | Build / hot-update window (`Cascade/构建窗口`) |
+
+Localization is installed by the launch flow (`LocalizationInstaller`); the UI system is created and disposed
+by `GameLogicEntry` (`UISystem.CreateAsync` / `Stop`) — neither lives on the host.
 
 ## Packages
 
 - `com.source27.cascade` (file)
 - `com.source27.cascade.integrations.yooasset` (file)
+- `com.source27.cascade.modules.ui` (file) — UI 底座（页面/视图/生成器）
 - `com.source27.cascade.modules.uiextras` (file)
-- `com.source27.cascade.modules.localizationtools` (file) — Sheet→JSON（`Cascade/更新多语言`，首次询问是否创建 settings）
+- `com.source27.cascade.modules.localization` (file) — 默认本地化运行时 + Sheet→JSON（`Cascade/更新多语言`，首次询问是否创建 settings）
 - HybridCLR, YooAsset, UniTask, LitMotion, LoopScroll (vendored under Packages/)

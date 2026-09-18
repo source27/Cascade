@@ -14,8 +14,8 @@ Thumbs.db
 # --- logs ---
 *.log
 
-# --- Cascade Roslyn generator (Tools~ is not imported by Unity) ---
-Cascade/Tools~/**/bin/
-Cascade/Tools~/**/obj/
-!Cascade/Tools~/**/*.csproj
-!Cascade/Tools~/**/*.sln
+# --- Roslyn generators shipped in Modules (Tools~ is not imported by Unity) ---
+Modules/*/Tools~/**/bin/
+Modules/*/Tools~/**/obj/
+!Modules/*/Tools~/**/*.csproj
+!Modules/*/Tools~/**/*.sln

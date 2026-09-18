@@ -10,7 +10,7 @@ namespace Cascade.Tests
             var result = Cascade.Editor.FoundationValidator.ValidateDefinitions(
                 new[]
                 {
-                    Definition("Cascade.Bootstrap", "Cascade.Service", "Cascade.Core"),
+                    Definition("Cascade.Bootstrap", "Cascade.Service", "Cascade.Core", "UniTask"),
                     Definition("Cascade.Service"),
                     Definition("Cascade.Core", "Cascade.Service"),
                     Definition("Cascade.Editor", "Cascade.Service", "Cascade.Core"),
@@ -19,6 +19,22 @@ namespace Cascade.Tests
                 new[] { "/project/Runtime/Cascade.Core/Event/EventBus.cs" },
                 "/project");
             Assert.That(result.IsValid, Is.True, string.Join("\n", result.Errors));
+        }
+
+        [Test]
+        public void CoreUiReferenceIsRejected()
+        {
+            var result = Cascade.Editor.FoundationValidator.ValidateDefinitions(
+                new[]
+                {
+                    Definition("Cascade.Bootstrap", "Cascade.Service", "Cascade.Core", "UniTask"),
+                    Definition("Cascade.Service"),
+                    Definition("Cascade.Core", "Cascade.Service", "UnityEngine.UI", "Unity.TextMeshPro")
+                },
+                new string[0],
+                "/project");
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors, Has.Some.Contains("disallowed reference"));
         }
 
         [Test]
@@ -89,12 +105,14 @@ namespace Cascade.Tests
 
         private static Cascade.Editor.AssemblyDefinitionInfo Definition(string name, params string[] references)
         {
+            // Validator contract: Cascade.Tests must live under a /Tests/ path, runtime assemblies under /Runtime/.
+            var area = name == "Cascade.Tests" ? "Tests" : "Runtime";
             return new Cascade.Editor.AssemblyDefinitionInfo
             {
                 name = name,
                 rootNamespace = name,
                 references = references,
-                path = $"/project/Runtime/{name}/{name}.asmdef"
+                path = $"/project/{area}/{name}/{name}.asmdef"
             };
         }
 

@@ -10,8 +10,8 @@
 |------|------|
 | `CreateResourceService` | 返回集成包中的 `IResourceService` 实现 |
 | `CreateResourceInitOptions` | 提供者专用 options |
-| `RegisterDefaultLocalization` | 默认 `true` 注册 Cascade 本地化；Unity Localization 等项目 override `false` |
-| `RegisterServices` | `base` + 增游戏服务；本地化靠上一钩子跳过，勿重复 Register 同契约 |
+| `CreateUpdateLoop` | 创建注册为 `IUpdateLoop` 的循环（默认 `UpdateLoop`；`RegisterServices` 里已注册者优先） |
+| `RegisterServices` | `base` + 增游戏服务；本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
 
 游戏专有服务：
@@ -22,7 +22,7 @@ registry.Register<IMyFeature>(new MyFeature(...));
 var f = host.Services.Get<IMyFeature>();
 ```
 
-不要把每个服务都加成 `IGameHost` 属性。
+别把每个服务都加成 `IGameHost` 属性——`IGameHost` 只有 `Services`。
 
 ## 服务与 ServiceRegistry
 
@@ -45,17 +45,19 @@ var f = host.Services.Get<IMyFeature>();
 Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 **TextAsset** 的 address；`UnloadUnused` 为 no-op（靠 Release 引用计数）。
 
 ## 本地化
-- 契约：`ILocalizationService`（主包运行时，只认 resource location）  
-- 默认实现：catalog + 语言表，经 `LoadRawBytesAsync`  
-- `IGameHost.Localization`：已注册时非 null；未注册（`RegisterDefaultLocalization => false`）为 null，用 `Services.TryGet` 亦可  
-- 磁盘目录：作者工具 `LocalizationSyncSettings.outputRoot`（默认 `Assets/Localization`）；**不是**框架品牌路径  
-- Google Sheet / 表导入：可选模块 `com.source27.cascade.modules.localizationtools`（Editor；**Cascade/更新多语言** 首次会询问是否创建 settings）  
-- 换配表格式：实现另一 `ILocalizationService`，在 `RegisterServices` 注册  
-- 流水线：仅当 registry 中有本地化服务时才 `InitializeAsync`  
+- 契约：`Cascade.Service.ILocalizationService`（主包，只认 resource location）
+- 默认实现 + 作者工具：可选模块 `com.source27.cascade.modules.localization`（`Modules/Localization`）
+- 安装：组合根 / 入口一行 `await LocalizationInstaller.InstallAsync(services, ct)` → 注册 `ILocalizationService`，`InitializeAsync` 内绑定 `LocalizationAccess`（`Dispose` 解绑）
+- `IGameHost.Localization` 已删除；要取用就 `services.Get<ILocalizationService>()` 或 `TryGet`（未装模块则为 null）
+- 磁盘目录：`LocalizationSyncSettings.outputRoot`（默认 `Assets/Localization`）；**不是**框架品牌路径
+- Google Sheet / 表导入：同模块 Editor 半边（**Cascade/更新多语言** 首次会询问是否创建 settings）
+- 换配表格式：实现另一 `ILocalizationService` 并注册，只依赖契约（不必装本模块）
+- Bootstrap **不做**本地化步骤
 ## UI
 
-- 页面/绑定：Core + Roslyn 生成器（`[UI]` 等特性 → 注册表，运行时少反射）  
-- `IGameHost.CreateUISystemAsync` / `DestroyUISystem`：UISystem 由宿主独占，不进 ServiceRegistry  
+- 页面/绑定：`com.source27.cascade.modules.ui`（`Cascade.Modules.UI`）+ Roslyn 生成器（`[UI]` 等特性 → 注册表，运行时少反射）
+- 创建：`UISystem.CreateAsync(services, registry, "UIRoot", ct)`；**实例归游戏**（入口保存、`Stop()`/退出时 Dispose），宿主不持有
+- 生成器随模块分发（`Modules/UI/Roslyn`），未装模块时空转
 - ScaleButton、LoopScroll 列表绑定：装 `com.source27.cascade.modules.uiextras`，命名空间 `Cascade.Modules.UIExtras`  
 
 ## 事件
@@ -68,8 +70,9 @@ Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 
 主包：`Cascade.Core.GameFlow` + `IGameFlowState` + `IGameFlowQuery`。
 
 ```csharp
-var flow = new GameFlow(new IGameFlowState[] { new MainFlowState(ctx), new BattleFlowState(ctx) }, host.Log);
-host.Services.Register<IGameFlowQuery>(flow);
+var log = services.Get<ILogService>();
+var flow = new GameFlow(new IGameFlowState[] { new MainFlowState(ctx), new BattleFlowState(ctx) }, log);
+services.Register<IGameFlowQuery>(flow);
 await flow.RunAsync("Main", ct);
 // 跳转 / 返回上一状态（单槽，不是多级栈）：
 await flow.ChangeStateAsync("Battle", ct);
@@ -105,5 +108,7 @@ public static UniTask<string> Start(IGameHost host, CancellationToken cancellati
 
 - 在主包引用 HybridCLR 或把补丁窗塞回 Bootstrap  
 - 在 `IResourceService` 上重新加更新方法  
+- 在 `IGameHost` 上加服务属性，或让宿主持有 UISystem / 本地化实例  
+- 在主包引用 uGUI/TMP（UI 属 `modules.ui`）  
 - 用 Example/Demo 命名新的生产工程  
 - 为尚未存在的第二用例先上 CQ 框架  

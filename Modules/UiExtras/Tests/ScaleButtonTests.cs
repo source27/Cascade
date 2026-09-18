@@ -1,5 +1,4 @@
 using System.Reflection;
-using Cascade.Core;
 using Cascade.Modules.UIExtras;
 using Cascade.Modules.UIExtras.Editor;
 using NUnit.Framework;
@@ -8,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using Cascade.Modules.UI;
 namespace Cascade.Modules.UIExtras.Tests
 {
     public sealed class ScaleButtonTests

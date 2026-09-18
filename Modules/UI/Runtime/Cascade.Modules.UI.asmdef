@@ -1,0 +1,19 @@
+{
+  "name": "Cascade.Modules.UI",
+  "rootNamespace": "Cascade.Modules.UI",
+  "references": [
+    "Cascade.Service",
+    "Cascade.Core",
+    "UniTask",
+    "UnityEngine.UI"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

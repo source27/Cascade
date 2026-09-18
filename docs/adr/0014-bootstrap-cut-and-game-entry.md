@@ -2,6 +2,8 @@
 
 **Status:** accepted — resolves [决策：Bootstrap 切割与主逻辑入口约定](https://github.com/source27/Cascade/issues/22)
 
+> **部分被 [ADR 0022](0022-ui-and-localization-out-of-core.md) 取代：** 本地化不再由 Bootstrap 注册/初始化；`IGameHost` 只剩 `Services`。
+
 主包 `Cascade.Bootstrap` 提供 **薄默认流水线**（非纯零件、非热更全家桶）：
 
 `RegisterServices` → `UpdateLoop` + `GameHost` → `IResourceService.InitializeAsync` →（若已注册）`ILocalizationService.InitializeAsync` → `RunGameAsync(IGameHost, CT)` 虚钩子。

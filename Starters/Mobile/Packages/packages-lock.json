@@ -35,8 +35,6 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.ugui": "1.0.0",
-        "com.unity.textmeshpro": "3.0.9",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.2d.sprite": "1.0.0"
@@ -50,12 +48,24 @@
         "com.source27.cascade": "0.1.0"
       }
     },
-    "com.source27.cascade.modules.localizationtools": {
-      "version": "file:../../../Modules/LocalizationTools",
+    "com.source27.cascade.modules.localization": {
+      "version": "file:../../../Modules/Localization",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.source27.cascade": "0.1.0"
+        "com.source27.cascade": "0.1.0",
+        "com.unity.ugui": "1.0.0",
+        "com.unity.textmeshpro": "3.0.9"
+      }
+    },
+    "com.source27.cascade.modules.ui": {
+      "version": "file:../../../Modules/UI",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.source27.cascade": "0.1.0",
+        "com.unity.ugui": "1.0.0",
+        "com.unity.textmeshpro": "3.0.9"
       }
     },
     "com.source27.cascade.modules.uiextras": {
@@ -64,7 +74,8 @@
       "source": "local",
       "dependencies": {
         "com.source27.cascade": "0.1.0",
-        "com.unity.ugui": "1.0.0"
+        "com.unity.ugui": "1.0.0",
+        "com.source27.cascade.modules.ui": "0.1.0"
       }
     },
     "com.tuyoogame.yooasset": {

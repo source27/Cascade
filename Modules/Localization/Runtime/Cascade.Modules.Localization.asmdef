@@ -1,0 +1,19 @@
+{
+  "name": "Cascade.Modules.Localization",
+  "rootNamespace": "Cascade.Modules.Localization",
+  "references": [
+    "Cascade.Service",
+    "UniTask",
+    "UnityEngine.UI",
+    "Unity.TextMeshPro"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -4,11 +4,19 @@
   "displayName": "Cascade UI Extras",
   "description": "Optional UI extras for Cascade: ScaleButton (LitMotion) and LoopScroll list binder.",
   "unity": "2022.3",
-  "keywords": ["cascade", "ui", "litmotion", "loopscroll"],
-  "author": {"name": "source27"},
+  "keywords": [
+    "cascade",
+    "ui",
+    "litmotion",
+    "loopscroll"
+  ],
+  "author": {
+    "name": "source27"
+  },
   "license": "MIT",
   "dependencies": {
     "com.source27.cascade": "0.1.0",
-    "com.unity.ugui": "1.0.0"
+    "com.unity.ugui": "1.0.0",
+    "com.source27.cascade.modules.ui": "0.1.0"
   }
 }

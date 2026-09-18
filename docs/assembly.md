@@ -9,13 +9,14 @@
 | `Integrations/Addressables/` | `com.source27.cascade.integrations.addressables` | 独立游戏 / Addressables |
 | `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等（需 `com.unity.inputsystem`） |
 | `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam-only（依赖 Desktop；peer Steamworks.NET） |
-| `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs） |
-| `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时 |
-| `Modules/LocalizationTools/` | `com.source27.cascade.modules.localizationtools` | 需要 Google Sheet→JSON 等本地化作者工具时 |
+| `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs `com.eviltwo.input-glyphs`；两者必须同装） |
+| `Modules/UI/` | `com.source27.cascade.modules.ui` | 需要 Cascade UI 栈（页面/视图/生成器）时 |
+| `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时（依赖 `modules.ui`） |
+| `Modules/Localization/` | `com.source27.cascade.modules.localization` | 需要默认本地化栈（资源 catalog）或 Google Sheet→JSON 等作者工具时 |
 
 主包程序集：`Cascade.Service`、`Cascade.Core`、`Cascade.Bootstrap`、`Cascade.Editor`、`Cascade.Tests`。
 
-依赖方向：Integrations / Modules → 主包；Starter → 任选。Steam → Desktop → 主包。
+依赖方向：Integrations / Modules → 主包；Starter → 任选。Steam → Desktop → 主包。UI 栈与本地化栈互不依赖。
 
 ## 安装主包
 
@@ -41,8 +42,9 @@ https://github.com/source27/Cascade.git?path=Cascade
 "com.source27.cascade.integrations.desktop": "https://github.com/source27/Cascade.git?path=Integrations/Desktop",
 "com.source27.cascade.integrations.steam": "https://github.com/source27/Cascade.git?path=Integrations/Steam",
 "com.source27.cascade.integrations.inputglyphs": "https://github.com/source27/Cascade.git?path=Integrations/InputGlyphs",
+"com.source27.cascade.modules.ui": "https://github.com/source27/Cascade.git?path=Modules/UI",
 "com.source27.cascade.modules.uiextras": "https://github.com/source27/Cascade.git?path=Modules/UiExtras",
-"com.source27.cascade.modules.localizationtools": "https://github.com/source27/Cascade.git?path=Modules/LocalizationTools"
+"com.source27.cascade.modules.localization": "https://github.com/source27/Cascade.git?path=Modules/Localization"
 ```
 
 Addressables 集成 pin `com.unity.addressables` **1.21.19**（与 Indie Starter 一致）。  
@@ -56,7 +58,7 @@ Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json
 
 | Peer 包 | 版本 | 需要它的包 |
 |--------|------|-----------|
-| com.cysharp.unitask | 2.5.11 | 主包 / YooAsset / Addressables |
+| com.cysharp.unitask | 2.5.11 | 主包 / Modules(UI, Localization) / YooAsset / Addressables |
 | com.annulusgames.lit-motion | 2.0.2 | UiExtras |
 | com.annulusgames.lit-motion.animation | 2.0.2 | UiExtras |
 | me.qiankanglai.loopscrollrect | 1.1.5 | UiExtras |
@@ -72,7 +74,7 @@ Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json
 
 主包 git URL 可单独添加；缺 peer 时是**编译**失败，不再是 Package Manager 解析失败。Starter 已写入上述 pin。
 
-主包 **不再** 依赖 HybridCLR、LitMotion、LoopScrollRect。
+主包 **不再** 依赖 uGUI/TMP、HybridCLR、LitMotion、LoopScrollRect、YooAsset。
 
 ## 最快路径：fork Starter
 
@@ -107,18 +109,22 @@ protected override ResourceInitOptions CreateResourceInitOptions() =>
 
 protected override async UniTask RunGameAsync(IGameHost host, CancellationToken ct)
 {
+    var services = host.Services;
+    // 需要本地化：await LocalizationInstaller.InstallAsync(services, ct);
+    // 需要 UI：var ui = await UISystem.CreateAsync(services, uiRegistry, "UIRoot", ct);（自行保存/释放）
     // Mobile: 资源更新（Yoo 具体 API）+ CodeLoader + 热更 Start
     // Indie: await GameEntry.Start(host, ct);
 }
 ```
 
-4. 需要 UI 动效/循环列表时再装 `modules.uiextras`  
-5. 需要 PC / Steam 壳时再装 Desktop（+ 可选 Steam / InputGlyphs），见下文
+4. 需要 UI 栈时装 `modules.ui`；需要 UI 动效/循环列表时再装 `modules.uiextras`
+5. 需要默认本地化栈（或 Sheet 作者工具）时装 `modules.localization`
+6. 需要 PC / Steam 壳时再装 Desktop（+ 可选 Steam / InputGlyphs），见下文
 
 ## 默认流水线止点
 
-Bootstrap **只到** 资源 init（+ 可选本地化 init）和 `RunGameAsync`。  
-资源 **更新**、HybridCLR、Patch UI、构建窗 **不在** 主包。
+Bootstrap **只到** 资源 init 和 `RunGameAsync`（`IUpdateLoop` 在 `RegisterServices` 之后注册）。  
+本地化安装、UI 创建、资源 **更新**、HybridCLR、Patch UI、构建窗 **不在** 主包。
 
 ## 游戏流程
 
@@ -135,6 +141,8 @@ Mobile 热更入口同样可在 `GameLogicEntry` 里 `new GameFlow(...).RunAsync
 | 资源热更 | 有（Yoo 方言 API + Starter 编排） | 无 |
 | 构建窗 | Starter Editor | 自备 |
 | 组合根 | `MobileBootstrapEntry` | `IndieBootstrapEntry` |
+| UI 栈（modules.ui） | 默认装 | 不装（烟测用原生 uGUI） |
+| 本地化栈（modules.localization） | 默认装 | 默认装 |
 | ui.extras | 默认带（目标态） | 默认不带 |
 | PC / Steam 壳 | 通常不用 | 可选 Desktop ± Steam ± Glyphs |
 

@@ -12,10 +12,11 @@
 
 - `com.source27.cascade.integrations.desktop`（必需）
 - `com.unity.inputsystem`（Desktop 0.2.0 需要）
-- （可选）`com.source27.cascade.integrations.steam`
-- （可选）`com.source27.cascade.integrations.inputglyphs`
+- `com.source27.cascade.integrations.steam`（Indie 默认装；不用 Steam 可整包移除——无 `STEAMWORKS_NET` 时 Steam 代码走 `#if` 空实现，已实测移除后仍能编译）
 
 Steam 成就 / 云存档还需 peer：`com.rlabrecque.steamworks.net`。
+
+**InputGlyphs 不默认装**：`com.source27.cascade.integrations.inputglyphs` 必须先装 peer `com.eviltwo.input-glyphs`（见 [`InputGlyphs` README](../../../../../Integrations/InputGlyphs/README.md)），否则工程编译不过。需要时两步一起加进 manifest。
 
 ---
 

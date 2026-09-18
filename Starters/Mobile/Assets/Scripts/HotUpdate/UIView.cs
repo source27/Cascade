@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Cascade.Core;
+using Cascade.Modules.UI;
 
 namespace GameLogic
 {

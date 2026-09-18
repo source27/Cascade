@@ -27,7 +27,7 @@ Pre-wired in `Assets/AddressableAssetsData`. JSON under `AddressableContent/` mu
 | `AddressableContent/loc_en.json` | `loc_en` |
 | `AddressableContent/loc_zh.json` | `loc_zh` |
 
-Optional authoring: `com.source27.cascade.modules.localizationtools` → **Cascade/更新多语言**.
+Optional authoring: `com.source27.cascade.modules.localization` → **Cascade/更新多语言**.
 
 ## 可选 PC / Steam 壳
 
@@ -38,4 +38,4 @@ Indie 可选用 Desktop ± Steam ± InputGlyphs（包已在仓库 `Integrations/
 | [`Assets/Scripts/DesktopShell/README.md`](Assets/Scripts/DesktopShell/README.md) | 场景接线 / Local vs Roaming / Mixer（中文） |
 | [`Integrations/Desktop`](../../Integrations/Desktop/README.md) | PC 壳 API |
 | [`Integrations/Steam`](../../Integrations/Steam/README.md) | Steam（依赖 Desktop；云 = roaming only） |
-| [`Integrations/InputGlyphs`](../../Integrations/InputGlyphs/README.md) | Glyph 桥接 |
+| [`Integrations/InputGlyphs`](../../Integrations/InputGlyphs/README.md) | Glyph 桥接（Indie 默认不装；需同时装 peer `com.eviltwo.input-glyphs`） |

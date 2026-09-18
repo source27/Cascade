@@ -2,24 +2,26 @@
 <linker>
   <assembly fullname="Cascade.Core">
     <type fullname="Cascade.Core.IGameHost" preserve="all" />
-    <type fullname="Cascade.Core.IUIArgs`1" preserve="all" />
-    <type fullname="Cascade.Core.IUIPageFactory" preserve="all" />
-    <type fullname="Cascade.Core.IUISystem" preserve="all" />
-    <type fullname="Cascade.Core.IUIView" preserve="all" />
     <type fullname="Cascade.Core.IUpdateLoop" preserve="all" />
-    <type fullname="Cascade.Core.UIAttribute" preserve="all" />
-    <type fullname="Cascade.Core.UIBackPolicy" preserve="all" />
-    <type fullname="Cascade.Core.UIBase" preserve="all" />
-    <type fullname="Cascade.Core.UIBase`1" preserve="all" />
-    <type fullname="Cascade.Core.UIBindingHost" preserve="all" />
-    <type fullname="Cascade.Core.UICachePolicy" preserve="all" />
-    <type fullname="Cascade.Core.UIContextId" preserve="all" />
-    <type fullname="Cascade.Core.UIInputPolicy" preserve="all" />
-    <type fullname="Cascade.Core.UILayer" preserve="all" />
-    <type fullname="Cascade.Core.UIPageRegistration" preserve="all" />
-    <type fullname="Cascade.Core.UIPresentation" preserve="all" />
-    <type fullname="Cascade.Core.UIRegistry" preserve="all" />
-    <type fullname="Cascade.Core.UISafeAreaPolicy" preserve="all" />
+  </assembly>
+  <assembly fullname="Cascade.Modules.UI">
+    <type fullname="Cascade.Modules.UI.IUIArgs`1" preserve="all" />
+    <type fullname="Cascade.Modules.UI.IUIPageFactory" preserve="all" />
+    <type fullname="Cascade.Modules.UI.IUISystem" preserve="all" />
+    <type fullname="Cascade.Modules.UI.IUIView" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIAttribute" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIBackPolicy" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIBase" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIBase`1" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIBindingHost" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UICachePolicy" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIContextId" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIInputPolicy" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UILayer" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIPageRegistration" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIPresentation" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UIRegistry" preserve="all" />
+    <type fullname="Cascade.Modules.UI.UISafeAreaPolicy" preserve="all" />
   </assembly>
   <assembly fullname="Cascade.Service">
     <type fullname="Cascade.Service.IAudioService" preserve="all" />

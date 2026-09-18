@@ -1,0 +1,15 @@
+{
+  "name": "com.source27.cascade.modules.localization",
+  "version": "0.2.0",
+  "displayName": "Cascade Localization",
+  "description": "Cascade default localization stack (resource catalog + locale tables) and Editor authoring tools (Sheet/CSV to JSON).",
+  "unity": "2022.3",
+  "keywords": ["cascade", "localization", "i18n", "google-sheets"],
+  "author": {"name": "source27"},
+  "license": "MIT",
+  "dependencies": {
+    "com.source27.cascade": "0.1.0",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.textmeshpro": "3.0.9"
+  }
+}

@@ -1,10 +1,10 @@
 using System;
-using Cascade.Core;
 using Cascade.Modules.UIExtras;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Cascade.Modules.UI;
 namespace Cascade.Modules.UIExtras.Editor
 {
     [CustomEditor(typeof(ScaleButton))]

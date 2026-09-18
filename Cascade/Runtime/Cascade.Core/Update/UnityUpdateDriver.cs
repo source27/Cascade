@@ -4,11 +4,11 @@ namespace Cascade.Core
 {
     public sealed class UnityUpdateDriver : MonoBehaviour
     {
-        private UpdateLoop _loop;
+        private IUpdateLoop _loop;
 
-        public UpdateLoop Loop => _loop;
+        public IUpdateLoop Loop => _loop;
 
-        public void Bind(UpdateLoop loop)
+        public void Bind(IUpdateLoop loop)
         {
             _loop = loop ?? throw new global::System.ArgumentNullException(nameof(loop));
         }

@@ -3,7 +3,7 @@ using Cascade.Service;
 
 namespace Cascade.Core
 {
-    public sealed class UpdateLoop : IUpdateLoop
+    public sealed class UpdateLoop : IUpdateLoop, global::System.IDisposable
     {
         private readonly List<global::System.Action> _updates = new List<global::System.Action>();
         private readonly List<global::System.Action> _lateUpdates = new List<global::System.Action>();
@@ -43,6 +43,13 @@ namespace Cascade.Core
         public void TickFixedUpdate()
         {
             InvokeAll(_fixedUpdates);
+        }
+
+        public void Dispose()
+        {
+            _updates.Clear();
+            _lateUpdates.Clear();
+            _fixedUpdates.Clear();
         }
 
         private global::System.IDisposable Register(List<global::System.Action> list, global::System.Action callback)

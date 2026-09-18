@@ -39,9 +39,9 @@ namespace Cascade.Editor
 
         private static readonly Dictionary<string, string[]> AllowedReferences = new Dictionary<string, string[]>
         {
-            ["Cascade.Bootstrap"] = new[] { "Cascade.Service", "Cascade.Core", "UniTask", "UnityEngine.UI" },
+            ["Cascade.Bootstrap"] = new[] { "Cascade.Service", "Cascade.Core", "UniTask" },
             ["Cascade.Service"] = new[] { "UniTask" },
-            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask", "UnityEngine.UI", "Unity.TextMeshPro" }
+            ["Cascade.Core"] = new[] { "Cascade.Service", "UniTask" }
         };
 
         public static FoundationValidationResult ValidateProject(string projectRoot)

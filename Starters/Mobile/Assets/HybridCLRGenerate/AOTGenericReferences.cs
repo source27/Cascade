@@ -6,6 +6,8 @@ public class AOTGenericReferences : UnityEngine.MonoBehaviour
 	public static readonly IReadOnlyList<string> PatchedAOTAssemblyList = new List<string>
 	{
 		"Cascade.Core.dll",
+		"Cascade.Modules.Localization.dll",
+		"Cascade.Modules.UI.dll",
 		"UniTask.dll",
 		"UnityEngine.CoreModule.dll",
 		"mscorlib.dll",
@@ -16,10 +18,10 @@ public class AOTGenericReferences : UnityEngine.MonoBehaviour
 	// }} 
 
 	// {{ AOT generic types
-	// Cascade.Core.IUIArgs<object>
-	// Cascade.Core.UIBase<CascadeExample.DetailPage.Args>
-	// Cascade.Core.UIBase<CascadeExample.HomePage.Args>
-	// Cascade.Core.UIBase<object>
+	// Cascade.Modules.UI.IUIArgs<object>
+	// Cascade.Modules.UI.UIBase<GameLogic.DetailPage.Args>
+	// Cascade.Modules.UI.UIBase<GameLogic.HomePage.Args>
+	// Cascade.Modules.UI.UIBase<object>
 	// Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask.<>c<GameLogic.GameLogicEntry.<Start>d__0,object>
 	// Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask<GameLogic.GameLogicEntry.<Start>d__0,object>
 	// Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder<object>
@@ -395,16 +397,16 @@ public class AOTGenericReferences : UnityEngine.MonoBehaviour
 
 	public void RefMethods()
 	{
-		// Cysharp.Threading.Tasks.UniTask<object> Cascade.Core.IUISystem.OpenUI<object>(Cascade.Core.IUIArgs<object>,System.Threading.CancellationToken)
-		// object Cascade.Core.UIBindingHost.Get<object>(int)
+		// Cysharp.Threading.Tasks.UniTask<object> Cascade.Modules.UI.IUISystem.OpenUI<object>(Cascade.Modules.UI.IUIArgs<object>,System.Threading.CancellationToken)
+		// object Cascade.Modules.UI.UIBindingHost.Get<object>(int)
 		// System.Void Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder<object>.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter<object>,GameLogic.GameLogicEntry.<Start>d__0>(Cysharp.Threading.Tasks.UniTask.Awaiter<object>&,GameLogic.GameLogicEntry.<Start>d__0&)
 		// System.Void Cysharp.Threading.Tasks.CompilerServices.AsyncUniTaskMethodBuilder<object>.Start<GameLogic.GameLogicEntry.<Start>d__0>(GameLogic.GameLogicEntry.<Start>d__0&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter,CascadeExample.HomePage.<OnLocaleClicked>d__9>(Cysharp.Threading.Tasks.UniTask.Awaiter&,CascadeExample.HomePage.<OnLocaleClicked>d__9&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter<float>,CascadeExample.HomePage.<OnAudioClicked>d__12>(Cysharp.Threading.Tasks.UniTask.Awaiter<float>&,CascadeExample.HomePage.<OnAudioClicked>d__12&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter<object>,CascadeExample.HomePage.<OnDetailClicked>d__13>(Cysharp.Threading.Tasks.UniTask.Awaiter<object>&,CascadeExample.HomePage.<OnDetailClicked>d__13&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<CascadeExample.HomePage.<OnAudioClicked>d__12>(CascadeExample.HomePage.<OnAudioClicked>d__12&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<CascadeExample.HomePage.<OnDetailClicked>d__13>(CascadeExample.HomePage.<OnDetailClicked>d__13&)
-		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<CascadeExample.HomePage.<OnLocaleClicked>d__9>(CascadeExample.HomePage.<OnLocaleClicked>d__9&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter,GameLogic.HomePage.<OnLocaleClicked>d__9>(Cysharp.Threading.Tasks.UniTask.Awaiter&,GameLogic.HomePage.<OnLocaleClicked>d__9&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter<float>,GameLogic.HomePage.<OnAudioClicked>d__12>(Cysharp.Threading.Tasks.UniTask.Awaiter<float>&,GameLogic.HomePage.<OnAudioClicked>d__12&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.AwaitUnsafeOnCompleted<Cysharp.Threading.Tasks.UniTask.Awaiter<object>,GameLogic.HomePage.<OnDetailClicked>d__13>(Cysharp.Threading.Tasks.UniTask.Awaiter<object>&,GameLogic.HomePage.<OnDetailClicked>d__13&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<GameLogic.HomePage.<OnAudioClicked>d__12>(GameLogic.HomePage.<OnAudioClicked>d__12&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<GameLogic.HomePage.<OnDetailClicked>d__13>(GameLogic.HomePage.<OnDetailClicked>d__13&)
+		// System.Void System.Runtime.CompilerServices.AsyncVoidMethodBuilder.Start<GameLogic.HomePage.<OnLocaleClicked>d__9>(GameLogic.HomePage.<OnLocaleClicked>d__9&)
 		// object UnityEngine.Component.GetComponentInChildren<object>()
 	}
 }

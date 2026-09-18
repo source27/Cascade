@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Cascade.Service;
 using Cascade.Bootstrap;
 using Cascade.Core;
+using Cascade.Modules.Localization;
 using UnityEngine;
 
 namespace Cascade.Mobile
@@ -16,7 +17,6 @@ namespace Cascade.Mobile
         private readonly ILauncherView _view;
         private readonly ILogService _log;
         private readonly IResourceService _resources;
-            private readonly ILocalizationService _localization;
         private readonly CodeLoader _codeLoader;
         private CancellationTokenSource _cts;
         private bool _running;
@@ -33,7 +33,6 @@ namespace Cascade.Mobile
             _view = view;
             _log = services.Get<ILogService>();
             _resources = services.Get<IResourceService>();
-            _localization = services.Get<ILocalizationService>();
             _codeLoader = new CodeLoader(_log, configuration.AssemblyLoadMode, configuration.GameLogicEntryType, configuration.HotUpdateAssemblyName);
         }
 
@@ -88,15 +87,6 @@ namespace Cascade.Mobile
             catch (Exception exception)
             {
                 _log.Exception("Launcher", exception, "GameLogic stop failed.");
-            }
-
-            try
-            {
-                _host.DestroyUISystem();
-            }
-            catch (Exception exception)
-            {
-                _log.Exception("Launcher", exception, "UISystem destroy failed.");
             }
 
             GameLogicVersion = null;
@@ -292,15 +282,14 @@ namespace Cascade.Mobile
             SetStatus(LauncherText.Get(LauncherText.LoadingLocalization));
             if (LocalizationAccess.IsBound)
             {
-                _log.Info("Launcher", "Localization already bound (thin Bootstrap); skipping.");
+                _log.Info("Launcher", "Localization already initialized; skipping.");
                 return;
             }
 
             try
             {
-                await _localization.InitializeAsync(cancellationToken);
-                LocalizationAccess.Bind(_localization);
-                _log.Info("Launcher", $"Localization initialized: {_localization.CurrentLocale}");
+                var localization = await LocalizationInstaller.InstallAsync(_services, cancellationToken);
+                _log.Info("Launcher", $"Localization initialized: {localization.CurrentLocale}");
             }
             catch (Exception exception)
             {

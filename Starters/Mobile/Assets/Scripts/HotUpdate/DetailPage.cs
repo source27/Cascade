@@ -1,4 +1,4 @@
-using Cascade.Core;
+using Cascade.Modules.UI;
 using Cascade.Generated;
 
 namespace GameLogic
