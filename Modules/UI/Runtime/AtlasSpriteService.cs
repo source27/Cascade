@@ -4,11 +4,11 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Cascade.Service;
 using UnityEngine;
 using UnityEngine.U2D;
 
-using Cascade.Service;
-namespace Cascade.Service
+namespace Cascade.Modules.UI
 {
     /// <summary>
     /// SpriteAtlas-backed sprite loader. AtlasMapping.bytes (spriteName -&gt; atlasName)

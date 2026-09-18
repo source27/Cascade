@@ -1,9 +1,9 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Cascade.Service;
 using UnityEngine;
 
-using Cascade.Service;
-namespace Cascade.Service
+namespace Cascade.Modules.UI
 {
     /// <summary>
     /// Loads sprites packed into generated SpriteAtlas assets through the

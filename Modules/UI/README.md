@@ -49,7 +49,9 @@ protected override void RegisterServices(IServiceRegistry registry)
 
 默认服务要等 `RegisterServices` 返回后才按缺失补，所以这里构建的服务只能依赖你自己刚注册的实例。
 
-没打包进图集的 Sprite 会返回 null（`TryGetAtlasName` 可用于预判）。
+没打包进图集的 Sprite 会返回 null（`TryGetAtlasName` 可用于预判）；索引缺失/图集加载失败同样降级为 null 而不抛。
+
+行为由 `Cascade.Modules.UI.Tests.AtlasSpriteServiceTests` 覆盖（索引格式解析、缺失索引不滞留且会重取、索引只加载一次、`Reset` 后重取、Dispose 后返回 null）。**atlas 句柄释放未覆盖**：EditMode 造不出 `SpriteAtlas` 实例（它是原生对象不是 `ScriptableObject`），那条需要真实打包好的图集资产。
 
 ## Ownership
 

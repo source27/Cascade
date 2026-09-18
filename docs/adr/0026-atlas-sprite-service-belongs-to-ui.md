@@ -13,6 +13,11 @@
 
 SpriteAtlas → Sprite 的查找是**给 UI 用的**（uGUI Image 的精灵来源），与 `Modules/UI` 的定位一致；放在主包会让「不做 UI 的工程」也背上 2D Sprite 依赖与一套 UI 约定（`AtlasMapping` 索引）。契约随实现进模块也符合 `IUISystem`/`UIRegistry` 的先例——模块自有契约、主包不反向依赖。
 
+## 后续（同批修正）
+
+- 迁移时遗漏了命名空间：两个文件留在 `Cascade.Service`，现已改为 `Cascade.Modules.UI`（本 ADR 声明的形状；也符合 ADR 0002「程序集名 = 命名空间」）。
+- 不再是零覆盖：`Cascade.Modules.UI.Tests.AtlasSpriteServiceTests` 覆盖索引解析、缺失索引不滞留且会重取、成功索引只加载一次、`Reset` 后重取、Dispose 后返回 null；**atlas 句柄释放未覆盖**（EditMode 造不出 `SpriteAtlas` 实例，需真实图集资产）。接线仍由项目在 `RegisterServices` 完成。
+
 ## Considered options
 
 - **契约留 `Cascade.Service`、实现进模块**（否：目前只有这一份实现、只服务 UI，留个无消费者的主包契约与 ADR 0011/0024 的取向相反；将来若真出现第二个 atlas 语义再提升）。
