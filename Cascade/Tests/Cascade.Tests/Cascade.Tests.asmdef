@@ -3,7 +3,6 @@
   "rootNamespace": "Cascade.Tests",
   "references": [
     "Cascade.Editor",
-    "Cascade.Bootstrap",
     "Cascade.Service",
     "Cascade.Core",
     "UniTask",

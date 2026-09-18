@@ -25,7 +25,7 @@ _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮
 _Avoid_: 把 UI 底座当主包必装能力、在主包或 Core 引用 uGUI/TMP、让宿主持有 UI
 
 **启动编排（Bootstrap）**:
-主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：注册服务（`CreateLogService`/`CreateResourceService` 等钩子）→ 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**环境分级、版本覆盖、日志级别、资源 options 等策略写在 Starter 子类**（`MobileBootstrapEntry`/`IndieBootstrapEntry`），主包不含这些字段，也没有 `BootstrapConfiguration`。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
+主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：注册服务（`CreateLogService`/`CreateResourceService` 等钩子）→ 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**环境分级、版本覆盖、日志级别、资源 options 等策略写在 Starter 子类**（含各自的 `BootstrapEnvironment` 枚举，见 `MobileBootstrapEntry`/`IndieBootstrapEntry`），主包不含这些字段与类型，也没有 `BootstrapConfiguration`。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
 _Avoid_: 热更包、cascade.hotupdate、框架管热更、默认跑资源更新、Cascade.Launcher（旧名）、Cascade.Module（已删空壳）、纯零件无流水线（已否决）
 
 **本地化提供者**:

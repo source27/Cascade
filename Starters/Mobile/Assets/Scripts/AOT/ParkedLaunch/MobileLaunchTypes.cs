@@ -1,5 +1,16 @@
 namespace Cascade.Mobile
 {
+    /// <summary>
+    /// Build/stage classification, owned by the starter. Maps to concrete policy (log level, CDN root …)
+    /// inside <see cref="MobileBootstrapEntry" />.
+    /// </summary>
+    public enum BootstrapEnvironment
+    {
+        Dev,
+        Beta,
+        Gold
+    }
+
     public enum BootstrapPlayMode
     {
         EditorSimulate,
