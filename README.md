@@ -1,7 +1,7 @@
 # Cascade
 
 Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。  
-薄 Bootstrap、提供者无关服务层、Core 事件/更新/生命周期/流程；**UI 栈**与**本地化栈**是可装可卸的 Module。  
+薄 Bootstrap、提供者无关服务层、Core 事件/更新/流程；**UI 栈**与**本地化栈**是可装可卸的 Module。  
 **不管** HybridCLR 热更编排与资源下载流水线——那些在 Mobile Starter。
 
 术语：[`CONTEXT.md`](CONTEXT.md) · 决策：[`docs/adr/`](docs/adr/) · 指南：[`docs/philosophy.md`](docs/philosophy.md) · [`docs/assembly.md`](docs/assembly.md) · [`docs/coding.md`](docs/coding.md)
@@ -12,7 +12,7 @@ Unity **能力库**（`com.source27.cascade`）+ 可 fork **Starter**。
 仓库根
 ├── Cascade/                         UPM 主包 com.source27.cascade（?path=Cascade）
 │   ├── Runtime/Cascade.Service/     契约 + 默认实现（含 ILocalizationService 契约）
-│   ├── Runtime/Cascade.Core/        事件 / 更新循环 / 生命周期 / GameFlow（无 UI 依赖）
+│   ├── Runtime/Cascade.Core/        事件 / 更新循环 / GameFlow（无 UI 依赖）
 │   ├── Runtime/Cascade.Bootstrap/   薄启动编排 + 组合根基类
 │   ├── Editor/  Tests/
 │   └── package.json

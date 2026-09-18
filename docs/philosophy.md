@@ -17,7 +17,7 @@ Cascade 同时交付两样东西：
 
 - 薄 **Bootstrap** 流水线与组合根基类  
 - **Service** 契约与默认实现（日志、音频、存档…；本地化只留契约）  
-- **Core** 基础设施（事件、更新循环、生命周期、GameFlow）  
+- **Core** 基础设施（事件、更新循环、GameFlow）  
 
 可选 Module 提供：
 

@@ -13,7 +13,6 @@ namespace Cascade.Bootstrap
         private ServiceRegistry _registry;
         private IUpdateLoop _updateLoop;
         private UnityUpdateDriver _updateDriver;
-        private LifecycleRunner _lifecycle;
         private IGameHost _host;
         private CancellationTokenSource _runCts;
 
@@ -49,7 +48,6 @@ namespace Cascade.Bootstrap
             _updateDriver = gameObject.GetComponent<UnityUpdateDriver>()
                             ?? gameObject.AddComponent<UnityUpdateDriver>();
             _updateDriver.Bind(_updateLoop);
-            _lifecycle = new LifecycleRunner(log);
             _host = new GameHost(_registry);
 
             try
@@ -122,7 +120,6 @@ namespace Cascade.Bootstrap
             _runCts?.Cancel();
             _runCts?.Dispose();
             _runCts = null;
-            _lifecycle?.StopAll();
             _registry?.Dispose();
         }
 

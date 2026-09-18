@@ -2,7 +2,9 @@
 
 **Status:** accepted — supersedes [ADR 0013](0013-upm-package-and-assembly-inventory.md)（UI 程序集归属）、[ADR 0014](0014-bootstrap-cut-and-game-entry.md)（流水线本地化步骤）、[ADR 0020](0020-localization-authoring-tools-module.md)（作者工具模块名）
 
-主包从「UI + 本地化栈常驻」收敛为「契约 + 事件/更新/生命周期/流程 + 注册表」。四条决策一起做，避免两次全量重命名。
+主包从「UI + 本地化栈常驻」收敛为「契约 + 事件/更新/流程 + 注册表」。四条决策一起做，避免两次全量重命名。
+
+> **后续修正：** 其中「生命周期」一项已删除，见 [ADR 0024](0024-remove-unwired-lifecycle.md)。
 
 ## 1. UI 底座 = 可选 Module `Modules/UI`
 
