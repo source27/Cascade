@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.U2D;
 
+using Cascade.Service;
 namespace Cascade.Service
 {
     /// <summary>

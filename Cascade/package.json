@@ -4,12 +4,17 @@
   "displayName": "Cascade",
   "description": "Unity capability library: thin Bootstrap, provider-neutral services, core event/update/lifecycle/flow.",
   "unity": "2022.3",
-  "keywords": ["cascade", "bootstrap", "service"],
-  "author": {"name": "source27"},
+  "keywords": [
+    "cascade",
+    "bootstrap",
+    "service"
+  ],
+  "author": {
+    "name": "source27"
+  },
   "license": "MIT",
   "dependencies": {
     "com.unity.modules.audio": "1.0.0",
-    "com.unity.modules.unitywebrequest": "1.0.0",
-    "com.unity.2d.sprite": "1.0.0"
+    "com.unity.modules.unitywebrequest": "1.0.0"
   }
 }

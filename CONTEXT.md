@@ -21,7 +21,7 @@ _Avoid_: 第三方封装、adapter 包（口语可说 adapter，正式称集成�
 _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮动画（若跨项目复用）
 
 **UI 栈（UI Stack）**:
-可选 UPM 模块 `com.source27.cascade.modules.ui`（`Modules/UI`，程序集/命名空间 `Cascade.Modules.UI`）：`UISystem` 页面栈、`UIBase`/`UIRegistry`/`UIContextId` 等 UI 底座、Roslyn 页面注册表生成器与其编辑器工具。**UI 实例归游戏**（游戏入口创建、自存、自释放），不挂在宿主上。不装则主包无 uGUI/TMP 依赖。
+可选 UPM 模块 `com.source27.cascade.modules.ui`（`Modules/UI`，程序集/命名空间 `Cascade.Modules.UI`）：`UISystem` 页面栈、`UIBase`/`UIRegistry`/`UIContextId` 等 UI 底座、`IAtlasSpriteService` 图集精灵服务、Roslyn 页面注册表生成器与其编辑器工具。**UI 实例归游戏**（游戏入口创建、自存、自释放），不挂在宿主上。不装则主包无 uGUI/TMP 依赖。
 _Avoid_: 把 UI 底座当主包必装能力、在主包或 Core 引用 uGUI/TMP、让宿主持有 UI
 
 **启动编排（Bootstrap）**:

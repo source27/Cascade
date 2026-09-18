@@ -83,10 +83,10 @@ asmdef 仍引用这些程序集；工程必须自行装齐，否则编译失败�
 
 | 包 | 说明 |
 |----|------|
-| Unity 模块 | audio、webrequest、2d.sprite |
+| Unity 模块 | audio、webrequest |
 
 **编译期 peer：** `com.cysharp.unitask`（见上，不进 `package.json`）。  
-主包**不含** uGUI/TMP、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI 与本地化按需装 `Modules/UI` / `Modules/Localization`，其余见 Modules/Integrations。
+主包**不含** uGUI/TMP、2d.sprite、HybridCLR、LitMotion、LoopScrollRect、YooAsset：UI（含图集精灵）与本地化按需装 `Modules/UI` / `Modules/Localization`，其余见 Modules/Integrations。
 
 ## 快速开始
 

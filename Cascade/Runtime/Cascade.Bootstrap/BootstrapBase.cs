@@ -108,10 +108,6 @@ namespace Cascade.Bootstrap
         /// <summary>Registered <see cref="INetworkService"/>; default is the null implementation.</summary>
         protected virtual INetworkService CreateNetworkService() => new NullNetworkService();
 
-        /// <summary>Registered <see cref="IAtlasSpriteService"/>; default reads the AtlasMapping index through <see cref="IResourceService"/>.</summary>
-        protected virtual IAtlasSpriteService CreateAtlasSpriteService(IResourceService resources, ILogService log) =>
-            new AtlasSpriteService(resources, log);
-
         /// <summary>
         /// Creates the frame loop registered as <see cref="IUpdateLoop"/> once <see cref="RegisterServices"/>
         /// has returned (the log service must exist first). An <see cref="IUpdateLoop"/> registered inside
@@ -141,7 +137,6 @@ namespace Cascade.Bootstrap
             RegisterIfNotNull(registry, CreateAudioService(resources, log));
             RegisterIfNotNull(registry, CreateSaveService());
             RegisterIfNotNull(registry, CreateNetworkService());
-            RegisterIfNotNull(registry, CreateAtlasSpriteService(resources, log));
         }
 
         /// <summary>Optional defaults: a hook returning null simply means “do not register this service”.</summary>

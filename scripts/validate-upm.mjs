@@ -74,8 +74,8 @@ if (pkg) {
   if (pkg.license !== 'MIT') fail(`Cascade/package.json license: expected MIT, got ${pkg.license}`);
   if (!pkg.dependencies || typeof pkg.dependencies !== 'object') fail('Cascade/package.json missing dependencies');
   for (const dep of Object.keys(pkg.dependencies)) {
-    if (/hybridclr|lit-motion|loopscroll|unitask|yooasset|cysharp|ugui|textmeshpro/i.test(dep)) {
-      fail(`Cascade must not depend on ${dep} (UI lives in Modules/UI, localization in Modules/Localization)`);
+    if (/hybridclr|lit-motion|loopscroll|unitask|yooasset|cysharp|ugui|textmeshpro|2d\.sprite/i.test(dep)) {
+      fail(`Cascade must not depend on ${dep} (UI + atlas live in Modules/UI, localization in Modules/Localization)`);
     }
   }
 }

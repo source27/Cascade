@@ -10,7 +10,7 @@
 | `Integrations/Desktop/` | `com.source27.cascade.integrations.desktop` | PC 壳：local/roaming 设置、JSON 多槽存档、音频/光标/日志等（需 `com.unity.inputsystem`） |
 | `Integrations/Steam/` | `com.source27.cascade.integrations.steam` | Steam-only（依赖 Desktop；peer Steamworks.NET） |
 | `Integrations/InputGlyphs/` | `com.source27.cascade.integrations.inputglyphs` | 手柄/键鼠 Glyph 桥接（peer InputGlyphs `com.eviltwo.input-glyphs`；两者必须同装） |
-| `Modules/UI/` | `com.source27.cascade.modules.ui` | 需要 Cascade UI 栈（页面/视图/生成器）时 |
+| `Modules/UI/` | `com.source27.cascade.modules.ui` | 需要 Cascade UI 栈（页面/视图/生成器、图集精灵服务）时 |
 | `Modules/UiExtras/` | `com.source27.cascade.modules.uiextras` | 需要 ScaleButton / LoopScroll 时（依赖 `modules.ui`） |
 | `Modules/Localization/` | `com.source27.cascade.modules.localization` | 需要默认本地化栈（资源 catalog）或 Google Sheet→JSON 等作者工具时 |
 

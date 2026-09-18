@@ -11,7 +11,7 @@
 | `CreateLogService` | 返回 `ILogService`（默认 `UnityLogService` + `LogLevel.Info`）；日志级别策略与 `environment` 字段写在子类 |
 | `CreateResourceService` | 返回 `IResourceService`（默认 `UnityResourcesService`，即 Unity `Resources`） |
 | `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`；Resources 实现忽略它） |
-| `CreateSaveService` / `CreateAudioService` / `CreateNetworkService` / `CreateAtlasSpriteService` | 其余默认服务的工厂（PlayerPrefs / Resource 驱动 / Null / 图集索引）；**返回 null = 不注册该服务** |
+| `CreateSaveService` / `CreateAudioService` / `CreateNetworkService` | 其余默认服务的工厂（PlayerPrefs / Resource 驱动 / Null）；**返回 null = 不注册该服务** |
 | `CreateUpdateLoop` | 创建注册为 `IUpdateLoop` 的循环（默认 `UpdateLoop`；`RegisterServices` 里已注册者优先） |
 | `RegisterServices` | `base` + 增游戏服务；本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
@@ -66,6 +66,7 @@ Indie：`AddressablesResourceService`；`LoadRawBytesAsync` 的 location 须是 
 - 页面/绑定：`com.source27.cascade.modules.ui`（`Cascade.Modules.UI`）+ Roslyn 生成器（`[UI]` 等特性 → 注册表，运行时少反射）
 - 创建：`UISystem.CreateAsync(services, registry, "UIRoot", ct)`；**实例归游戏**（入口保存、`Stop()`/退出时 Dispose），宿主不持有
 - 生成器随模块分发（`Modules/UI/Roslyn`），未装模块时空转
+- 图集精灵：`IAtlasSpriteService`/`AtlasSpriteService`（`Cascade.Modules.UI`，索引 `AtlasMapping` 经 `IResourceService`）；**不默认注册**，需要时在 `RegisterServices` 自行登记
 - ScaleButton、LoopScroll 列表绑定：装 `com.source27.cascade.modules.uiextras`，命名空间 `Cascade.Modules.UIExtras`  
 
 ## 事件

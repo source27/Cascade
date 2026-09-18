@@ -13,8 +13,7 @@
       "source": "local",
       "dependencies": {
         "com.unity.modules.audio": "1.0.0",
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.2d.sprite": "1.0.0"
+        "com.unity.modules.unitywebrequest": "1.0.0"
       }
     },
     "com.source27.cascade.integrations.addressables": {

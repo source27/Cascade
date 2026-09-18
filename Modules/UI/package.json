@@ -4,12 +4,21 @@
   "displayName": "Cascade UI",
   "description": "Optional UI stack for Cascade: page/view base types, UI tree contexts, Roslyn page-registry generator.",
   "unity": "2022.3",
-  "keywords": ["cascade", "ui", "ugui", "tmp", "roslyn"],
-  "author": {"name": "source27"},
+  "keywords": [
+    "cascade",
+    "ui",
+    "ugui",
+    "tmp",
+    "roslyn"
+  ],
+  "author": {
+    "name": "source27"
+  },
   "license": "MIT",
   "dependencies": {
     "com.source27.cascade": "0.1.0",
     "com.unity.ugui": "1.0.0",
-    "com.unity.textmeshpro": "3.0.9"
+    "com.unity.textmeshpro": "3.0.9",
+    "com.unity.2d.sprite": "1.0.0"
   }
 }

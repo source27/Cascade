@@ -23,12 +23,30 @@ Depends on `com.source27.cascade` (+ uGUI / TMP). Never reverse.
 
 | Assembly | Platform | Contents |
 |----------|----------|----------|
-| `Cascade.Modules.UI` | runtime | `UISystem`, `UIBase`, `UIRoot`, `UIRegistry`, `IUISystem`, `WorldUIHost`, `SafeArea`, `UITooltipPlacement`, `UICoordUtility` … |
+| `Cascade.Modules.UI` | runtime | `UISystem`, `UIBase`, `UIRoot`, `UIRegistry`, `IUISystem`, `WorldUIHost`, `SafeArea`, `UITooltipPlacement`, `UICoordUtility`, `IAtlasSpriteService`/`AtlasSpriteService` … |
 | `Cascade.Modules.UI.Editor` | Editor | `UIScriptGenerator` (`Assets/Generate UI Page`), `UIBindingHostEditor`, layout settings |
 | `Cascade.Modules.UI.Tests` | Editor | EditMode tests |
 
+Dependencies: `com.source27.cascade` + `com.unity.ugui` / `com.unity.textmeshpro` / `com.unity.2d.sprite`（SpriteAtlas）.
+
 The Roslyn generator ships in this module (`Roslyn/Cascade.SourceGenerator.dll`; sources in `Tools~/Cascade.SourceGenerator/`).
 It is inert when the module is absent.
+
+## Atlas sprites
+
+`IAtlasSpriteService`（`AtlasSpriteService`）按名字取 SpriteAtlas 里的 Sprite：索引 `AtlasMapping.bytes`（spriteName → atlasName）与图集句柄都由 `IResourceService` 装载并在服务生命周期内缓存。
+它**不随 Bootstrap 默认注册**——需要时在组合根自己登记：
+
+```csharp
+protected override void RegisterServices(IServiceRegistry registry)
+{
+    base.RegisterServices(registry);
+    registry.Register<IAtlasSpriteService>(new AtlasSpriteService(
+        registry.Get<IResourceService>(), registry.Get<ILogService>()));
+}
+```
+
+没打包进图集的 Sprite 会返回 null（`TryGetAtlasName` 可用于预判）。
 
 ## Ownership
 
