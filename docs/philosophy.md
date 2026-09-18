@@ -16,7 +16,7 @@ Cascade 同时交付两样东西：
 主包提供：
 
 - 薄 **Bootstrap** 流水线与组合根基类  
-- **Service** 契约与默认实现：日志 = Unity 日志、资源 = Unity `Resources`、存档 = PlayerPrefs、音频 = Resource 驱动、网络 = Null（本地化只留契约；图集精灵随 UI 栈在 `Modules/UI`）  
+- **Service** 契约与默认实现：日志 = Unity 日志、资源 = Unity `Resources`、存档 = PlayerPrefs、音频 = Resource 驱动（本地化只留契约；图集精灵随 UI 栈在 `Modules/UI`）  
 - **Core** 基础设施（事件、更新循环、GameFlow）  
 
 可选 Module 提供：

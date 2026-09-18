@@ -105,9 +105,6 @@ namespace Cascade.Bootstrap
         protected virtual IAudioService CreateAudioService(IResourceService resources, ILogService log) =>
             new AudioService(resources, log);
 
-        /// <summary>Registered <see cref="INetworkService"/>; default is the null implementation.</summary>
-        protected virtual INetworkService CreateNetworkService() => new NullNetworkService();
-
         /// <summary>
         /// Creates the frame loop registered as <see cref="IUpdateLoop"/> once <see cref="RegisterServices"/>
         /// has returned (the log service must exist first). An <see cref="IUpdateLoop"/> registered inside
@@ -136,7 +133,6 @@ namespace Cascade.Bootstrap
 
             RegisterIfNotNull(registry, CreateAudioService(resources, log));
             RegisterIfNotNull(registry, CreateSaveService());
-            RegisterIfNotNull(registry, CreateNetworkService());
         }
 
         /// <summary>Optional defaults: a hook returning null simply means “do not register this service”.</summary>
