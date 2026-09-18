@@ -6,17 +6,25 @@
 
 唯一注册服务、选择资源后端、决定是否热更的地方。继承 `BootstrapBase`：
 
-| 钩子 | 用途 |
+| 成员 | 用途 |
 |------|------|
-| `CreateLogService` | 返回 `ILogService`（默认 `UnityLogService` + `LogLevel.Info`）；日志级别策略与 `environment` 字段写在子类 |
-| `CreateResourceService` | 返回 `IResourceService`（默认 `UnityResourcesService`，即 Unity `Resources`） |
+| `RegisterServices(registry)` | **唯一的服务注册接缝**：注册自己的实现与游戏服务（都走 `registry.Register<T>(…)`）。它在框架默认之前执行，**不需要调 base** |
 | `CreateResourceInitOptions` | 提供者专用 options（直接用于 `InitializeAsync`；Resources 实现忽略它） |
-| `CreateSaveService` / `CreateAudioService` | 其余默认服务的工厂（PlayerPrefs / Resource 驱动）；**返回 null = 不注册该服务** |
-| `CreateUpdateLoop` | 创建注册为 `IUpdateLoop` 的循环（默认 `UpdateLoop`；`RegisterServices` 里已注册者优先） |
-| `RegisterServices` | `base` + 增游戏服务；本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`） |
 | `RunGameAsync` | 主逻辑入口（必 override，否则仅警告） |
 
-`CreateLogService` / `CreateResourceService` 返回 null 会直接报错（流水线必需）；其余默认服务 null 即跳过注册。追加自定义服务：`override RegisterServices` 里 `base` 之后 `registry.Register<T>(…)`。
+默认服务在 `RegisterServices` 之后由框架**按缺失补**（`TryGet` 为空才登记）：
+
+| 契约 | 默认实现 |
+|---|---|
+| `ILogService` | `UnityLogService`（`LogLevel.Info`） |
+| `IResourceService` | `UnityResourcesService`（Unity `Resources`） |
+| `IEventBus` | `EventBus`（用上面那份 log） |
+| `IAudioService` | `AudioService`（用上面那份 resource + log） |
+| `ISaveService` | `PlayerPrefsSaveService` |
+
+所以：**换实现** = 在 `RegisterServices` 里 `registry.Register<T>(你的实现)`（你的实例就是默认依赖采用的那份）；**事后替换** = `registry.Replace<T>(…)`（Dispose 被换掉的实例、占用原槽位，仅限组合根阶段）；**不要某个默认** = `registry.Remove<T>()`。同契约重复 `Register` 仍抛异常——要换就用 `Replace`。
+
+注意：`RegisterServices` 执行时默认还没登记，这里构建的服务只能依赖你**自己**刚注册的实例（或推迟到 `RunGameAsync`/模块安装时再建）。本地化等可选栈由 Starter 自行安装（`LocalizationInstaller`）。
 
 环境分级（`BootstrapEnvironment` Dev/Beta/Gold）、版本覆盖、`[SerializeField]` 配置字段都在 **Starter 子类**：主包 `BootstrapBase` 不含这些，也没有 `BootstrapConfiguration`（ADR 0023）。
 

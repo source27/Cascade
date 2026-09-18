@@ -26,13 +26,15 @@ namespace Cascade.Mobile
         public string AppVersion =>
             string.IsNullOrWhiteSpace(appVersionOverride) ? Application.version : appVersionOverride;
 
-        protected override ILogService CreateLogService() => new UnityLogService
+        protected override void RegisterServices(IServiceRegistry registry)
         {
-            Enabled = true,
-            MinimumLevel = ResolveMinimumLogLevel()
-        };
-
-        protected override IResourceService CreateResourceService() => new YooAssetResourceService();
+            registry.Register<ILogService>(new UnityLogService
+            {
+                Enabled = true,
+                MinimumLevel = ResolveMinimumLogLevel()
+            });
+            registry.Register<IResourceService>(new YooAssetResourceService());
+        }
 
         protected override ResourceInitOptions CreateResourceInitOptions()
         {

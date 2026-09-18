@@ -11,7 +11,7 @@ Unity **2022.3.62f3**. Open `Starters/Indie`.
 
 Composition root: `IndieBootstrapEntry` → `GameEntry` → `Cascade.Core.GameFlow`。
 
-`IndieBootstrapEntry` 自己持有 `environment`（Dev/Beta/Gold，经 `CreateLogService` 决定日志级别）；主包
+`IndieBootstrapEntry` 自己持有 `environment`（Dev/Beta/Gold）并在 `RegisterServices` 里注册对应日志级别的 `UnityLogService` 与 Addressables 资源服务；主包
 `BootstrapBase` 不含环境/版本/配置字段（ADR 0023）。
 
 | Layer | Where |

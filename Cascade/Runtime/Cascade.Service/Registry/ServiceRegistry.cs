@@ -17,10 +17,58 @@ namespace Cascade.Service
 
             var type = typeof(TService);
             if (_services.ContainsKey(type))
-                throw new InvalidOperationException($"Service already registered: {type.FullName}");
+                throw new InvalidOperationException(
+                    $"Service already registered: {type.FullName}. Use Replace to swap the implementation.");
 
             _services.Add(type, instance);
             _registrationOrder.Add(instance);
+        }
+
+        public void Replace<TService>(TService instance) where TService : class
+        {
+            ThrowIfDisposed();
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            var type = typeof(TService);
+            if (!_services.TryGetValue(type, out var previous))
+            {
+                _services.Add(type, instance);
+                _registrationOrder.Add(instance);
+                return;
+            }
+
+            if (ReferenceEquals(previous, instance))
+                return;
+
+            // Take over the old slot: registration order drives reverse-order teardown,
+            // so a swap must not move this contract in that order.
+            // Reference-based search on purpose — UnityEngine.Object.Equals compares object identity.
+            var slot = IndexOf(previous);
+            if (slot >= 0)
+                _registrationOrder[slot] = instance;
+            else
+                _registrationOrder.Add(instance);
+
+            _services[type] = instance;
+            (previous as IDisposable)?.Dispose();
+        }
+
+        public bool Remove<TService>() where TService : class
+        {
+            ThrowIfDisposed();
+
+            var type = typeof(TService);
+            if (!_services.TryGetValue(type, out var previous))
+                return false;
+
+            _services.Remove(type);
+            var slot = IndexOf(previous);
+            if (slot >= 0)
+                _registrationOrder.RemoveAt(slot);
+
+            (previous as IDisposable)?.Dispose();
+            return true;
         }
 
         public TService Get<TService>() where TService : class
@@ -58,6 +106,17 @@ namespace Cascade.Service
 
             _registrationOrder.Clear();
             _services.Clear();
+        }
+
+        private int IndexOf(object instance)
+        {
+            for (var i = 0; i < _registrationOrder.Count; i++)
+            {
+                if (ReferenceEquals(_registrationOrder[i], instance))
+                    return i;
+            }
+
+            return -1;
         }
 
         private void ThrowIfDisposed()

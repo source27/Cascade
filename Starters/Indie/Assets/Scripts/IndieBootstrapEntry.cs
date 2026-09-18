@@ -14,13 +14,15 @@ namespace Cascade.Indie
 
         public BootstrapEnvironment InspectorEnvironment => environment;
 
-        protected override ILogService CreateLogService() => new UnityLogService
+        protected override void RegisterServices(IServiceRegistry registry)
         {
-            Enabled = true,
-            MinimumLevel = ResolveMinimumLogLevel()
-        };
-
-        protected override IResourceService CreateResourceService() => new AddressablesResourceService();
+            registry.Register<ILogService>(new UnityLogService
+            {
+                Enabled = true,
+                MinimumLevel = ResolveMinimumLogLevel()
+            });
+            registry.Register<IResourceService>(new AddressablesResourceService());
+        }
 
         protected override ResourceInitOptions CreateResourceInitOptions() =>
             new AddressablesResourceInitOptions(autoReleaseInitHandle: true);

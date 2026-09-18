@@ -11,7 +11,7 @@ namespace Cascade.Service
     /// Everything it can load must live under a <c>Resources/</c> folder (raw bytes: a TextAsset there);
     /// scenes must be in Build Settings. Loads are synchronous — the <see cref="IResourceService"/>
     /// surface stays async so a project can swap in an integration provider (YooAsset / Addressables)
-    /// via <c>BootstrapBase.CreateResourceService()</c> without touching call sites.
+    /// by registering another <see cref="IResourceService"/> in <c>BootstrapBase.RegisterServices</c>, without touching call sites.
     /// </summary>
     public sealed class UnityResourcesService : IResourceService, IDisposable
     {

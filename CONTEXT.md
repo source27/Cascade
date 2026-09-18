@@ -25,7 +25,7 @@ _Avoid_: 塞进主包的 UI 工具、仅存在于某个 Starter 的列表/按钮
 _Avoid_: 把 UI 底座当主包必装能力、在主包或 Core 引用 uGUI/TMP、让宿主持有 UI
 
 **启动编排（Bootstrap）**:
-主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：注册服务（`CreateLogService`/`CreateResourceService` 等钩子）→ 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**环境分级、版本覆盖、日志级别、资源 options 等策略写在 Starter 子类**（含各自的 `BootstrapEnvironment` 枚举，见 `MobileBootstrapEntry`/`IndieBootstrapEntry`），主包不含这些字段与类型，也没有 `BootstrapConfiguration`。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
+主包程序集 **`Cascade.Bootstrap`**（原 `Cascade.Launcher`）内的薄默认流水线：`RegisterServices`（项目自己的实现先登记，框架默认按缺失补 log/resource/eventbus/audio/save）→ 建 Host → 解析/注册 `IUpdateLoop` → 资源 **初始化** → 虚钩子 `RunGameAsync` 交主逻辑。Starter 在钩子内接热更/直入游戏（本地化安装、UI 创建都在这里或更后）。**环境分级、版本覆盖、日志级别、资源 options 等策略写在 Starter 子类**（含各自的 `BootstrapEnvironment` 枚举，见 `MobileBootstrapEntry`/`IndieBootstrapEntry`），主包不含这些字段与类型，也没有 `BootstrapConfiguration`。**不含** HybridCLR、资源版本下载、补丁窗、构建窗。
 _Avoid_: 热更包、cascade.hotupdate、框架管热更、默认跑资源更新、Cascade.Launcher（旧名）、Cascade.Module（已删空壳）、纯零件无流水线（已否决）
 
 **本地化提供者**:
@@ -48,14 +48,14 @@ _Avoid_: Example、示例工程、Demo、Sample、Examples/
 _Avoid_: 把 `IGameHost` 当服务目录、在 Host 上挂 UI/本地化、为方便再加属性
 
 **服务注册表（ServiceRegistry）**:
-显式 `Register` / `Get` 的服务容器；不使用 DI 框架。扩展方式：组合根 override 注册，而非改宿主类型。
+显式 `Register` / `Get` / `TryGet` 的服务容器，另有 `Replace`（换实现并 Dispose 旧的、占用原槽位）与 `Remove`（移除并 Dispose）；不使用 DI 框架。`Register` 对同契约重复注册抛异常。扩展方式：组合根 `RegisterServices` 里注册，而非改宿主类型。
 
 **更新循环（Update Loop）**:
-注册表服务 `IUpdateLoop`：消费者 `RegisterUpdate` / `RegisterLateUpdate` / `RegisterFixedUpdate` 拿 `IDisposable`；驱动者（`UnityUpdateDriver` 或自实现）调 `Tick*`。由 Bootstrap 在 `RegisterServices` 之后解析（已注册者优先，否则 `CreateUpdateLoop`）或组合根自注册；实现 `IDisposable`，随注册表释放。
+注册表服务 `IUpdateLoop`：消费者 `RegisterUpdate` / `RegisterLateUpdate` / `RegisterFixedUpdate` 拿 `IDisposable`；驱动者（`UnityUpdateDriver` 或自实现）调 `Tick*`。由 Bootstrap 在 `RegisterServices` 与默认补齐之后解析：组合根已注册 `IUpdateLoop` 就用它，否则创建默认 `UpdateLoop`（事后可用 `registry.Replace<IUpdateLoop>(…)` 换）；实现 `IDisposable`，随注册表释放。
 _Avoid_: 把 `UpdateLoop` 具体类型塞进宿主、让每个消费者各自 `AddComponent` 一个 MonoBehaviour 循环
 
 **资源提供者（Resource Provider）**:
-`IResourceService` 的具体实现。**默认实现** `UnityResourcesService`（`UnityEngine.Resources` + `SceneManager`）在主包，作为 Bootstrap 的默认资源服务；YooAsset / Addressables 等实现在集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。换 provider 只改组合根的 `CreateResourceService()`。
+`IResourceService` 的具体实现。**默认实现** `UnityResourcesService`（`UnityEngine.Resources` + `SceneManager`）在主包，作为 Bootstrap 的默认资源服务；YooAsset / Addressables 等实现在集成包。核心契约限于 init/load/unload 等加载语义；**不含**更新语义。换 provider ＝ 在自己的 `RegisterServices` 里 `registry.Register<IResourceService>(…)`（或事后 `registry.Replace<IResourceService>(…)`）。
 
 **代码热更 / 资源热更**:
 仅 Mobile Starter（及 fork 项目）领域内的概念与实现。Cascade 主包不依赖 HybridCLR，也不编排资源更新。

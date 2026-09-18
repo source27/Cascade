@@ -47,7 +47,7 @@ Starter  ──►  Cascade + 选定的 Integrations / Modules
 
 Bootstrap 默认顺序：
 
-1. `RegisterServices`（日志从 `CreateLogService()` 来）  
+1. `RegisterServices`（项目自己的实现先登记，框架默认按缺失补：log / resource / eventbus / audio / save）  
 2. 解析/注册 `IUpdateLoop` + 建 `IGameHost`（只有 `Services`）  
 3. `IResourceService.InitializeAsync`（options 来自 `CreateResourceInitOptions()`）  
 4. 虚方法 `RunGameAsync(IGameHost, CancellationToken)`  
@@ -63,7 +63,7 @@ Bootstrap 默认顺序：
 
 ## 扩展方式
 
-- 组合根 override：`CreateLogService`、`CreateResourceService`、`CreateResourceInitOptions`、`CreateUpdateLoop`、`RegisterServices`、`RunGameAsync`（环境分级、版本覆盖、日志级别等策略写在 Starter 子类，见 ADR 0023）  
+- 组合根 override：`RegisterServices`（唯一注册缝）、`CreateResourceInitOptions`、`RunGameAsync`；事后替换用 `IServiceRegistry.Replace/Remove`（环境分级、版本覆盖、日志级别等策略写在 Starter 子类，见 ADR 0023/0028）  
 - 游戏专有服务：`Register` 进 `ServiceRegistry`，热更/主逻辑经 `host.Services.Get<T>()`  
 - 游戏流程：主包 `GameFlow` + 游戏实现 `IGameFlowState`（状态 id 自定）；**不**提供 GF 式通用 FSM  
 - **不**使用 DI 容器（AOT 侧）；**不**把 `IGameHost` 扩成服务目录（只剩 `Services`）  

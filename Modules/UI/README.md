@@ -40,11 +40,14 @@ It is inert when the module is absent.
 ```csharp
 protected override void RegisterServices(IServiceRegistry registry)
 {
-    base.RegisterServices(registry);
+    registry.Register<ILogService>(new UnityLogService { Enabled = true, MinimumLevel = LogLevel.Info });
+    registry.Register<IResourceService>(new YooAssetResourceService());
     registry.Register<IAtlasSpriteService>(new AtlasSpriteService(
         registry.Get<IResourceService>(), registry.Get<ILogService>()));
 }
 ```
+
+默认服务要等 `RegisterServices` 返回后才按缺失补，所以这里构建的服务只能依赖你自己刚注册的实例。
 
 没打包进图集的 Sprite 会返回 null（`TryGetAtlasName` 可用于预判）。
 

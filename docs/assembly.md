@@ -101,12 +101,12 @@ Desktop 依赖 `com.unity.inputsystem` **1.14.2**（写在 Desktop `package.json
 3. Override：
 
 ```csharp
-// 环境/版本/日志级别等策略由你自己的子类持有（Inspector 字段 + ResolveMinimumLogLevel）
-protected override ILogService CreateLogService() =>
-    new UnityLogService { Enabled = true, MinimumLevel = LogLevel.Info };
-
-protected override IResourceService CreateResourceService() =>
-    new YooAssetResourceService(); // 或 AddressablesResourceService
+// 你自己的实现先登记，框架默认按缺失补（EventBus/AudioService 会用你这份 log/resource）
+protected override void RegisterServices(IServiceRegistry registry)
+{
+    registry.Register<ILogService>(new UnityLogService { Enabled = true, MinimumLevel = LogLevel.Info });
+    registry.Register<IResourceService>(new YooAssetResourceService()); // 或 AddressablesResourceService
+}
 
 protected override ResourceInitOptions CreateResourceInitOptions() =>
     new YooAssetResourceInitOptions(...); // 或 AddressablesResourceInitOptions

@@ -9,7 +9,7 @@
 - **删除** `BootstrapConfiguration`（含 `ResolvePlayerEnvironment()` / `DefaultLogLevel()`），以及 `BootstrapBase` 上的 `[SerializeField] environment`、`appVersionOverride`、`InspectorEnvironment`、`AppVersion`、`Configuration`。
 - `BootstrapEnvironment`（Dev/Beta/Gold）**也下移**到各 Starter（`Cascade.Mobile` / `Cascade.Indie` 各自的枚举）：主包对它零引用，留着就是死词汇（修订于同日，原稿曾判「留主包」）。映射成策略（日志级别、玩家侧取值）由 Starter 子类写。
 - 新增虚钩子 `CreateLogService()`（默认 `UnityLogService` + `LogLevel.Info`）；`CreateResourceInitOptions()` 的返回值直接进 `IResourceService.InitializeAsync`，不再经配置容器中转。
-- 组合根钩子集合：`CreateLogService` / `CreateResourceService` / `CreateResourceInitOptions` / `CreateUpdateLoop` / `RegisterServices` / `RunGameAsync`。
+- 组合根钩子集合（**清单已被 [ADR 0028](0028-single-composition-seam.md) 取代**）：`CreateLogService` / `CreateResourceService` / `CreateResourceInitOptions` / `CreateUpdateLoop` / `RegisterServices` / `RunGameAsync`。
 - Starter 侧：`MobileBootstrapEntry` 收回 `environment`、`appVersionOverride`（喂给 `MobileBootstrapConfiguration`）与日志级别映射；`IndieBootstrapEntry` 收回 `environment` 与同一映射（无版本覆盖消费方，不搬空字段）。
 - `Cascade.Tests/BootstrapConfigurationTests.cs` 随类型删除——主包已无该类型可测。
 
